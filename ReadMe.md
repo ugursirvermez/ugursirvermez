@@ -18,9 +18,3 @@ ML researcher & game developer. Focused on deep learning, computer vision, and P
 ![Unity](https://img.shields.io/badge/unity-%23000000.svg?style=for-the-badge&logo=unity&logoColor=white)
 ![Keras](https://img.shields.io/badge/Keras-%23D00000.svg?style=for-the-badge&logo=Keras&logoColor=white)
 ![nVIDIA](https://img.shields.io/badge/cuda-000000.svg?style=for-the-badge&logo=nVIDIA&logoColor=green)
-
-## 📊 GitHub Stats
-
-![](https://github-readme-stats.vercel.app/api?username=ugursirvermez&theme=github_dark&hide_border=false&include_all_commits=false&count_private=false)
-![](https://nirzak-streak-stats.vercel.app/?user=ugursirvermez&theme=github_dark&hide_border=false)
-![](https://github-readme-stats.vercel.app/api/top-langs/?username=ugursirvermez&theme=github_dark&hide_border=false&include_all_commits=false&count_private=false&layout=compact)
