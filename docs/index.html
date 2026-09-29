@@ -1,0 +1,1121 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Tunnel Vision · Uğur Sırvermez</title>
+<meta name="description" content="A tiny browser game about a real VR problem: moving the camera without making people sick.">
+<meta name="theme-color" content="#0b0c0f">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%230b0c0f'/%3E%3Ccircle cx='16' cy='16' r='9' fill='none' stroke='%23f2464a' stroke-width='3'/%3E%3C/svg%3E">
+<style>
+  html, body { margin: 0; height: 100%; background: #0b0c0f; overflow: hidden; }
+  body { touch-action: none; -webkit-user-select: none; user-select: none; }
+  canvas { display: block; width: 100vw; height: 100vh; cursor: none; outline: none; }
+  .links {
+    position: fixed; left: 16px; bottom: 14px; display: flex; gap: 18px;
+    font: 12px/1 ui-monospace, "SF Mono", Menlo, Consolas, monospace; letter-spacing: .04em;
+    transition: opacity .3s;
+  }
+  .links a { color: #8d8980; text-decoration: none; }
+  .links a:hover { color: #ece8e1; }
+  body.playing .links { opacity: 0; pointer-events: none; }
+  .links button { all: unset; cursor: pointer; color: #ece8e1; }
+  .links button:hover { color: #f2464a; }
+  @media (max-width: 560px) { .links { gap: 14px; font-size: 11px; } .links .long { display: none; } }
+
+  /* design notes */
+  .notes {
+    position: fixed; inset: 0; background: rgba(11, 12, 15, .82); display: grid; place-items: center;
+    padding: 16px; box-sizing: border-box; -webkit-backdrop-filter: blur(3px); backdrop-filter: blur(3px);
+  }
+  .notes[hidden] { display: none; }
+  .sheet {
+    width: min(680px, 100%); max-height: 100%; overflow: auto; box-sizing: border-box;
+    background: #0f1013; border: 1px solid #272a31; border-radius: 14px; padding: 22px 28px 28px;
+    color: #d9d5ce; font: 15.5px/1.6 -apple-system, "Segoe UI", "IBM Plex Sans", Roboto, sans-serif;
+    -webkit-user-select: text; user-select: text; touch-action: pan-y;
+  }
+  .sheet header { display: flex; justify-content: space-between; align-items: center; gap: 12px;
+    font: 600 11px/1 ui-monospace, "SF Mono", Menlo, Consolas, monospace; letter-spacing: .16em; color: #f2464a; }
+  .sheet header .tools { display: flex; gap: 6px; }
+  .sheet header button {
+    font: 600 11px/1 ui-monospace, "SF Mono", Menlo, Consolas, monospace; letter-spacing: .08em;
+    background: none; color: #8d8980; border: 1px solid #272a31; border-radius: 6px; padding: 7px 9px; cursor: pointer;
+  }
+  .sheet header button[aria-pressed="true"], .sheet header button:hover { color: #ece8e1; border-color: #8d8980; }
+  .sheet header button:focus-visible, .links button:focus-visible, .links a:focus-visible {
+    outline: 2px solid #f2464a; outline-offset: 2px; }
+  .sheet h2 { font: 600 38px/1.1 "Source Serif 4", "Iowan Old Style", Georgia, serif; color: #ece8e1; margin: 22px 0 10px; }
+  .sheet h3 { font: 600 21px/1.25 "Source Serif 4", "Iowan Old Style", Georgia, serif; color: #ece8e1; margin: 28px 0 6px; }
+  .sheet h3 span { font: 600 11px/1 ui-monospace, "SF Mono", Menlo, Consolas, monospace; color: #f2464a;
+    letter-spacing: .12em; margin-right: 10px; vertical-align: 3px; }
+  .sheet p { margin: 0 0 10px; }
+  .sheet .lede { color: #ece8e1; font-size: 17px; }
+  .sheet .ingame { border-left: 2px solid #f2464a; padding: 2px 0 2px 12px; color: #b9b4ab; font-size: 14.5px; }
+  .sheet .ingame b { color: #ece8e1; font-weight: 600; }
+  .sheet kbd { font: 600 12px ui-monospace, "SF Mono", Menlo, Consolas, monospace; border: 1px solid #3a3d45;
+    border-bottom-width: 2px; border-radius: 4px; padding: 1px 5px; color: #ece8e1; }
+  .sheet .try { margin-top: 26px; background: #15161a; border: 1px solid #272a31; border-radius: 10px; padding: 14px 16px; }
+  .sheet .try b { color: #ece8e1; }
+  .sheet ol { padding-left: 20px; margin: 8px 0 0; font-size: 13.5px; color: #a7a298; }
+  .sheet ol li { margin-bottom: 6px; }
+  .sheet a { color: #ece8e1; text-decoration-color: #f2464a; text-underline-offset: 3px; }
+  .sheet em { font-style: italic; }
+</style>
+</head>
+<body>
+<canvas id="c" tabindex="0" aria-label="Tunnel Vision. Fly through the red gates and avoid the blocks. Mouse, touch or WASD to move."></canvas>
+<nav class="links">
+  <a href="https://github.com/ugursirvermez">← <span class="long">github.com/</span>ugursirvermez</a>
+  <button type="button" id="notes-open">design notes<span class="long"> (N)</span></button>
+  <a href="https://github.com/ugursirvermez/ugursirvermez/blob/main/docs/index.html">source</a>
+</nav>
+
+<div id="notes" class="notes" role="dialog" aria-modal="true" aria-label="Design notes" hidden>
+  <div class="sheet">
+    <header>
+      <span>TUNNEL VISION</span>
+      <div class="tools">
+        <button type="button" data-set-lang="en">EN</button>
+        <button type="button" data-set-lang="tr">TR</button>
+        <button type="button" id="notes-close" aria-label="Close">ESC ✕</button>
+      </div>
+    </header>
+
+    <article data-lang="en" lang="en">
+      <h2>Design notes</h2>
+      <p class="lede">Tunnel Vision is a playable explainer. Every mechanic in it stands in for a problem that VR developers deal with every day. Play a round first, then read this.</p>
+
+      <h3><span>01</span>Sensory conflict</h3>
+      <p>When the camera moves and your body doesn't, your eyes report motion and your inner ear reports none. That mismatch is the most common explanation for VR sickness. The compelling sense of self-motion that moving imagery creates is called <em>vection</em>. LaViola (2000) discusses this theory together with two competing ones.</p>
+      <p class="ingame"><b>In the game:</b> every miss and every hit raises nausea, and the wobble and the red/cyan split grow with it.</p>
+
+      <h3><span>02</span>The comfort vignette</h3>
+      <p>Much of the sense of motion comes from the periphery. Narrowing the field of view while the camera moves (tunnelling, or a comfort vignette) cuts that down. Fernandes and Feiner (2016) found that restricting the field of view dynamically and subtly during virtual locomotion helped participants feel more comfortable.</p>
+      <p class="ingame"><b>In the game:</b> <kbd>C</kbd> turns it off. Without it, moving sideways costs nausea, and your score gets ×1.5 for the trouble. That is the trade-off designers argue about: comfort against visibility and immersion.</p>
+
+      <h3><span>03</span>The frame budget</h3>
+      <p>A 90 Hz headset gives you 11.1 ms to simulate and render both eyes. Miss it and the image stutters (judder), which is far more unpleasant in a headset than on a monitor. That is why VR performance work cares about the worst frame, not the average one.</p>
+      <p class="ingame"><b>In the game:</b> the graph in the bottom-right corner is real frame timing from your browser. Hitting a block drops frames on purpose.</p>
+
+      <h3><span>04</span>Measuring it</h3>
+      <p>The nausea bar is a toy. Research uses validated instruments given before and after exposure. The best known is the Simulator Sickness Questionnaire (SSQ; Kennedy et al., 1993).</p>
+      <p class="ingame"><b>In the game:</b> the curve on the game-over screen is the data from your run.</p>
+
+      <div class="try"><b>Try it in class.</b> Play one run with the vignette on and one with it off, then compare the two curves and the scores. Which setting would you ship as the default, and who would want to change it?</div>
+
+      <h3><span>—</span>References</h3>
+      <ol>
+        <li>Fernandes, A. S., &amp; Feiner, S. K. (2016). Combating VR sickness through subtle dynamic field-of-view modification. <em>2016 IEEE Symposium on 3D User Interfaces (3DUI)</em>, 201–210. <a href="https://doi.org/10.1109/3DUI.2016.7460053">doi:10.1109/3DUI.2016.7460053</a></li>
+        <li>Kennedy, R. S., Lane, N. E., Berbaum, K. S., &amp; Lilienthal, M. G. (1993). Simulator Sickness Questionnaire: An enhanced method for quantifying simulator sickness. <em>The International Journal of Aviation Psychology, 3</em>(3), 203–220. <a href="https://doi.org/10.1207/s15327108ijap0303_3">doi:10.1207/s15327108ijap0303_3</a></li>
+        <li>LaViola, J. J. (2000). A discussion of cybersickness in virtual environments. <em>ACM SIGCHI Bulletin, 32</em>(1), 47–56. <a href="https://doi.org/10.1145/333329.333344">doi:10.1145/333329.333344</a></li>
+      </ol>
+    </article>
+
+    <article data-lang="tr" lang="tr" hidden>
+      <h2>Tasarım notları</h2>
+      <p class="lede">Tunnel Vision oynanabilir bir anlatım. İçindeki her mekanik, VR geliştiricilerinin her gün uğraştığı bir sorunun karşılığı. Önce bir tur oynayın, sonra bunu okuyun.</p>
+
+      <h3><span>01</span>Duyusal çatışma</h3>
+      <p>Kamera hareket eder de bedeniniz durursa gözleriniz hareket bildirir, iç kulağınız bildirmez. VR'da yaşanan rahatsızlığın en yaygın açıklaması bu uyumsuzluktur. Hareketli görüntünün yarattığı güçlü "ilerliyorum" hissine <em>vection</em> denir. LaViola (2000) bu kuramı, onunla yarışan iki kuramla birlikte tartışır.</p>
+      <p class="ingame"><b>Oyunda:</b> her ıska ve her çarpma bulantıyı artırır; ekranın sallanması ve kırmızı/camgöbeği ayrışma da onunla birlikte büyür.</p>
+
+      <h3><span>02</span>Konfor vinyeti</h3>
+      <p>Hareket hissinin büyük kısmı çevresel görüşten gelir. Kamera hareket ederken görüş alanını daraltmak (tünelleme ya da konfor vinyeti) bunu azaltır. Fernandes ve Feiner (2016), sanal ortamda ilerlerken görüş alanını dinamik olarak ve fark ettirmeden daraltmanın katılımcıların daha rahat hissetmesine yardım ettiğini buldu.</p>
+      <p class="ingame"><b>Oyunda:</b> <kbd>C</kbd> vinyeti kapatır. Kapalıyken yana hareket bulantı yaratır, buna karşılık skor ×1.5 olur. Tasarımcıların tartıştığı ödünleşim tam olarak bu: bir yanda konfor, öbür yanda görüş ve sürükleyicilik.</p>
+
+      <h3><span>03</span>Kare bütçesi</h3>
+      <p>90 Hz'lik bir gözlük, iki gözün görüntüsünü hesaplayıp çizmek için toplam 11,1 ms verir. Bu süre aşılırsa görüntü takılır (judder) ve bu, gözlükte monitördekinden çok daha rahatsız edicidir. Bu yüzden VR'da performans çalışması ortalama kareye değil, en kötü kareye bakar.</p>
+      <p class="ingame"><b>Oyunda:</b> sağ alttaki grafik, tarayıcınızın gerçek kare süreleridir. Bir bloğa çarptığınızda oyun bilerek kare düşürür.</p>
+
+      <h3><span>04</span>Ölçmek</h3>
+      <p>Bulantı çubuğu bir oyuncak. Araştırmalarda deneyimden önce ve sonra uygulanan, geçerliği sınanmış araçlar kullanılır. En bilineni Simülatör Hastalığı Anketi'dir (SSQ; Kennedy vd., 1993).</p>
+      <p class="ingame"><b>Oyunda:</b> oyun bitince görünen eğri, o turun verisidir.</p>
+
+      <div class="try"><b>Derste deneyin.</b> Bir turu vinyet açıkken, bir turu kapalıyken oynayın; iki eğriyi ve skoru karşılaştırın. Varsayılan ayar olarak hangisini seçerdiniz, bunu kim değiştirmek isteyebilir?</div>
+
+      <h3><span>—</span>Kaynaklar</h3>
+      <ol>
+        <li>Fernandes, A. S., &amp; Feiner, S. K. (2016). Combating VR sickness through subtle dynamic field-of-view modification. <em>2016 IEEE Symposium on 3D User Interfaces (3DUI)</em>, 201–210. <a href="https://doi.org/10.1109/3DUI.2016.7460053">doi:10.1109/3DUI.2016.7460053</a></li>
+        <li>Kennedy, R. S., Lane, N. E., Berbaum, K. S., &amp; Lilienthal, M. G. (1993). Simulator Sickness Questionnaire: An enhanced method for quantifying simulator sickness. <em>The International Journal of Aviation Psychology, 3</em>(3), 203–220. <a href="https://doi.org/10.1207/s15327108ijap0303_3">doi:10.1207/s15327108ijap0303_3</a></li>
+        <li>LaViola, J. J. (2000). A discussion of cybersickness in virtual environments. <em>ACM SIGCHI Bulletin, 32</em>(1), 47–56. <a href="https://doi.org/10.1145/333329.333344">doi:10.1145/333329.333344</a></li>
+      </ol>
+    </article>
+  </div>
+</div>
+<noscript><p style="color:#ece8e1;font:16px monospace;padding:24px">Tunnel Vision needs JavaScript.</p></noscript>
+<script>
+'use strict';
+
+// ---------------------------------------------------------------------------
+// Tunnel Vision
+//
+// A wireframe tunnel, a reticle, and a nausea meter. Everything is plain
+// canvas 2D with a hand-rolled perspective projection: no engine, no deps.
+//
+// The design joke is also the design lesson: the "comfort vignette" is a real
+// VR locomotion technique (narrow the field of view while the camera moves,
+// and vection-induced sickness drops). Turning it off makes movement cost
+// nausea, and pays a x1.5 score multiplier for the trouble.
+// ---------------------------------------------------------------------------
+
+const COL = {
+  bg: '#0b0c0f',
+  ink: [236, 232, 225],
+  muted: [141, 137, 128],
+  accent: [242, 70, 74],
+  red: [255, 71, 71],
+  cyan: [47, 211, 216],
+};
+const rgba = (c, a = 1) => `rgba(${c[0]},${c[1]},${c[2]},${a})`;
+const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+const lerp = (a, b, t) => a + (b - a) * t;
+const TAU = Math.PI * 2;
+
+const MONO = 'ui-monospace, "SF Mono", Menlo, Consolas, "IBM Plex Mono", monospace';
+const SERIF = '"Source Serif 4", "Iowan Old Style", Georgia, "Times New Roman", serif';
+
+// World units: the playable disc has radius 1, the tunnel wall sits at 1.32.
+const ZP = 1.6;        // depth of the player's plane
+const ZF = 42;         // far plane
+const RS = 2.4;        // spacing between tunnel rings
+const TUN_R = 1.32;
+const PLAYER_R = 0.07;
+const CAM_FOLLOW = 0.42;
+
+const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+// ---------------------------------------------------------------------------
+// canvas
+// ---------------------------------------------------------------------------
+const cv = document.getElementById('c');
+const ctx = cv.getContext('2d');
+let W = 0, H = 0, DPR = 1, M = 0;   // M = min(W, H)
+
+function resize() {
+  DPR = Math.min(2, window.devicePixelRatio || 1);
+  W = window.innerWidth;
+  H = window.innerHeight;
+  M = Math.min(W, H);
+  cv.width = Math.round(W * DPR);
+  cv.height = Math.round(H * DPR);
+}
+window.addEventListener('resize', resize);
+resize();
+
+// ---------------------------------------------------------------------------
+// storage (best score, settings). Private windows may throw; that's fine.
+// ---------------------------------------------------------------------------
+const store = {
+  get(k, d) { try { const v = localStorage.getItem(k); return v == null ? d : JSON.parse(v); } catch (e) { return d; } },
+  set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) { /* ignore */ } },
+};
+
+// ---------------------------------------------------------------------------
+// audio: a handful of synth blips, created lazily after the first gesture
+// ---------------------------------------------------------------------------
+let actx = null;
+let muted = store.get('tv.muted', false);
+
+function audio() {
+  if (!actx) {
+    const AC = window.AudioContext || window.webkitAudioContext;
+    if (AC) actx = new AC();
+  }
+  if (actx && actx.state === 'suspended') actx.resume();
+  return actx;
+}
+
+function blip(freq, dur = 0.12, type = 'sine', gain = 0.07, slide = 0) {
+  if (muted || !actx) return;
+  const t = actx.currentTime;
+  const o = actx.createOscillator();
+  const g = actx.createGain();
+  o.type = type;
+  o.frequency.setValueAtTime(freq, t);
+  if (slide) o.frequency.exponentialRampToValueAtTime(Math.max(30, freq + slide), t + dur);
+  g.gain.setValueAtTime(gain, t);
+  g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+  o.connect(g).connect(actx.destination);
+  o.start(t);
+  o.stop(t + dur + 0.02);
+}
+
+function crunch(dur = 0.25, gain = 0.12) {
+  if (muted || !actx) return;
+  const t = actx.currentTime;
+  const len = Math.floor(actx.sampleRate * dur);
+  const buf = actx.createBuffer(1, len, actx.sampleRate);
+  const d = buf.getChannelData(0);
+  for (let i = 0; i < len; i++) {
+    // bit-crushed noise, decaying
+    d[i] = (Math.round((Math.random() * 2 - 1) * 4) / 4) * Math.pow(1 - i / len, 2);
+  }
+  const src = actx.createBufferSource();
+  const g = actx.createGain();
+  const f = actx.createBiquadFilter();
+  f.type = 'lowpass';
+  f.frequency.value = 1800;
+  src.buffer = buf;
+  g.gain.value = gain;
+  src.connect(f).connect(g).connect(actx.destination);
+  src.start(t);
+}
+
+// ---------------------------------------------------------------------------
+// design notes (HTML overlay, so the text is selectable and the links work)
+// ---------------------------------------------------------------------------
+const notesEl = document.getElementById('notes');
+let notesLang = store.get('tv.lang', (navigator.language || 'en').toLowerCase().startsWith('tr') ? 'tr' : 'en');
+
+function setLang(lang) {
+  notesLang = lang;
+  store.set('tv.lang', lang);
+  for (const a of notesEl.querySelectorAll('article')) a.hidden = a.dataset.lang !== lang;
+  for (const b of notesEl.querySelectorAll('[data-set-lang]')) b.setAttribute('aria-pressed', String(b.dataset.setLang === lang));
+}
+function notesOpen() { return !notesEl.hidden; }
+function openNotes() {
+  if (S.mode === 'play') S.paused = true;
+  keys.clear();
+  setLang(notesLang);
+  notesEl.hidden = false;
+  notesEl.querySelector('.sheet').scrollTop = 0;
+  document.getElementById('notes-close').focus();
+}
+function closeNotes() {
+  notesEl.hidden = true;
+  cv.focus();
+}
+document.getElementById('notes-open').addEventListener('click', openNotes);
+document.getElementById('notes-close').addEventListener('click', closeNotes);
+notesEl.addEventListener('click', (e) => {
+  const b = e.target.closest('[data-set-lang]');
+  if (b) setLang(b.dataset.setLang);
+  else if (e.target === notesEl) closeNotes();
+});
+
+// ---------------------------------------------------------------------------
+// input
+// ---------------------------------------------------------------------------
+const keys = new Set();
+const target = { x: 0, y: 0 };
+let pointerMode = 'mouse';
+let touchStart = null;
+
+window.addEventListener('keydown', (e) => {
+  const k = e.key.toLowerCase();
+  if (notesOpen()) {
+    if (k === 'escape' || k === 'n') { e.preventDefault(); closeNotes(); }
+    return;
+  }
+  if (k === 'n') { openNotes(); return; }
+  if (['arrowup', 'arrowdown', 'arrowleft', 'arrowright', ' '].includes(k)) e.preventDefault();
+  if (e.repeat) { keys.add(k); return; }
+  keys.add(k);
+  pointerMode = 'keys';
+  if (k === ' ' || k === 'enter') primary();
+  if (k === 'v') { S.stereo = !S.stereo; toast(S.stereo ? 'stereo view: on' : 'stereo view: off'); }
+  if (k === 'c') {
+    S.vignette = !S.vignette;
+    store.set('tv.vignette', S.vignette);
+    toast(S.vignette ? 'comfort vignette: on' : 'comfort vignette: off  ·  score ×1.5, movement costs nausea');
+  }
+  if (k === 'm') { muted = !muted; store.set('tv.muted', muted); toast(muted ? 'sound: off' : 'sound: on'); }
+  if ((k === 'p' || k === 'escape') && S.mode === 'play') S.paused = !S.paused;
+});
+window.addEventListener('keyup', (e) => keys.delete(e.key.toLowerCase()));
+
+function pointerToWorld(px, py) {
+  // Mouse maps 1:1 onto the reticle: undo the camera follow and the projection.
+  const s = (1 - CAM_FOLLOW) * 0.62 * M / ZP;
+  let x = (px - W / 2) / s;
+  let y = (py - H / 2) / s;
+  const r = Math.hypot(x, y);
+  if (r > 1) { x /= r; y /= r; }
+  return { x, y };
+}
+
+cv.addEventListener('pointerdown', (e) => {
+  audio();
+  cv.focus();
+  pointerMode = e.pointerType === 'mouse' ? 'mouse' : 'touch';
+  if (pointerMode === 'touch') {
+    touchStart = { sx: e.clientX, sy: e.clientY, tx: target.x, ty: target.y };
+  } else {
+    const p = pointerToWorld(e.clientX, e.clientY);
+    target.x = p.x; target.y = p.y;
+  }
+  if (S.mode !== 'play' || S.paused) primary();
+});
+cv.addEventListener('pointermove', (e) => {
+  if (e.pointerType === 'mouse') {
+    pointerMode = 'mouse';
+    const p = pointerToWorld(e.clientX, e.clientY);
+    target.x = p.x; target.y = p.y;
+  } else if (touchStart) {
+    // Touch is relative, so the finger never covers the reticle.
+    const s = M * 0.3;
+    let x = touchStart.tx + (e.clientX - touchStart.sx) / s;
+    let y = touchStart.ty + (e.clientY - touchStart.sy) / s;
+    const r = Math.hypot(x, y);
+    if (r > 1) { x /= r; y /= r; }
+    target.x = x; target.y = y;
+  }
+});
+const endTouch = () => { touchStart = null; };
+cv.addEventListener('pointerup', endTouch);
+cv.addEventListener('pointercancel', endTouch);
+document.addEventListener('visibilitychange', () => { if (document.hidden && S.mode === 'play') S.paused = true; });
+
+function primary() {
+  audio();
+  if (S.mode === 'play') { if (S.paused) S.paused = false; return; }
+  if (S.mode === 'over' && S.overT < 0.8) return;   // don't skip the result by accident
+  start();
+}
+
+// ---------------------------------------------------------------------------
+// state
+// ---------------------------------------------------------------------------
+const S = {
+  mode: 'title',
+  paused: false,
+  stereo: false,
+  vignette: store.get('tv.vignette', true),
+  best: store.get('tv.best', 0),
+  t: 0, dist: 0, speed: 10,
+  px: 0, py: 0, lat: 0,
+  nausea: 0, score: 0, gates: 0, misses: 0, combo: 1, hitCd: 0,
+  nextGate: 20, nextBlock: 12, nextAir: 70,
+  objs: [], parts: [], pops: [],
+  shake: 0, glitch: 0, judder: 0, flash: 0, overT: 0, vig: 0,
+  toast: null,
+};
+
+function reset(playing) {
+  Object.assign(S, {
+    t: 0, dist: 0, speed: 10, px: 0, py: 0, lat: 0,
+    nausea: 0, score: 0, gates: 0, misses: 0, combo: 1, hitCd: 0,
+    nextGate: 20, nextBlock: 12, nextAir: 70,
+    objs: [], parts: [], pops: [], hist: [], histT: 0,
+    shake: 0, glitch: 0, judder: 0, flash: 0, overT: 0, paused: false,
+  });
+  target.x = 0; target.y = 0;
+  S.mode = playing ? 'play' : 'title';
+  document.body.classList.toggle('playing', playing);
+}
+
+function start() {
+  reset(true);
+  blip(440, 0.08, 'square', 0.04);
+  setTimeout(() => blip(660, 0.12, 'square', 0.04), 90);
+}
+
+function toast(msg) { S.toast = { msg, t: 2.2 }; }
+
+// The route the gates follow: two slow sines per axis, kept inside the disc.
+function pathAt(w) {
+  let x = 0.58 * Math.sin(w * 0.041 + 1.3) + 0.17 * Math.sin(w * 0.113);
+  let y = 0.44 * Math.sin(w * 0.057 + 0.4) + 0.15 * Math.cos(w * 0.091);
+  const r = Math.hypot(x, y);
+  if (r > 0.72) { x *= 0.72 / r; y *= 0.72 / r; }
+  return { x, y };
+}
+
+function spawn() {
+  const t = S.t;
+  const far = S.dist + ZF;
+  while (S.nextGate < far) {
+    const p = pathAt(S.nextGate);
+    const r = Math.max(0.23, 0.42 - t * 0.0022);
+    S.objs.push({ type: 'gate', x: p.x, y: p.y, w: S.nextGate, r, spin: Math.random() * TAU });
+    S.nextGate += Math.max(8.5, 14 - t * 0.035);
+  }
+  while (S.nextBlock < far) {
+    const w = S.nextBlock;
+    const p = pathAt(w);
+    const s = 0.12 + Math.random() * 0.13;
+    for (let tries = 0; tries < 12; tries++) {
+      const a = Math.random() * TAU;
+      const rr = Math.sqrt(Math.random()) * 0.95;
+      const x = Math.cos(a) * rr, y = Math.sin(a) * rr;
+      // always leave the route clear
+      if (Math.hypot(x - p.x, y - p.y) > 0.34 + s) {
+        S.objs.push({ type: 'block', x, y, w, s, rx: Math.random() * TAU, ry: Math.random() * TAU,
+          vx: (Math.random() - 0.5) * 3, vy: (Math.random() - 0.5) * 3 });
+        break;
+      }
+    }
+    S.nextBlock += Math.max(2.4, 7 - t * 0.035) * (0.7 + Math.random() * 0.6);
+  }
+  while (S.nextAir < far) {
+    const p = pathAt(S.nextAir + 4);
+    S.objs.push({ type: 'air', x: p.x, y: p.y, w: S.nextAir + 4, spin: 0 });
+    S.nextAir += 80 + Math.random() * 40;
+  }
+}
+
+function burst(x, y, z, col, count, speed = 1.6) {
+  for (let i = 0; i < count; i++) {
+    const a = Math.random() * TAU;
+    const v = speed * (0.4 + Math.random() * 0.8);
+    S.parts.push({ x, y, z, vx: Math.cos(a) * v, vy: Math.sin(a) * v, vz: (Math.random() - 0.3) * 2,
+      life: 0.6 + Math.random() * 0.5, max: 1.1, col });
+  }
+}
+
+function pop(text, x, y, col) { S.pops.push({ text, x, y, t: 0, col }); }
+
+function hurt(amount) {
+  S.nausea = Math.min(100, S.nausea + amount);
+  S.hitCd = 1.4;
+}
+
+// ---------------------------------------------------------------------------
+// update
+// ---------------------------------------------------------------------------
+function update(dt) {
+  const playing = S.mode === 'play';
+  const over = S.mode === 'over';
+  const tscale = over ? Math.max(0.05, 1 - S.overT * 0.9) : 1;   // slow-mo after game over
+  const sdt = dt * tscale;
+
+  S.t += playing ? dt : 0;
+  if (over) S.overT += dt;
+  S.speed = playing ? 10 + 20 * (1 - Math.exp(-S.t / 95)) : (over ? S.speed : 11);
+  S.dist += S.speed * sdt;
+
+  // steering
+  if (S.mode === 'title') {
+    const p = pathAt(S.dist + 7);
+    target.x = p.x; target.y = p.y;
+  } else if (playing) {
+    const kx = (keys.has('arrowright') || keys.has('d') ? 1 : 0) - (keys.has('arrowleft') || keys.has('a') ? 1 : 0);
+    const ky = (keys.has('arrowdown') || keys.has('s') ? 1 : 0) - (keys.has('arrowup') || keys.has('w') ? 1 : 0);
+    if (kx || ky) {
+      target.x += kx * dt * 2.1;
+      target.y += ky * dt * 2.1;
+      const r = Math.hypot(target.x, target.y);
+      if (r > 1) { target.x /= r; target.y /= r; }
+    }
+  }
+  const ox = S.px, oy = S.py;
+  const k = 1 - Math.exp(-dt * 11);
+  S.px += (target.x - S.px) * k;
+  S.py += (target.y - S.py) * k;
+  const lat = Math.hypot(S.px - ox, S.py - oy) / Math.max(dt, 1e-4);
+  S.lat = lerp(S.lat, lat, 1 - Math.exp(-dt * 6));
+
+  // comfort vignette closes in while you move; without it, moving makes you sick
+  const want = clamp((S.lat - 0.35) / 2.2, 0, 1);
+  S.vig = lerp(S.vig, S.vignette ? want : 0, 1 - Math.exp(-dt * 8));
+  if (playing && !S.vignette) S.nausea = Math.min(100, S.nausea + Math.max(0, S.lat - 0.6) * dt * 5.5);
+
+  if (playing) {
+    S.hitCd -= dt;
+    if (S.hitCd < 0) S.nausea = Math.max(0, S.nausea - dt * 1.6);
+    S.histT -= dt;
+    if (S.histT <= 0) { S.hist.push([S.t, S.nausea, S.vignette]); S.histT = 0.25; }
+  }
+
+  spawn();
+
+  // objects: move, and resolve anything that crossed the player's plane
+  for (const o of S.objs) {
+    const zPrev = o.z === undefined ? Infinity : o.z;
+    o.z = o.w - S.dist;
+    if (o.type === 'block') { o.rx += o.vx * sdt; o.ry += o.vy * sdt; }
+    if (o.type === 'gate' || o.type === 'air') o.spin += sdt * 1.2;
+    if (zPrev >= ZP && o.z < ZP && !o.done) {
+      o.done = true;
+      const d = Math.hypot(S.px - o.x, S.py - o.y);
+      if (!playing) continue;
+      if (o.type === 'gate') {
+        if (d < o.r - PLAYER_R * 0.3) {
+          const pts = 10 * S.combo * (S.vignette ? 1 : 1.5);
+          S.score += Math.round(pts);
+          S.gates++;
+          o.passed = true;
+          S.combo = Math.min(8, S.combo + 1);
+          S.nausea = Math.max(0, S.nausea - 3);
+          S.flash = 1;
+          burst(o.x, o.y, ZP, COL.accent, 26);
+          pop(`+${Math.round(pts)}`, o.x, o.y - o.r, COL.ink);
+          blip(420 + S.combo * 70, 0.14, 'triangle', 0.06, 260);
+        } else {
+          S.misses++;
+          S.combo = 1;
+          hurt(9);
+          S.shake = Math.max(S.shake, 0.25);
+          pop('miss', o.x, o.y, COL.muted);
+          blip(160, 0.22, 'sawtooth', 0.035, -60);
+        }
+      } else if (o.type === 'block') {
+        if (d < o.s * 1.2 + PLAYER_R) {
+          S.combo = 1;
+          hurt(22);
+          S.shake = 0.6;
+          S.glitch = 0.45;
+          if (!reducedMotion) S.judder = 0.09;
+          S.spike = true;
+          burst(o.x, o.y, ZP, COL.cyan, 18, 2.2);
+          burst(o.x, o.y, ZP, COL.red, 18, 2.2);
+          pop('judder', o.x, o.y, COL.red);
+          crunch();
+        }
+      } else if (o.type === 'air') {
+        if (d < 0.24) {
+          o.taken = true;
+          S.nausea = Math.max(0, S.nausea - 15);
+          burst(o.x, o.y, ZP, COL.ink, 20, 1.2);
+          pop('fresh air  −15%', o.x, o.y, COL.ink);
+          blip(880, 0.3, 'sine', 0.05, 440);
+        }
+      }
+    }
+  }
+  S.objs = S.objs.filter((o) => o.z > 0.2);
+
+  for (const p of S.parts) {
+    p.x += p.vx * sdt; p.y += p.vy * sdt; p.z += (p.vz - S.speed * 0.25) * sdt;
+    p.life -= sdt;
+  }
+  S.parts = S.parts.filter((p) => p.life > 0 && p.z > 0.2);
+  for (const p of S.pops) p.t += dt;
+  S.pops = S.pops.filter((p) => p.t < 1);
+
+  S.shake = Math.max(0, S.shake - dt * 1.8);
+  S.glitch = Math.max(0, S.glitch - dt);
+  S.flash = Math.max(0, S.flash - dt * 3);
+  if (S.toast) { S.toast.t -= dt; if (S.toast.t <= 0) S.toast = null; }
+
+  if (playing && S.nausea >= 100) {
+    S.hist.push([S.t, 100, S.vignette]);
+    S.mode = 'over';
+    S.overT = 0;
+    document.body.classList.remove('playing');
+    const isBest = S.score > S.best;
+    if (isBest) { S.best = S.score; store.set('tv.best', S.best); }
+    S.newBest = isBest && S.score > 0;
+    S.tip = TIPS[Math.floor(Math.random() * TIPS.length)];
+    blip(330, 0.5, 'sine', 0.06, -200);
+    setTimeout(() => blip(220, 0.7, 'sine', 0.05, -120), 180);
+  }
+}
+
+const TIPS = [
+  'The vignette is a real comfort technique: less peripheral motion, less vection.',
+  'Press C to turn the vignette off. Score ×1.5, but moving now costs nausea.',
+  'Press V to see what each eye gets in a headset.',
+  'Judder = dropped frames. At 90 Hz you get 11.1 ms per frame, total.',
+  'Designers call it "VR legs": tolerance to artificial motion builds up over time.',
+  'Snap turning exists for the same reason this game does.',
+];
+
+// ---------------------------------------------------------------------------
+// rendering
+// ---------------------------------------------------------------------------
+// cam: { cx, cy, f, x, y, eye }  — eye shifts the viewpoint sideways (stereo)
+function proj(cam, x, y, z) {
+  return [cam.cx + (x - cam.x - cam.eye) * cam.f / z, cam.cy + (y - cam.y) * cam.f / z];
+}
+const depthA = (z) => Math.pow(clamp(1 - z / ZF, 0, 1), 1.5);
+
+function drawTunnel(cam, col, alpha) {
+  const off = ((S.dist % RS) + RS) % RS;
+  const base = Math.round((S.dist - off) / RS);
+  let prev = null;
+  ctx.lineWidth = 1.2;
+  for (let i = Math.ceil(ZF / RS); i >= 0; i--) {
+    const z = i * RS - off + 0.5;
+    if (z < 0.3) continue;
+    const ang = (base + i) * 0.085 + Math.PI / 8;
+    const pts = [];
+    for (let j = 0; j < 8; j++) {
+      const th = ang + j * Math.PI / 4;
+      pts.push(proj(cam, Math.cos(th) * TUN_R, Math.sin(th) * TUN_R, z));
+    }
+    const a = depthA(z) * alpha;
+    ctx.strokeStyle = rgba(col, a);
+    ctx.beginPath();
+    ctx.moveTo(pts[0][0], pts[0][1]);
+    for (let j = 1; j < 8; j++) ctx.lineTo(pts[j][0], pts[j][1]);
+    ctx.closePath();
+    ctx.stroke();
+    if (prev) {
+      ctx.strokeStyle = rgba(col, a * 0.45);
+      ctx.beginPath();
+      for (let j = 0; j < 8; j++) { ctx.moveTo(pts[j][0], pts[j][1]); ctx.lineTo(prev[j][0], prev[j][1]); }
+      ctx.stroke();
+    }
+    prev = pts;
+  }
+}
+
+const CUBE = [];
+for (const x of [-1, 1]) for (const y of [-1, 1]) for (const z of [-1, 1]) CUBE.push([x, y, z]);
+const CUBE_E = [];
+for (let i = 0; i < 8; i++) for (let j = i + 1; j < 8; j++) {
+  let d = 0; for (let k = 0; k < 3; k++) d += Math.abs(CUBE[i][k] - CUBE[j][k]);
+  if (d === 2) CUBE_E.push([i, j]);
+}
+
+function drawBlock(cam, o, col, alpha) {
+  const cx = Math.cos(o.rx), sx = Math.sin(o.rx), cy = Math.cos(o.ry), sy = Math.sin(o.ry);
+  const pts = CUBE.map(([x, y, z]) => {
+    let y1 = y * cx - z * sx, z1 = y * sx + z * cx;
+    let x2 = x * cy + z1 * sy, z2 = -x * sy + z1 * cy;
+    return proj(cam, o.x + x2 * o.s, o.y + y1 * o.s, o.z + z2 * o.s);
+  });
+  ctx.strokeStyle = rgba(col, alpha * depthA(o.z));
+  ctx.lineWidth = 1.6;
+  ctx.beginPath();
+  for (const [a, b] of CUBE_E) { ctx.moveTo(pts[a][0], pts[a][1]); ctx.lineTo(pts[b][0], pts[b][1]); }
+  ctx.stroke();
+}
+
+function ring(cam, x, y, z, r, col, a, lw) {
+  const [sx, sy] = proj(cam, x, y, z);
+  const sr = r * cam.f / z;
+  ctx.strokeStyle = rgba(col, a);
+  ctx.lineWidth = lw;
+  ctx.beginPath();
+  ctx.arc(sx, sy, Math.max(0.5, sr), 0, TAU);
+  ctx.stroke();
+  return [sx, sy, sr];
+}
+
+function drawGate(cam, o) {
+  const a = depthA(o.z);
+  const near = clamp(1 - (o.z - ZP) / 10, 0, 1);
+  ring(cam, o.x, o.y, o.z, o.r, COL.accent, a * 0.18, 7);           // glow
+  const [sx, sy, sr] = ring(cam, o.x, o.y, o.z, o.r, COL.accent, a, 2.2);
+  ring(cam, o.x, o.y, o.z, o.r * 1.14, COL.accent, a * 0.4, 1);
+  // four ticks that rotate, so gates read as "things" and not just circles
+  ctx.strokeStyle = rgba(COL.accent, a);
+  ctx.lineWidth = 2;
+  ctx.beginPath();
+  for (let i = 0; i < 4; i++) {
+    const th = o.spin + i * Math.PI / 2;
+    ctx.moveTo(sx + Math.cos(th) * sr * 1.14, sy + Math.sin(th) * sr * 1.14);
+    ctx.lineTo(sx + Math.cos(th) * sr * (1.3 + near * 0.1), sy + Math.sin(th) * sr * (1.3 + near * 0.1));
+  }
+  ctx.stroke();
+}
+
+function drawAir(cam, o) {
+  const a = depthA(o.z);
+  const [sx, sy] = proj(cam, o.x, o.y, o.z);
+  const s = 0.11 * cam.f / o.z;
+  const pul = 1 + Math.sin(S.t * 6 + o.w) * 0.12;
+  ctx.strokeStyle = rgba(COL.ink, a);
+  ctx.lineWidth = 1.6;
+  ctx.beginPath();
+  for (let i = 0; i < 4; i++) {
+    const th = o.spin + i * Math.PI / 2;
+    const x1 = sx + Math.cos(th) * s * pul, y1 = sy + Math.sin(th) * s * pul;
+    const th2 = th + Math.PI / 2;
+    ctx.moveTo(x1, y1);
+    ctx.lineTo(sx + Math.cos(th2) * s * pul, sy + Math.sin(th2) * s * pul);
+  }
+  ctx.stroke();
+  ctx.fillStyle = rgba(COL.ink, a);
+  ctx.beginPath();
+  ctx.arc(sx, sy, Math.max(1, s * 0.22), 0, TAU);
+  ctx.fill();
+  ring(cam, o.x, o.y, o.z, 0.2, COL.ink, a * 0.25, 1);
+}
+
+function drawParts(cam) {
+  for (const p of S.parts) {
+    const [sx, sy] = proj(cam, p.x, p.y, p.z);
+    const a = clamp(p.life / p.max, 0, 1);
+    const s = Math.max(1, 0.012 * cam.f / p.z);
+    ctx.fillStyle = rgba(p.col, a);
+    ctx.fillRect(sx - s / 2, sy - s / 2, s, s);
+  }
+}
+
+function drawReticle(cam) {
+  const [sx, sy] = proj(cam, S.px, S.py, ZP);
+  const r = PLAYER_R * cam.f / ZP * 1.6;
+  const col = S.mode === 'title' ? COL.muted : COL.accent;
+  ctx.strokeStyle = rgba(col, 1);
+  ctx.lineWidth = 2;
+  ctx.beginPath();
+  ctx.arc(sx, sy, r, 0, TAU);
+  ctx.moveTo(sx - r * 1.9, sy); ctx.lineTo(sx - r * 0.6, sy);
+  ctx.moveTo(sx + r * 0.6, sy); ctx.lineTo(sx + r * 1.9, sy);
+  ctx.moveTo(sx, sy - r * 1.9); ctx.lineTo(sx, sy - r * 0.6);
+  ctx.moveTo(sx, sy + r * 0.6); ctx.lineTo(sx, sy + r * 1.9);
+  ctx.stroke();
+  ctx.fillStyle = rgba(col, 1);
+  ctx.beginPath();
+  ctx.arc(sx, sy, 2, 0, TAU);
+  ctx.fill();
+  if (S.flash > 0) {
+    ctx.strokeStyle = rgba(COL.accent, S.flash);
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.arc(sx, sy, r * (1 + (1 - S.flash) * 5), 0, TAU);
+    ctx.stroke();
+  }
+}
+
+function drawPops(cam) {
+  ctx.textAlign = 'center';
+  ctx.font = `600 ${Math.round(M * 0.024)}px ${MONO}`;
+  for (const p of S.pops) {
+    const [sx, sy] = proj(cam, p.x, p.y, ZP);
+    ctx.fillStyle = rgba(p.col, 1 - p.t);
+    ctx.fillText(p.text, sx, sy - M * 0.05 - p.t * M * 0.06);
+  }
+}
+
+// One full view of the world from a camera. In mono view the tunnel and the
+// blocks are drawn twice (red/cyan) with a small eye offset: a real anaglyph
+// that gets wider as nausea goes up.
+function drawView(cam, anaglyph) {
+  const sorted = S.objs.slice().sort((a, b) => b.z - a.z);
+  if (anaglyph) {
+    const sep = 0.006 + S.nausea * 0.00045 + S.glitch * 0.05;
+    ctx.globalCompositeOperation = 'lighter';
+    for (const [eye, col] of [[-sep, COL.red], [sep, COL.cyan]]) {
+      const c = { ...cam, eye: cam.eye + eye };
+      drawTunnel(c, col, 0.75);
+      for (const o of sorted) if (o.type === 'block') drawBlock(c, o, col, 0.95);
+    }
+    ctx.globalCompositeOperation = 'source-over';
+  } else {
+    drawTunnel(cam, COL.ink, 0.6);
+    for (const o of sorted) if (o.type === 'block') drawBlock(cam, o, COL.ink, 0.95);
+  }
+  for (const o of sorted) {
+    if (o.type === 'gate' && !o.passed) drawGate(cam, o);
+    if (o.type === 'air' && !o.taken) drawAir(cam, o);
+  }
+  drawParts(cam);
+  if (S.mode !== 'over') drawReticle(cam);
+  drawPops(cam);
+}
+
+function vignette(cx, cy, r0, r1, a) {
+  const g = ctx.createRadialGradient(cx, cy, r0, cx, cy, r1);
+  g.addColorStop(0, 'rgba(0,0,0,0)');
+  g.addColorStop(1, `rgba(0,0,0,${a})`);
+  ctx.fillStyle = g;
+  ctx.fillRect(0, 0, W, H);
+}
+
+function render() {
+  ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
+  ctx.fillStyle = COL.bg;
+  ctx.fillRect(0, 0, W, H);
+
+  const camX = S.px * CAM_FOLLOW, camY = S.py * CAM_FOLLOW;
+  const shake = reducedMotion ? 0 : S.shake;
+  const roll = reducedMotion ? 0 : Math.sin(S.t * 1.7) * S.nausea * 0.0016 + (S.px - camX) * -0.04;
+
+  ctx.save();
+  ctx.translate(W / 2 + (Math.random() - 0.5) * shake * 16, H / 2 + (Math.random() - 0.5) * shake * 16);
+  ctx.rotate(roll);
+  ctx.translate(-W / 2, -H / 2);
+
+  if (S.stereo) {
+    // side-by-side, one lens per eye, 64 mm IPD at "tunnel = 2.6 m" scale
+    const lr = Math.min(W / 4, H / 2) * 0.92;
+    for (const side of [-1, 1]) {
+      const cx = W / 2 + side * W / 4;
+      ctx.save();
+      ctx.beginPath();
+      ctx.arc(cx, H / 2, lr, 0, TAU);
+      ctx.clip();
+      drawView({ cx, cy: H / 2, f: lr * 1.05, x: camX, y: camY, eye: side * 0.032 }, false);
+      vignette(cx, H / 2, lr * 0.55, lr, 0.95);
+      ctx.restore();
+      ctx.strokeStyle = rgba(COL.muted, 0.35);
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.arc(cx, H / 2, lr, 0, TAU);
+      ctx.stroke();
+    }
+  } else {
+    drawView({ cx: W / 2, cy: H / 2, f: M * 0.62, x: camX, y: camY, eye: 0 }, true);
+  }
+  ctx.restore();
+
+  // comfort vignette (and a faint permanent one)
+  const R = Math.hypot(W, H) / 2;
+  if (!S.stereo) {
+    vignette(W / 2, H / 2, R * lerp(0.62, 0.16, S.vig), R * lerp(1.0, 0.62, S.vig), lerp(0.55, 0.97, S.vig));
+  }
+  if (S.glitch > 0) {
+    ctx.fillStyle = rgba(COL.red, S.glitch * 0.18);
+    ctx.fillRect(0, 0, W, H);
+  }
+
+  drawHud();
+  if (S.mode === 'title') drawTitle();
+  if (S.mode === 'over') drawOver();
+  if (S.paused) drawPaused();
+  if (S.toast) drawToast();
+}
+
+// ---------------------------------------------------------------------------
+// HUD and screens
+// ---------------------------------------------------------------------------
+const frameTimes = [];
+function pushFrame(ms) {
+  if (S.spike) { ms = Math.max(ms, 38); S.spike = false; }
+  frameTimes.push(ms);
+  if (frameTimes.length > 120) frameTimes.shift();
+}
+
+function label(txt, x, y, col, size, weight = 400, align = 'left', track = 0) {
+  ctx.font = `${weight} ${size}px ${MONO}`;
+  ctx.textAlign = align;
+  ctx.fillStyle = typeof col === 'string' ? col : rgba(col, 1);
+  if ('letterSpacing' in ctx) ctx.letterSpacing = `${track}px`;
+  ctx.fillText(txt, x, y);
+  if ('letterSpacing' in ctx) ctx.letterSpacing = '0px';
+}
+
+function drawHud() {
+  const pad = Math.max(16, M * 0.03);
+  const fs = Math.max(11, Math.round(M * 0.017));
+  ctx.textBaseline = 'alphabetic';
+
+  if (S.mode === 'play' || S.mode === 'over') {
+    // nausea
+    label('NAUSEA', pad, pad + fs, COL.muted, fs, 600, 'left', 1.5);
+    const bx = pad + fs * 5.6, seg = fs * 0.75, gap = fs * 0.28;
+    for (let i = 0; i < 10; i++) {
+      const lit = S.nausea > i * 10 + 0.01;
+      const col = i >= 7 ? COL.accent : COL.ink;
+      ctx.fillStyle = rgba(col, lit ? 1 : 0.16);
+      ctx.fillRect(bx + i * (seg + gap), pad + fs * 0.08, seg, fs * 0.95);
+    }
+    label(`${Math.round(S.nausea)}%`, bx + 10 * (seg + gap) + fs * 0.4, pad + fs,
+      S.nausea > 70 ? COL.accent : COL.ink, fs, 600);
+
+    // score + combo
+    label(S.score.toLocaleString('en-US'), W - pad, pad + fs * 1.6, COL.ink, Math.round(fs * 1.7), 600, 'right');
+    label(`×${S.combo}${S.vignette ? '' : '  ·  ×1.5'}`, W - pad, pad + fs * 3.1,
+      S.combo > 1 ? COL.accent : COL.muted, fs, 600, 'right');
+
+    // gates, time (the page links take this corner once the run is over)
+    if (S.mode === 'play') label(`GATES ${String(S.gates).padStart(2, '0')}   ${S.t.toFixed(1)} s`, pad, H - pad, COL.muted, fs, 400, 'left', 1);
+  }
+
+  // frame-time graph: real numbers from requestAnimationFrame
+  if (W < 560 && S.mode !== 'play') return;   // phones: the page links need this row
+  const gw = Math.min(180, W * 0.28), gh = fs * 2.6;
+  const gx = W - pad - gw, gy = H - pad - gh;
+  const scale = gh / 40;   // 40 ms full height
+  const bw = gw / 120;
+  for (let i = 0; i < frameTimes.length; i++) {
+    const ms = frameTimes[i];
+    ctx.fillStyle = ms > 11.2 ? rgba(COL.accent, 0.85) : rgba(COL.ink, 0.35);
+    const h = Math.min(gh, ms * scale);
+    ctx.fillRect(gx + i * bw, gy + gh - h, Math.max(1, bw - 0.4), h);
+  }
+  ctx.strokeStyle = rgba(COL.accent, 0.6);
+  ctx.setLineDash([3, 3]);
+  ctx.beginPath();
+  ctx.moveTo(gx, gy + gh - 11.1 * scale);
+  ctx.lineTo(gx + gw, gy + gh - 11.1 * scale);
+  ctx.stroke();
+  ctx.setLineDash([]);
+  const avg = frameTimes.slice(-30).reduce((a, b) => a + b, 0) / Math.max(1, Math.min(30, frameTimes.length));
+  label(`${avg.toFixed(1)} ms / 11.1`, gx + gw, gy - fs * 0.6, COL.muted, Math.round(fs * 0.9), 400, 'right');
+  if (S.mode === 'play') {
+    label(S.vignette ? 'comfort vignette: on' : 'comfort vignette: off', W / 2, H - pad, COL.muted,
+      Math.round(fs * 0.9), 400, 'center');
+  }
+}
+
+function panel(cx, cy, w, h) {
+  ctx.fillStyle = 'rgba(11,12,15,0.78)';
+  ctx.fillRect(cx - w / 2, cy - h / 2, w, h);
+  ctx.strokeStyle = rgba(COL.muted, 0.3);
+  ctx.lineWidth = 1;
+  ctx.strokeRect(cx - w / 2 + 0.5, cy - h / 2 + 0.5, w - 1, h - 1);
+}
+
+function wrapLines(text, maxW, font) {
+  ctx.font = font;
+  const words = text.split(' ');
+  const lines = [];
+  let cur = '';
+  for (const w of words) {
+    const t = cur ? cur + ' ' + w : w;
+    if (ctx.measureText(t).width > maxW && cur) { lines.push(cur); cur = w; } else cur = t;
+  }
+  if (cur) lines.push(cur);
+  return lines;
+}
+
+function drawTitle() {
+  const cx = W / 2;
+  const s = clamp(M / 720, 0.55, 1.3);
+  const narrow = W < 560;
+  let y = H / 2 - 150 * s;
+  label('A SMALL GAME ABOUT A REAL VR PROBLEM', cx, y, COL.accent, Math.round(12 * s), 700, 'center', 2.5 * s);
+  y += 78 * s;
+  ctx.font = `600 ${Math.round(76 * s)}px ${SERIF}`;
+  ctx.fillStyle = rgba(COL.ink, 1);
+  ctx.textAlign = 'center';
+  ctx.fillText('Tunnel Vision', cx, y);
+  y += 50 * s;
+  const body = [
+    'Fly through the red gates. Stay away from the blocks.',
+    'Every miss and every hit makes you a little sicker.',
+    'At 100% nausea, the headset comes off.',
+  ];
+  const fs = Math.round((narrow ? 13 : 15) * s);
+  for (const line of body) {
+    for (const l of wrapLines(line, W - 40, `400 ${fs}px ${MONO}`)) {
+      label(l, cx, y, COL.muted, fs, 400, 'center');
+      y += fs * 1.6;
+    }
+  }
+  y += 22 * s;
+  const blink = Math.sin(performance.now() / 260) > -0.3;
+  const bw = 230 * s, bh = 50 * s;
+  ctx.fillStyle = rgba(COL.accent, 1);
+  ctx.fillRect(cx - bw / 2, y, bw, bh);
+  if (blink) label('PRESS START', cx + 10 * s, y + bh / 2 + 6 * s, '#fff', Math.round(17 * s), 700, 'center', 2 * s);
+  ctx.fillStyle = '#fff';
+  if (blink) {
+    const tx = cx - 72 * s, ty = y + bh / 2;
+    ctx.beginPath();
+    ctx.moveTo(tx - 6 * s, ty - 7 * s); ctx.lineTo(tx + 6 * s, ty); ctx.lineTo(tx - 6 * s, ty + 7 * s);
+    ctx.fill();
+  }
+  y += bh + 34 * s;
+  const cs = Math.round(12 * s);
+  const ctrl = pointerMode === 'touch' || matchMedia('(pointer: coarse)').matches
+    ? ['drag anywhere to steer', 'tap to start']
+    : ['move: mouse · WASD · arrows', 'V stereo view   C comfort vignette   M mute   P pause   N notes'];
+  for (const l of ctrl) { label(l, cx, y, COL.muted, cs, 400, 'center', 0.5); y += cs * 1.8; }
+  if (S.best > 0) label(`best ${S.best.toLocaleString('en-US')}`, cx, y + cs, COL.ink, cs, 600, 'center', 1);
+}
+
+function drawOver() {
+  const a = clamp(S.overT * 1.5, 0, 1);
+  ctx.fillStyle = `rgba(11,12,15,${0.62 * a})`;
+  ctx.fillRect(0, 0, W, H);
+  ctx.globalAlpha = a;
+  const cx = W / 2;
+  const s = clamp(Math.min(W / 640, H / 720), 0.5, 1.25);
+  let y = H / 2 - 176 * s;
+  label(S.newBest ? 'NEW BEST' : 'SESSION ENDED', cx, y, COL.accent, Math.round(12 * s), 700, 'center', 2.5 * s);
+  y += 66 * s;
+  ctx.font = `600 ${Math.round(64 * s)}px ${SERIF}`;
+  ctx.fillStyle = rgba(COL.ink, 1);
+  ctx.textAlign = 'center';
+  ctx.fillText('Headset off.', cx, y);
+  y += 44 * s;
+  const fs = Math.round(15 * s);
+  label(`${S.score.toLocaleString('en-US')} points  ·  ${S.gates} gates  ·  ${S.t.toFixed(1)} s`, cx, y, COL.ink, fs, 600, 'center');
+  y += fs * 1.7;
+  label(`best ${S.best.toLocaleString('en-US')}`, cx, y, COL.muted, fs, 400, 'center');
+  y += 34 * s;
+  y = drawChart(cx, y, Math.min(W - 48, 480 * s), 92 * s, s) + 34 * s;
+  const ts = Math.round(13 * s);
+  for (const l of wrapLines(S.tip || '', Math.min(W - 40, 560 * s), `400 ${ts}px ${MONO}`)) {
+    label(l, cx, y, COL.muted, ts, 400, 'center');
+    y += ts * 1.7;
+  }
+  y += 20 * s;
+  if (S.overT > 0.8 && Math.sin(performance.now() / 260) > -0.3) {
+    label(pointerMode === 'touch' ? 'tap to fly again' : 'space / click to fly again', cx, y, COL.accent,
+      Math.round(14 * s), 700, 'center', 1.5 * s);
+  }
+  y += 26 * s;
+  label('N  ·  what was that about? read the design notes', cx, y, COL.ink, ts, 400, 'center');
+  ctx.globalAlpha = 1;
+}
+
+// Nausea over time for the run that just ended. Grey where the comfort
+// vignette was on, cyan where it was off.
+function drawChart(cx, y, w, h, s) {
+  const x0 = cx - w / 2;
+  const hist = S.hist;
+  const tMax = Math.max(1, hist.length ? hist[hist.length - 1][0] : 1);
+  const fs = Math.round(11 * s);
+  label('nausea over time', x0, y - 8 * s, COL.muted, fs, 400, 'left', 0.5);
+  label(`${tMax.toFixed(0)} s`, x0 + w, y + h + fs + 6 * s, COL.muted, fs, 400, 'right');
+  label('0', x0, y + h + fs + 6 * s, COL.muted, fs, 400, 'left');
+  ctx.strokeStyle = rgba(COL.muted, 0.35);
+  ctx.lineWidth = 1;
+  ctx.beginPath();
+  ctx.moveTo(x0, y); ctx.lineTo(x0, y + h); ctx.lineTo(x0 + w, y + h);
+  ctx.stroke();
+  ctx.strokeStyle = rgba(COL.accent, 0.55);
+  ctx.setLineDash([3, 4]);
+  ctx.beginPath();
+  ctx.moveTo(x0, y); ctx.lineTo(x0 + w, y);
+  ctx.stroke();
+  ctx.setLineDash([]);
+  label('100%', x0 + w, y - 8 * s, COL.accent, fs, 400, 'right');
+  ctx.lineWidth = 2;
+  ctx.lineJoin = 'round';
+  for (let i = 1; i < hist.length; i++) {
+    const [t0, n0] = hist[i - 1];
+    const [t1, n1, v1] = hist[i];
+    ctx.strokeStyle = v1 ? rgba(COL.ink, 0.9) : rgba(COL.cyan, 1);
+    ctx.beginPath();
+    ctx.moveTo(x0 + (t0 / tMax) * w, y + h - (n0 / 100) * h);
+    ctx.lineTo(x0 + (t1 / tMax) * w, y + h - (n1 / 100) * h);
+    ctx.stroke();
+  }
+  if (hist.some((p) => !p[2])) {
+    label('vignette off', x0 + w, y + h - 8 * s, COL.cyan, fs, 400, 'right');
+  }
+  return y + h + fs;
+}
+
+function drawPaused() {
+  ctx.fillStyle = 'rgba(11,12,15,0.7)';
+  ctx.fillRect(0, 0, W, H);
+  const s = clamp(M / 720, 0.55, 1.3);
+  ctx.font = `600 ${Math.round(54 * s)}px ${SERIF}`;
+  ctx.fillStyle = rgba(COL.ink, 1);
+  ctx.textAlign = 'center';
+  ctx.fillText('Paused', W / 2, H / 2);
+  label('click, tap, space or P to continue', W / 2, H / 2 + 40 * s, COL.muted, Math.round(13 * s), 400, 'center');
+}
+
+function drawToast() {
+  const fs = Math.max(12, Math.round(M * 0.018));
+  const a = clamp(S.toast.t / 0.3, 0, 1);
+  ctx.globalAlpha = a;
+  ctx.font = `600 ${fs}px ${MONO}`;
+  const w = ctx.measureText(S.toast.msg).width + fs * 2;
+  panel(W / 2, H * 0.16, w, fs * 2.6);
+  label(S.toast.msg, W / 2, H * 0.16 + fs * 0.35, COL.ink, fs, 600, 'center');
+  ctx.globalAlpha = 1;
+}
+
+// ---------------------------------------------------------------------------
+// loop
+// ---------------------------------------------------------------------------
+let last = performance.now();
+function loop(now) {
+  requestAnimationFrame(loop);
+  const raw = now - last;
+  last = now;
+  pushFrame(raw);
+  const dt = Math.min(raw / 1000, 1 / 20);
+  if (S.paused) { render(); return; }
+  update(dt);
+  if (S.judder > 0) { S.judder -= dt; return; }   // hold the last frame: a deliberate stutter
+  render();
+}
+reset(false);
+requestAnimationFrame(loop);
+</script>
+</body>
+</html>
