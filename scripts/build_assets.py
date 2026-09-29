@@ -727,7 +727,7 @@ def illus_torch(th, uid):
     for i in range(N + 1):
         u = i / N
         loss = 0.08 + 0.92 * math.exp(-4.2 * u) + rnd.uniform(-0.035, 0.035) * (1 - 0.6 * u)
-        val = 0.14 + 0.86 * math.exp(-3.4 * u) + 0.06 * u * u + rnd.uniform(-0.02, 0.02)
+        val = 0.14 + 0.86 * math.exp(-3.6 * u) + 0.2 * u ** 2.5 + rnd.uniform(-0.015, 0.015)   # overfits late
         x = X0 + 6 + (X1 - X0 - 12) * u
         pts.append((x, Y1 - 6 - (Y1 - Y0 - 20) * min(loss, 1)))
         val_pts.append((x, Y1 - 6 - (Y1 - Y0 - 20) * min(val, 1)))
@@ -916,18 +916,533 @@ def footer(tn):
     return svg(W, H, "A Unity progress bar that never quite finishes. Thanks for scrolling this far.",
                "".join(body), fdefs)
 
+# --------------------------------------------------------------------------
+# SECTION HEADERS (transparent, so they sit on GitHub's own background)
+# --------------------------------------------------------------------------
+SECTIONS = [
+    ("01", "Learn by playing", "two things built to teach, both playable"),
+    ("02", "Timeline", "2018 → now, scrubbed like a Unity Timeline"),
+    ("03", "Research", "game engines · virtual environments · digital citizenship"),
+    ("04", "Other things I've built", "side projects, fan work, experiments"),
+    ("05", "Skill tree", "where the branches meet"),
+    ("06", "Pop quiz", "questions students actually ask"),
+    ("07", "Writing", "in Turkish, on Medium"),
+]
+
+
+def section(tn, idx):
+    th = THEMES[tn]
+    num, title, sub = SECTIONS[idx]
+    W, H = 1200, 100
+    uid = f"s{num}"
+    body = []
+    lab, lw = text("mono-bold", num, 13, 2, 28, th["accent"], tracking=0.16)
+    body.append(lab)
+    body.append(f'<rect x="{n(lw + 12)}" y="22" width="36" height="1.5" fill="{th["accent"]}" opacity="0.6"/>')
+    t, _ = text("serif", title, 46, 0, 78, th["ink"])
+    body.append(t)
+    st, _ = text("mono", sub, 13, W - 2, 76, th["muted"], anchor="end")
+    body.append(st)
+    body.append(f'<rect x="0" y="94" width="{W}" height="1" fill="{th["muted"]}" opacity="0.28"/>')
+    body.append(f'<rect x="0" y="93" width="64" height="3" fill="{th["accent"]}"/>')
+    # a glint that runs along the rule now and then; each header on its own beat
+    defs = (f'<linearGradient id="{uid}g" x1="0" x2="1"><stop offset="0" stop-color="{th["accent"]}" stop-opacity="0"/>'
+            f'<stop offset="0.5" stop-color="{th["accent"]}" stop-opacity="1"/>'
+            f'<stop offset="1" stop-color="{th["accent"]}" stop-opacity="0"/></linearGradient>')
+    dur = 9 + idx * 0.7
+    body.append(f'<rect x="-160" y="93" width="160" height="3" fill="url(#{uid}g)">'
+                f'<animate attributeName="x" values="-160;-160;{W}" keyTimes="0;{0.55 + idx * 0.04:.2f};1" dur="{dur:.1f}s" '
+                f'repeatCount="indefinite"/></rect>')
+    return svg(W, H, f"{num} {title}", "".join(body), defs)
+
+
+# --------------------------------------------------------------------------
+# LINK PILLS
+# --------------------------------------------------------------------------
+def _icon(key, col, bg):
+    """24x24 line icons."""
+    st = f'fill="none" stroke="{col}" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"'
+    if key == "scholar":
+        return (f'<path d="M12 4L1.5 9.5L12 15L22.5 9.5Z" {st}/>'
+                f'<path d="M5.5 11.8V16.2C5.5 18 8.6 19.8 12 19.8C15.4 19.8 18.5 18 18.5 16.2V11.8" {st}/>'
+                f'<path d="M21 10.3V15.5" {st}/>')
+    if key == "orcid":
+        t, _ = text("mono-bold", "iD", 10.5, 12, 15.8, bg, anchor="middle")
+        return f'<circle cx="12" cy="12" r="10" fill="{col}"/>{t}'
+    if key == "linkedin":
+        t, _ = text("mono-bold", "in", 11, 12, 16, bg, anchor="middle")
+        return f'<rect x="2.5" y="2.5" width="19" height="19" rx="4" fill="{col}"/>{t}'
+    if key == "medium":
+        return (f'<circle cx="7" cy="12" r="5.6" fill="{col}"/><ellipse cx="16.2" cy="12" rx="2.7" ry="5.3" fill="{col}"/>'
+                f'<ellipse cx="21.3" cy="12" rx="1.05" ry="4.8" fill="{col}"/>')
+    if key == "email":
+        return f'<rect x="2.5" y="5" width="19" height="14" rx="2.5" {st}/><path d="M3.5 6.5L12 13L20.5 6.5" {st}/>'
+    raise KeyError(key)
+
+
+LINKS = [("scholar", "SCHOLAR"), ("orcid", "ORCID"), ("linkedin", "LINKEDIN"), ("medium", "MEDIUM"), ("email", "EMAIL")]
+
+
+def pill(tn, idx):
+    th = THEMES[tn]
+    key, label = LINKS[idx]
+    H = 48
+    lw = width("mono-bold", label, 13, 0.14)
+    W = round(18 + 24 + 12 + lw + 14 + 12 + 18)
+    uid = f"l{key}"
+    defs = (f'<clipPath id="{uid}c"><rect x="1" y="1" width="{W - 2}" height="{H - 2}" rx="{(H - 2) / 2}"/></clipPath>'
+            f'<linearGradient id="{uid}g" x1="0" x2="1"><stop offset="0" stop-color="{th["ink"]}" stop-opacity="0"/>'
+            f'<stop offset="0.5" stop-color="{th["ink"]}" stop-opacity="0.13"/>'
+            f'<stop offset="1" stop-color="{th["ink"]}" stop-opacity="0"/></linearGradient>')
+    body = [f'<rect x="1" y="1" width="{W - 2}" height="{H - 2}" rx="{(H - 2) / 2}" fill="{th["bg"]}" '
+            f'stroke="{th["stroke"]}" stroke-width="1.5"/>']
+    body.append(f'<g transform="translate(18 12)">{_icon(key, th["accent"], th["bg"])}</g>')
+    t, _ = text("mono-bold", label, 13, 54, 29, th["ink"], tracking=0.14)
+    body.append(t)
+    ar, _ = text("mono", "↗", 13, W - 18, 29, th["muted"], anchor="end")
+    body.append(ar)
+    # the sheen visits one pill after another
+    dur = 7.5
+    a = 0.1 + idx * 0.1
+    body.append(f'<g clip-path="url(#{uid}c)"><rect x="-70" y="0" width="70" height="{H}" fill="url(#{uid}g)" '
+                f'transform="skewX(-20)"><animate attributeName="x" values="-70;-70;{W + 40};{W + 40}" '
+                f'keyTimes="0;{a:.2f};{a + 0.12:.2f};1" dur="{dur}s" repeatCount="indefinite"/></rect></g>')
+    return svg(W, H, label.title() if key != "orcid" else "ORCID", "".join(body), defs)
+
+
+# --------------------------------------------------------------------------
+# PLAYER CARD: character sheet + achievements
+# --------------------------------------------------------------------------
+def _ach_icon(key, col):
+    st = f'fill="none" stroke="{col}" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"'
+    if key == "medal":
+        return f'<path d="M8 2.5L11 9M16 2.5L13 9" {st}/><circle cx="12" cy="15" r="6" {st}/><path d="M12 12.3V17.7" {st}/>'
+    if key == "diploma":
+        return (f'<rect x="3" y="5" width="18" height="12" rx="1.5" {st}/><path d="M6.5 9H14M6.5 12.5H11" {st}/>'
+                f'<circle cx="17" cy="16.5" r="2.6" {st}/><path d="M16 18.8L15.3 21.5M18 18.8L18.7 21.5" {st}/>')
+    if key == "book":
+        return (f'<path d="M3 5.5C5.5 4.5 8.5 4.5 12 6.3C15.5 4.5 18.5 4.5 21 5.5V19C18.5 18 15.5 18 12 19.8C8.5 18 5.5 18 3 19Z" {st}/>'
+                f'<path d="M12 6.3V19.8" {st}/>')
+    if key == "doi":
+        return (f'<circle cx="12" cy="12" r="9" {st}/><path d="M9 12.2A3.2 3.2 0 1 1 12.2 15.4" {st}/>'
+                f'<path d="M12.2 15.4V9" {st}/>')
+    if key == "clip":
+        return (f'<rect x="5" y="4.5" width="14" height="17" rx="2" {st}/><path d="M9 4.5V3H15V4.5" {st}/>'
+                f'<path d="M8.5 13L11 15.5L15.5 10.5" {st}/>')
+    if key == "lock":
+        return f'<rect x="5" y="10.5" width="14" height="10.5" rx="2" {st}/><path d="M8 10.5V7.5A4 4 0 0 1 16 7.5V10.5" {st}/>'
+    raise KeyError(key)
+
+
+ACHIEVEMENTS = [
+    ("medal", "2021", "Top of the class", "BSc · graduated first"),
+    ("diploma", "2024", "Master's degree", "MSc · same department"),
+    ("book", "2023–26", "Seven works", "journals, chapters, OER"),
+    ("doi", "2026", "Open resource", "PyTorch OER with a DOI"),
+    ("clip", "cert.", "Project management", "certified"),
+    ("lock", "2024–", "Doctor of Philosophy", "in progress"),
+]
+
+
+def player(tn):
+    th = THEMES[tn]
+    W, H = 1200, 344
+    fdefs, fbody, fborder = frame(W, H, th, "pc")
+    defs = [fdefs, f'<pattern id="pcstripe" width="10" height="10" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">'
+                   f'<rect width="5" height="10" fill="{th["accent"]}" opacity="0.55"/>'
+                   f'<animateTransform attributeName="patternTransform" type="translate" additive="sum" values="0 0;10 0" '
+                   f'dur="0.8s" repeatCount="indefinite"/></pattern>']
+    body = [fbody]
+    # title bar
+    tb, _ = text("mono-bold", "player_1.sav", 12, 30, 30, th["ink"], tracking=0.06)
+    body.append(tb)
+    ld, _ = text("mono", "LOAD  ·  CONTINUE", 11, W - 30, 30, th["muted"], anchor="end", tracking=0.12)
+    body.append(ld)
+    body.append(f'<rect x="0" y="46" width="{W}" height="1" fill="{th["stroke"]}"/>')
+
+    # character sheet
+    x0 = 32
+    nm, _ = text("serif", "Uğur Sırvermez", 32, x0 - 1, 94, th["ink"])
+    body.append(nm)
+    sub, _ = text("mono", "multi-class  ·  level 3 of 3", 12, x0, 118, th["muted"])
+    body.append(sub)
+    rows = [("CLASS", "researcher · developer · teacher"),
+            ("GUILD", "Bursa Uludağ University"),
+            ("SPEAKS", "Türkçe · English · C# · Python"),
+            ("FAN OF", "Control · Queens of the Stone Age"),
+            ("ASK ME", "Unity, VR comfort, PyTorch")]
+    for i, (k, v) in enumerate(rows):
+        y = 160 + i * 27
+        kk, _ = text("mono-bold", k, 10.5, x0, y, th["muted"], tracking=0.14)
+        vv, _ = text("mono", v, 13, x0 + 88, y, th["ink"])
+        body.append(kk + vv)
+    # XP bar: the thesis
+    xy = 312
+    xl, _ = text("mono-bold", "XP", 10.5, x0, xy + 9, th["muted"], tracking=0.14)
+    body.append(xl)
+    bw = 250
+    body.append(f'<rect x="{x0 + 88}" y="{xy}" width="{bw}" height="10" rx="5" fill="{th["faint"]}"/>')
+    body.append(f'<rect x="{x0 + 88}" y="{xy}" width="{bw}" height="10" rx="5" fill="url(#pcstripe)"/>')
+    xt, _ = text("mono", "thesis", 11, x0 + 88 + bw + 12, xy + 9, th["muted"])
+    body.append(xt)
+
+    body.append(f'<rect x="452" y="70" width="1" height="{H - 96}" fill="{th["stroke"]}"/>')
+
+    # achievements
+    ax, ay = 484, 64
+    ah, _ = text("mono-bold", "ACHIEVEMENTS", 12, ax, ay + 12, th["accent"], tracking=0.16)
+    cnt, _ = text("mono", "5 / 6 unlocked", 11.5, W - 32, ay + 12, th["muted"], anchor="end")
+    body.append(ah + cnt)
+    tw, tht, gap = 220, 118, 12
+    for i, (ic, yr, title, sub_) in enumerate(ACHIEVEMENTS):
+        cx_ = ax + (i % 3) * (tw + gap)
+        cy_ = ay + 30 + (i // 3) * (tht + gap)
+        locked = ic == "lock"
+        tid = f"pct{i}"
+        defs.append(f'<clipPath id="{tid}"><rect x="{cx_}" y="{cy_}" width="{tw}" height="{tht}" rx="10"/></clipPath>')
+        dash = ' stroke-dasharray="5 4"' if locked else ""
+        body.append(f'<rect x="{cx_ + 0.5}" y="{cy_ + 0.5}" width="{tw - 1}" height="{tht - 1}" rx="10" '
+                    f'fill="{th["ink"]}" fill-opacity="{0.02 if locked else 0.045}" stroke="{th["stroke"]}"{dash}/>')
+        col = th["muted"] if locked else th["accent"]
+        body.append(f'<circle cx="{cx_ + 30}" cy="{cy_ + 30}" r="17" fill="none" stroke="{col}" stroke-opacity="0.35"/>')
+        body.append(f'<g transform="translate({cx_ + 18} {cy_ + 18})">{_ach_icon(ic, col)}</g>')
+        y_, _ = text("mono", yr, 11, cx_ + tw - 14, cy_ + 26, th["muted"], anchor="end")
+        t_, _ = text("serif", title, 17, cx_ + 14, cy_ + 76, th["muted"] if locked else th["ink"])
+        s_, _ = text("mono", sub_, 11.5, cx_ + 14, cy_ + 97, th["muted"])
+        body.append(y_ + t_ + s_)
+        if locked:
+            body.append(f'<rect x="{cx_ + 14 + width("mono", sub_, 11.5) + 10}" y="{cy_ + 89}" width="70" height="8" rx="4" fill="{th["faint"]}"/>'
+                        f'<rect x="{cx_ + 14 + width("mono", sub_, 11.5) + 10}" y="{cy_ + 89}" width="70" height="8" rx="4" fill="url(#pcstripe)"/>')
+        else:
+            # a shine sweeps across each unlocked tile in turn
+            if i == 0:
+                defs.append(f'<linearGradient id="pcsh" x1="0" x2="1"><stop offset="0" stop-color="{th["ink"]}" stop-opacity="0"/>'
+                            f'<stop offset="0.5" stop-color="{th["ink"]}" stop-opacity="0.12"/>'
+                            f'<stop offset="1" stop-color="{th["ink"]}" stop-opacity="0"/></linearGradient>')
+            a = 0.08 + i * 0.07
+            body.append(f'<g clip-path="url(#{tid})"><rect x="{cx_ - 90}" y="{cy_}" width="80" height="{tht}" '
+                        f'fill="url(#pcsh)" transform="skewX(-18)"><animate attributeName="x" '
+                        f'values="{cx_ - 90};{cx_ - 90};{cx_ + tw + 60};{cx_ + tw + 60}" keyTimes="0;{a:.2f};{a + 0.1:.2f};1" '
+                        f'dur="8s" repeatCount="indefinite"/></rect></g>')
+    body.append(fborder)
+    return svg(W, H, "player_1.sav: Uğur Sırvermez. Researcher, developer, teacher. Achievements: top of the class (BSc 2021), "
+                     "master's degree (2024), seven published works, an open resource with a DOI, certified in project "
+                     "management; PhD in progress.", "".join(body), "".join(defs))
+
+
+# --------------------------------------------------------------------------
+# TIMELINE (a Unity Timeline window; stays dark in both themes, like an editor)
+# --------------------------------------------------------------------------
+NOW = 2026 + 272 / 365      # 29 Sep 2026
+
+
+def timeline(tn):
+    th = THEMES[tn]
+    S = SCREEN
+    W, H = 1200, 386
+    X0, X1 = 214, 1172
+    Y0, Y1 = 2018.0, 2027.0
+    xa = lambda yr: X0 + (yr - Y0) / (Y1 - Y0) * (X1 - X0)
+    TB, RB = 42, 78          # toolbar bottom, ruler bottom
+    TH = 66                  # track height
+    tracks = [("EDUCATION", S["ink"]), ("RESEARCH", S["accent"]), ("TEACHING", S["cyan"]), ("BUILDS", S["muted"])]
+    ty = lambda i: RB + i * TH
+    defs = [f'<clipPath id="tlw"><rect x="0.5" y="0.5" width="{W - 1}" height="{H - 1}" rx="18"/></clipPath>',
+            f'<clipPath id="tla"><rect x="{X0}" y="{TB}" width="{X1 - X0}" height="{H - TB}"/></clipPath>',
+            f'<pattern id="tlst" width="9" height="9" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">'
+            f'<rect width="4" height="9" fill="{S["ink"]}" opacity="0.18"/>'
+            f'<animateTransform attributeName="patternTransform" type="translate" additive="sum" values="0 0;9 0" dur="0.9s" repeatCount="indefinite"/></pattern>',
+            f'<linearGradient id="tlfade" x1="0" x2="1"><stop offset="0" stop-color="{S["bg"]}" stop-opacity="0"/>'
+            f'<stop offset="1" stop-color="{S["bg"]}" stop-opacity="1"/></linearGradient>']
+    b = [f'<rect x="0" y="0" width="{W}" height="{H}" fill="{S["bg"]}"/>']
+    # toolbar
+    b.append(f'<rect x="0" y="0" width="{W}" height="{TB}" fill="#15171b"/>')
+    b.append(f'<rect x="14" y="8" width="118" height="{TB - 8}" rx="6" fill="{S["bg"]}"/>')
+    b.append(f'<path d="M26 20h10M26 25h14M26 30h8" stroke="{S["ink"]}" stroke-width="1.6" stroke-linecap="round"/>')
+    tl, _ = text("mono-bold", "Timeline", 12, 48, 30, S["ink"])
+    b.append(tl)
+    # transport controls
+    bx = X0
+    b.append(f'<path d="M{bx} 15V29M{bx + 12} 15L{bx + 3} 22L{bx + 12} 29Z" fill="{S["muted"]}" stroke="{S["muted"]}" stroke-width="1.5" stroke-linejoin="round"/>')
+    b.append(f'<path d="M{bx + 30} 14L{bx + 44} 22L{bx + 30} 30Z" fill="{S["accent"]}"/>')
+    b.append(f'<path d="M{bx + 74} 15V29M{bx + 62} 15L{bx + 71} 22L{bx + 62} 29Z" fill="{S["muted"]}" stroke="{S["muted"]}" stroke-width="1.5" stroke-linejoin="round"/>')
+    b.append(f'<rect x="{bx + 92}" y="10" width="74" height="24" rx="4" fill="{S["bg"]}" stroke="{S["faint"]}"/>')
+    RUN, CYC = 14.0, 16.8
+    t_of = lambda yr: (yr - Y0) / (NOW - Y0) * RUN
+    years = list(range(2018, 2027))
+    for i, yv in enumerate(years):
+        p_, _ = text("mono-bold", str(yv), 12, bx + 129, 27, S["ink"], anchor="middle")
+        t_on = 0 if yv == 2018 else t_of(yv)
+        t_off = t_of(yv + 1) if yv < 2026 else RUN
+        if yv == 2026:
+            vals, tms, base = [0, 1], [0, t_on], 1
+        else:
+            vals, tms, base = [1, 0], [0, t_off], 0
+            if yv > 2018:
+                vals, tms = [0, 1, 0], [0, t_on, t_off]
+        b.append(f'<g opacity="{base}">{p_}' + discrete("opacity", vals, tms, CYC) + "</g>")
+    dr, _ = text("mono", "Uğur (Playable Director)", 11.5, W - 24, 27, S["muted"], anchor="end")
+    b.append(dr)
+    # ruler
+    b.append(f'<rect x="0" y="{TB}" width="{W}" height="{RB - TB}" fill="#101115"/>')
+    for yv in range(2018, 2028):
+        x = xa(yv)
+        b.append(f'<path d="M{n(x)} {RB - 14}V{RB}" stroke="{S["muted"]}"/>')
+        if yv < 2027:
+            lab, _ = text("mono", str(yv), 11, x + 5, RB - 18, S["muted"])
+            b.append(lab)
+        for q in (0.25, 0.5, 0.75):
+            if yv + q < Y1:
+                b.append(f'<path d="M{n(xa(yv + q))} {RB - (7 if q == 0.5 else 4)}V{RB}" stroke="{S["muted"]}" stroke-opacity="0.5"/>')
+    # track headers + lanes
+    for i, (name, col) in enumerate(tracks):
+        y = ty(i)
+        b.append(f'<rect x="0" y="{y}" width="{W}" height="{TH}" fill="{S["ink"]}" fill-opacity="{0.025 if i % 2 else 0}"/>')
+        b.append(f'<rect x="0" y="{y + TH - 1}" width="{W}" height="1" fill="{S["faint"]}"/>')
+        b.append(f'<rect x="12" y="{y + 12}" width="4" height="{TH - 24}" rx="2" fill="{col}"/>')
+        nm, _ = text("mono-bold", name, 11.5, 28, y + 30, S["ink"], tracking=0.12)
+        b.append(nm)
+        info = {0: "3 clips", 1: "7 signals", 2: "1 clip", 3: "8 markers"}[i]
+        inf, _ = text("mono", info, 10.5, 28, y + 48, S["muted"])
+        b.append(inf)
+        b.append(f'<circle cx="{X0 - 36}" cy="{y + TH / 2}" r="4" fill="none" stroke="{S["muted"]}"/>'
+                 f'<circle cx="{X0 - 20}" cy="{y + TH / 2}" r="4" fill="{S["muted"]}" fill-opacity="0.5"/>')
+    b.append(f'<rect x="{X0 - 6}" y="{TB}" width="1" height="{H - TB}" fill="{S["faint"]}"/>')
+
+    area = []
+    # education clips
+    y = ty(0) + 13
+    ch = TH - 26
+    for (a, z, lab) in [(2018.7, 2021.5, "BSc · top of the class"), (2021.7, 2024.5, "MSc"),
+                        (2024.7, Y1 + 0.2, "PhD · in progress")]:
+        area.append(f'<rect x="{n(xa(a))}" y="{y}" width="{n(xa(z) - xa(a))}" height="{ch}" rx="5" '
+                    f'fill="{S["ink"]}" fill-opacity="0.12" stroke="{S["ink"]}" stroke-opacity="0.55"/>')
+        if lab.startswith("PhD"):
+            area.append(f'<rect x="{n(xa(NOW))}" y="{y}" width="{n(xa(z) - xa(NOW))}" height="{ch}" fill="url(#tlst)"/>')
+            area.append(f'<rect x="{n(xa(NOW) + 20)}" y="{y - 1}" width="{n(xa(z) - xa(NOW))}" height="{ch + 2}" fill="url(#tlfade)"/>')
+        area.append(f'<rect x="{n(xa(a))}" y="{y}" width="4" height="{ch}" rx="2" fill="{S["ink"]}"/>')
+        lt, _ = text("mono-bold", lab, 12, xa(a) + 14, y + ch / 2 + 4.5, S["ink"])
+        area.append(lt)
+    # research signals
+    y = ty(1) + TH / 2
+    pubs = [2023.8, 2026.05, 2026.16, 2026.27, 2026.38, 2026.49, 2026.6]
+    for k, pv in enumerate(pubs):
+        x = xa(pv)
+        area.append(f'<path d="M{n(x)} {n(y - 8)}L{n(x + 8)} {n(y)}L{n(x)} {n(y + 8)}L{n(x - 8)} {n(y)}Z" '
+                    f'fill="{S["accent"]}" stroke="{S["bg"]}" stroke-width="1.5"/>')
+    l1, _ = text("mono", "Springer · Studies in Big Data", 11, xa(2023.8) - 14, y + 4, S["ink"], anchor="end")
+    l2, _ = text("mono", "×6", 11, xa(2026.05) - 14, y + 4, S["ink"], anchor="end")
+    area.append(l1 + l2)
+    # teaching
+    y = ty(2) + 13
+    a, z = 2023.3, Y1 + 0.2
+    area.append(f'<rect x="{n(xa(a))}" y="{y}" width="{n(xa(z) - xa(a))}" height="{ch}" rx="5" fill="{S["cyan"]}" '
+                f'fill-opacity="0.12" stroke="{S["cyan"]}" stroke-opacity="0.6"/>')
+    area.append(f'<rect x="{n(xa(a))}" y="{y}" width="4" height="{ch}" rx="2" fill="{S["cyan"]}"/>')
+    area.append(f'<rect x="{n(xa(NOW) + 20)}" y="{y - 1}" width="{n(xa(z) - xa(NOW))}" height="{ch + 2}" fill="url(#tlfade)"/>')
+    lt, _ = text("mono-bold", "Unity & Python, with students", 12, xa(a) + 14, y + ch / 2 + 4.5, S["ink"])
+    area.append(lt)
+    for mv in (2023.38, 2024.56, 2025.2, 2025.41, 2025.7):
+        area.append(f'<path d="M{n(xa(mv))} {y + ch - 9}V{y + ch - 2}" stroke="{S["cyan"]}" stroke-width="2"/>')
+    # builds (GitHub creation dates)
+    y = ty(3)
+    builds = [(2022.32, "Sarcaster-Corvus", 0), (2023.51, "", 1), (2023.52, "ML-Agents", 1),
+              (2024.70, "PyTorch_Education", 0), (2025.17, "", 1), (2025.70, "FBC_OS", 0),
+              (2025.99, "BlazeFace", 1), (2026.45, "GameEngineStudio", 0)]
+    # labels go in the first of three rows where they don't collide
+    rows_end = [-1e9, -1e9, -1e9]
+    for (bv, lab, _row) in builds:
+        x = xa(bv)
+        area.append(f'<path d="M{n(x)} {y + 10}V{y + 20}" stroke="{S["ink"]}" stroke-width="1.6" stroke-linecap="round"/>')
+        area.append(f'<circle cx="{n(x)}" cy="{y + 10}" r="3" fill="{S["ink"]}"/>')
+        if not lab:
+            continue
+        lw_ = width("mono", lab, 10.5)
+        for r in range(3):
+            if x + 6 + lw_ < X1 - 4 and x + 6 > rows_end[r] + 10:
+                lx, anc, end = x + 6, "start", x + 6 + lw_
+                break
+            if x - 6 - lw_ > rows_end[r] + 10 and x + 6 + lw_ >= X1 - 4:
+                lx, anc, end = x - 6, "end", x
+                break
+        else:
+            raise ValueError(f"no room for build label {lab}")
+        rows_end[r] = end
+        lt, _ = text("mono", lab, 10.5, lx, y + 33 + r * 14, S["muted"], anchor=anc)
+        area.append(f'<path d="M{n(x)} {y + 22}V{y + 29 + r * 14}" stroke="{S["muted"]}" stroke-opacity="0.45"/>')
+        area.append(lt)
+    # now marker
+    xn = xa(NOW)
+    area.append(f'<path d="M{n(xn)} {TB}V{H}" stroke="{S["muted"]}" stroke-dasharray="3 4"/>')
+    nw_, _ = text("mono-bold", "NOW", 9.5, xn + 4, TB + 12, S["muted"], tracking=0.12)
+    area.append(nw_)
+    b.append(f'<g clip-path="url(#tla)">{"".join(area)}</g>')
+    lg, _ = text("mono", "clips = years  ·  diamonds = publications  ·  ticks = repositories, by the date they were created on GitHub",
+                 10.5, 28, H - 14, S["muted"])
+    b.append(lg)
+
+    # playhead: scrubs 2018 -> now, then holds
+    D = xa(NOW) - xa(Y0)
+    ph = (f'<g transform="translate({n(D)} 0)"><animateTransform attributeName="transform" type="translate" '
+          f'values="0 0;{n(D)} 0;{n(D)} 0" keyTimes="0;{RUN / CYC:.4f};1" dur="{CYC}s" repeatCount="indefinite"/>'
+          f'<path d="M{X0} {RB - 4}V{H}" stroke="{S["accent"]}" stroke-width="1.6"/>'
+          f'<path d="M{X0 - 7} {TB + 4}H{X0 + 7}V{RB - 12}L{X0} {RB - 4}L{X0 - 7} {RB - 12}Z" fill="{S["accent"]}"/></g>')
+    b.append(ph)
+
+    # achievement toasts, stacked in two slots like the real thing
+    toasts = [(2021.5, "Top of the class", "BSc · Bursa Uludağ University"),
+              (2023.8, "Published", "Springer · Studies in Big Data"),
+              (2024.6, "New quest: PhD", "MSc done, doctorate started"),
+              (2025.7, "Fan favourite", "FBC_OS · most-starred repo"),
+              (2026.3, "Busy year", "six works on ORCID in 2026")]
+    SHOW = 2.3
+    tw_, th_ = 290, 62
+    tx_ = X1 - tw_ - 8
+    for k, (yv, t1, t2) in enumerate(toasts):
+        t0 = t_of(yv)
+        slot = k % 2
+        yy = RB + 8 + slot * (th_ + 8)
+        kt = [0, t0 / CYC, (t0 + 0.25) / CYC, (t0 + SHOW - 0.3) / CYC, (t0 + SHOW) / CYC, 1]
+        kts = ";".join(f"{v:.4f}" for v in kt)
+        a1, _ = text("mono-bold", "ACHIEVEMENT UNLOCKED", 9.5, tx_ + 50, yy + 18, S["accent"], tracking=0.14)
+        a2, _ = text("serif", t1, 16, tx_ + 50, yy + 37, S["ink"])
+        a3, _ = text("mono", t2, 10.5, tx_ + 50, yy + 53, S["muted"])
+        trophy = (f'<g transform="translate({tx_ + 15} {yy + 19})"><path d="M6 3H18V9A6 6 0 0 1 6 9Z M6 5H3V7A3 3 0 0 0 6 10 '
+                  f'M18 5H21V7A3 3 0 0 1 18 10 M12 15V19 M8 21H16" fill="none" stroke="{S["accent"]}" stroke-width="1.7" '
+                  f'stroke-linecap="round" stroke-linejoin="round"/></g>')
+        b.append(f'<g opacity="0"><animate attributeName="opacity" values="0;0;1;1;0;0" keyTimes="{kts}" dur="{CYC}s" repeatCount="indefinite"/>'
+                 f'<animateTransform attributeName="transform" type="translate" values="0 -8;0 -8;0 0;0 0;0 -4;0 -4" keyTimes="{kts}" dur="{CYC}s" repeatCount="indefinite"/>'
+                 f'<rect x="{tx_}" y="{yy}" width="{tw_}" height="{th_}" rx="8" fill="#17191e" stroke="{S["faint"]}"/>'
+                 f'<rect x="{tx_}" y="{yy}" width="3" height="{th_}" rx="1.5" fill="{S["accent"]}"/>{trophy}{a1}{a2}{a3}</g>')
+
+    body = f'<g clip-path="url(#tlw)">{"".join(b)}</g><rect x="0.5" y="0.5" width="{W - 1}" height="{H - 1}" rx="18" fill="none" stroke="{th["stroke"]}"/>'
+    return svg(W, H, "Timeline, 2018 to now: BSc (top of the class) 2018–2021, MSc 2021–2024, PhD since 2024; "
+                     "seven publications 2023–2026; teaching Unity and Python since 2023; projects from Sarcaster-Corvus "
+                     "to GameEngineStudio.", body, "".join(defs))
+
+
+# --------------------------------------------------------------------------
+# SKILL TREE
+# --------------------------------------------------------------------------
+def skilltree(tn):
+    th = THEMES[tn]
+    W, H = 1200, 556
+    fdefs, fbody, fborder = frame(W, H, th, "st")
+    defs = [fdefs, '<filter id="stglow" x="-30%" y="-80%" width="160%" height="260%"><feGaussianBlur stdDeviation="7"/></filter>']
+    body = [fbody]
+    BR = {"gd": th["ink"], "ml": th["cyan"], "rs": th["accent"]}
+    # id: (label, x, y, branch, kind)   kind: root | skill | merge
+    N = {
+        "gd": ("GAME DEV", 36, 100, "gd", "root"),
+        "ml": ("MACHINE LEARNING", 36, 262, "ml", "root"),
+        "rs": ("RESEARCH", 36, 420, "rs", "root"),
+        "unity": ("Unity · C#", 290, 62, "gd", "skill"),
+        "xr": ("XR · Meta XR SDK", 290, 112, "gd", "skill"),
+        "blender": ("Blender", 290, 162, "gd", "skill"),
+        "torch": ("PyTorch · Keras", 290, 228, "ml", "skill"),
+        "cuda": ("CUDA", 290, 274, "ml", "skill"),
+        "rag": ("RAG · LangChain", 290, 320, "ml", "skill"),
+        "sr": ("Systematic reviews", 290, 380, "rs", "skill"),
+        "bib": ("Bibliometrics", 290, 426, "rs", "skill"),
+        "sv": ("Surveys & prediction", 290, 472, "rs", "skill"),
+        "onnx": ("ONNX export", 540, 228, "ml", "skill"),
+        "id": ("Instructional design", 540, 400, "rs", "skill"),
+        "sentis": ("Unity Sentis", 745, 110, "gd", "merge"),
+        "mla": ("ML-Agents", 745, 200, "gd", "merge"),
+        "gbl": ("Game-based learning", 745, 330, "gd", "merge"),
+        "ail": ("AI literacy research", 745, 450, "rs", "merge"),
+    }
+    E = [("gd", "unity"), ("gd", "xr"), ("gd", "blender"),
+         ("ml", "torch"), ("ml", "cuda"), ("ml", "rag"),
+         ("rs", "sr"), ("rs", "bib"), ("rs", "sv"),
+         ("torch", "onnx"), ("sr", "id"), ("bib", "id"),
+         ("unity", "sentis"), ("onnx", "sentis"),
+         ("unity", "mla"), ("torch", "mla"),
+         ("unity", "gbl"), ("xr", "gbl"), ("id", "gbl"),
+         ("sv", "ail"), ("torch", "ail")]
+    OUTS = {"sentis": "→ BlazeFace_NMS_Sentis", "mla": "→ Unity-ML-Test-Project",
+            "gbl": "→ GameEngineStudio · the PhD", "ail": "→ IJCES 2026 paper"}
+    CH = 32
+    box = {}
+    for k, (lab, x, y, br, kind) in N.items():
+        fnt, size, tr = ("mono-bold", 11.5, 0.14) if kind == "root" else ("mono", 13, 0)
+        if kind == "merge":
+            fnt, size = "mono-bold", 13
+        w = width(fnt, lab, size, tr) + 30
+        box[k] = (x, y - CH / 2, w, CH, lab, br, kind, fnt, size, tr)
+    edges, flows = [], []
+    for i, (a, z) in enumerate(E):
+        ax_, ay_, aw, ah_ = box[a][:4]
+        zx, zy, zw, zh = box[z][:4]
+        x1, y1 = ax_ + aw, ay_ + ah_ / 2
+        x2, y2 = zx, zy + zh / 2
+        dx = (x2 - x1) * 0.5
+        d = f"M{n(x1)} {n(y1)}C{n(x1 + dx)} {n(y1)} {n(x2 - dx)} {n(y2)} {n(x2)} {n(y2)}"
+        col = BR[box[a][5]]
+        edges.append(f'<path d="{d}" fill="none" stroke="{col}" stroke-opacity="0.32" stroke-width="1.5"/>')
+        flows.append(f'<path d="{d}" fill="none" stroke="{col}" stroke-width="2" stroke-linecap="round" '
+                     f'stroke-dasharray="2 16" stroke-dashoffset="0"><animate attributeName="stroke-dashoffset" '
+                     f'values="18;0" dur="{0.9 + (i % 5) * 0.12:.2f}s" repeatCount="indefinite"/></path>')
+    body.append("".join(edges) + f'<g opacity="0.9">{"".join(flows)}</g>')
+    for k, (x, y, w, h, lab, br, kind, fnt, size, tr) in box.items():
+        col = BR[br]
+        if kind == "root":
+            body.append(f'<rect x="{x}" y="{y}" width="{n(w)}" height="{h}" rx="{h / 2}" fill="{col}"/>')
+            t, _ = text(fnt, lab, size, x + 15, y + h / 2 + 4.3, th["bg"], tracking=tr)
+        elif kind == "merge":
+            body.append(f'<rect x="{x - 4}" y="{y - 4}" width="{n(w + 8)}" height="{h + 8}" rx="{h / 2 + 4}" '
+                        f'fill="{th["accent"]}" opacity="0.25" filter="url(#stglow)">'
+                        f'<animate attributeName="opacity" values="0.1;0.35;0.1" dur="3s" begin="-{(x + y) % 3}s" repeatCount="indefinite"/></rect>')
+            body.append(f'<rect x="{x}" y="{y}" width="{n(w)}" height="{h}" rx="{h / 2}" fill="{th["bg"]}" '
+                        f'stroke="{th["ink"]}" stroke-width="1.6"/>')
+            body.append(f'<rect x="{x + 3.5}" y="{y + 3.5}" width="{n(w - 7)}" height="{h - 7}" rx="{h / 2 - 3.5}" '
+                        f'fill="none" stroke="{th["accent"]}" stroke-width="1"/>')
+            t, _ = text(fnt, lab, size, x + 15, y + h / 2 + 4.6, th["ink"])
+            o, _ = text("mono", OUTS[k], 12, x + w + 18, y + h / 2 + 4.3, th["muted"])
+            body.append(o)
+        else:
+            body.append(f'<rect x="{x}" y="{y}" width="{n(w)}" height="{h}" rx="{h / 2}" fill="{th["bg"]}" '
+                        f'stroke="{col}" stroke-opacity="0.7" stroke-width="1.2"/>')
+            t, _ = text(fnt, lab, size, x + 15, y + h / 2 + 4.6, th["ink"])
+        body.append(t)
+    # legend
+    lx, ly = 36, 530
+    body.append(f'<rect x="36" y="{ly - 26}" width="{W - 72}" height="1" fill="{th["stroke"]}"/>')
+    for i, (lab, col) in enumerate([("game dev", BR["gd"]), ("machine learning", BR["ml"]), ("research", BR["rs"])]):
+        body.append(f'<circle cx="{lx + i * 150}" cy="{ly - 4}" r="4.5" fill="{col}"/>')
+        t, _ = text("mono", lab, 11.5, lx + i * 150 + 12, ly, th["muted"])
+        body.append(t)
+    mt, mw = text("mono", "where two branches meet", 11.5, W - 36, ly, th["muted"], anchor="end")
+    mx = W - 36 - mw - 40
+    body.append(f'<rect x="{n(mx)}" y="{ly - 13}" width="30" height="18" rx="9" fill="none" stroke="{th["ink"]}" stroke-width="1.4"/>'
+                f'<rect x="{n(mx + 3)}" y="{ly - 10}" width="24" height="12" rx="6" fill="none" stroke="{th["accent"]}"/>' + mt)
+    body.append(fborder)
+    return svg(W, H, "Skill tree. Game dev (Unity, C#, XR with Meta XR SDK, Blender), machine learning (PyTorch, Keras, CUDA, "
+                     "RAG, LangChain, ONNX) and research (systematic reviews, bibliometrics, surveys, instructional design) "
+                     "meet in Unity Sentis, ML-Agents, game-based learning and AI literacy research.",
+               "".join(body), "".join(defs))
+
+
 
 def main():
-    os.makedirs(OUT, exist_ok=True)
+    for sub in ("", "sections", "links"):
+        os.makedirs(os.path.join(OUT, sub), exist_ok=True)
     jobs = []
     for tn in THEMES:
         jobs.append((f"hero-{tn}.svg", lambda tn=tn: hero(tn)))
         jobs.append((f"play-{tn}.svg", lambda tn=tn: play(tn)))
         jobs.append((f"feature-{tn}.svg", lambda tn=tn: feature(tn)))
         jobs.append((f"footer-{tn}.svg", lambda tn=tn: footer(tn)))
+        jobs.append((f"player-{tn}.svg", lambda tn=tn: player(tn)))
+        jobs.append((f"timeline-{tn}.svg", lambda tn=tn: timeline(tn)))
+        jobs.append((f"skilltree-{tn}.svg", lambda tn=tn: skilltree(tn)))
         for key, c in CARDS.items():
             jobs.append((f"card-{key}-{tn}.svg",
                          lambda tn=tn, key=key, c=c: card(tn, key, c["title"], c["lines"], c["meta"], c["illus"], c["alt"])))
+        for i in range(len(SECTIONS)):
+            jobs.append((f"sections/{SECTIONS[i][0]}-{tn}.svg", lambda tn=tn, i=i: section(tn, i)))
+        for i, (key, _) in enumerate(LINKS):
+            jobs.append((f"links/{key}-{tn}.svg", lambda tn=tn, i=i: pill(tn, i)))
     for name, fn in jobs:
         s = fn()
         with open(os.path.join(OUT, name), "w") as f:

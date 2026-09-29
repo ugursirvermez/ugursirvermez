@@ -4,18 +4,28 @@
 </picture>
 
 <p align="center">
-  <a href="https://scholar.google.com/citations?user=_aIQYmwAAAAJ">Google Scholar</a> &nbsp;·&nbsp;
-  <a href="https://orcid.org/0000-0001-7266-6408">ORCID</a> &nbsp;·&nbsp;
-  <a href="https://www.linkedin.com/in/u%C4%9Fur-s%C4%B1rvermez-360794151/">LinkedIn</a> &nbsp;·&nbsp;
-  <a href="https://medium.com/@ugursirvermez">Medium</a> &nbsp;·&nbsp;
-  <a href="mailto:ugursirvermez@hotmail.com">Email</a>
+  <a href="https://scholar.google.com/citations?user=_aIQYmwAAAAJ"><picture><source media="(prefers-color-scheme: dark)" srcset="assets/links/scholar-dark.svg"><img alt="Google Scholar" src="assets/links/scholar-light.svg" height="34"></picture></a>
+  <a href="https://orcid.org/0000-0001-7266-6408"><picture><source media="(prefers-color-scheme: dark)" srcset="assets/links/orcid-dark.svg"><img alt="ORCID" src="assets/links/orcid-light.svg" height="34"></picture></a>
+  <a href="https://www.linkedin.com/in/u%C4%9Fur-s%C4%B1rvermez-360794151/"><picture><source media="(prefers-color-scheme: dark)" srcset="assets/links/linkedin-dark.svg"><img alt="LinkedIn" src="assets/links/linkedin-light.svg" height="34"></picture></a>
+  <a href="https://medium.com/@ugursirvermez"><picture><source media="(prefers-color-scheme: dark)" srcset="assets/links/medium-dark.svg"><img alt="Medium" src="assets/links/medium-light.svg" height="34"></picture></a>
+  <a href="mailto:ugursirvermez@hotmail.com"><picture><source media="(prefers-color-scheme: dark)" srcset="assets/links/email-dark.svg"><img alt="Email" src="assets/links/email-light.svg" height="34"></picture></a>
 </p>
 
 I'm doing a PhD in Computer and Instructional Technologies Education at Bursa Uludağ University. The academic half of me studies game engines and virtual environments as places where people learn. The other half is usually in Unity, building whatever the first half listed under *future work*.
 
-I've also built VR and AR applications in the private sector, and I teach Unity, Python and PyTorch. Most of the repositories below started as lesson material, and a few of them were written together with my students, bugs included.
+I've also built VR and AR applications in the private sector. I teach Unity and Python, and I write open course material for PyTorch. Most of the repositories below started as lesson material, and a few of them were written together with my students, bugs included.
 
-### `01` Learn by playing
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="assets/player-dark.svg">
+  <img alt="player_1.sav: researcher, developer, teacher at Bursa Uludağ University. Achievements: top of the class (BSc 2021), master's degree (2024), seven published works, an open resource with a DOI, certified in project management. PhD in progress." src="assets/player-light.svg" width="100%">
+</picture>
+
+<h3>
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="assets/sections/01-dark.svg">
+  <img alt="01 · Learn by playing" src="assets/sections/01-light.svg" width="100%">
+</picture>
+</h3>
 
 Two things I made to teach an idea by letting people poke at it. A README can't run code, so both open in the browser on GitHub Pages.
 
@@ -33,7 +43,24 @@ Two things I made to teach an idea by letting people poke at it. A README can't 
   </picture>
 </a>
 
-### `02` Research
+<h3>
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="assets/sections/02-dark.svg">
+  <img alt="02 · Timeline" src="assets/sections/02-light.svg" width="100%">
+</picture>
+</h3>
+
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="assets/timeline-dark.svg">
+  <img alt="Timeline from 2018 to now: BSc 2018–2021 (top of the class), MSc 2021–2024, PhD since 2024; seven publications from 2023 to 2026; teaching Unity and Python since 2023; projects from Sarcaster-Corvus to GameEngineStudio." src="assets/timeline-light.svg" width="100%">
+</picture>
+
+<h3>
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="assets/sections/03-dark.svg">
+  <img alt="03 · Research" src="assets/sections/03-light.svg" width="100%">
+</picture>
+</h3>
 
 My work is about game engines and virtual environments in education. Lately it also covers a lot of digital citizenship and AI literacy.
 
@@ -55,7 +82,12 @@ My work is about game engines and virtual environments in education. Lately it a
 
 The full list is on [Google Scholar](https://scholar.google.com/citations?user=_aIQYmwAAAAJ) and [ORCID](https://orcid.org/0000-0001-7266-6408).
 
-### `03` Other things I've built
+<h3>
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="assets/sections/04-dark.svg">
+  <img alt="04 · Other things I've built" src="assets/sections/04-light.svg" width="100%">
+</picture>
+</h3>
 
 <p align="center">
   <a href="https://github.com/ugursirvermez/FBC_OS-Fan-Project"><picture><source media="(prefers-color-scheme: dark)" srcset="assets/card-fbc-dark.svg"><img alt="FBC_OS: a retro terminal inspired by Control" src="assets/card-fbc-light.svg" width="49%"></picture></a>
@@ -66,7 +98,20 @@ The full list is on [Google Scholar](https://scholar.google.com/citations?user=_
 
 Also in here: [RunToLife](https://github.com/ugursirvermez/RunToLife) and [PydewValley](https://github.com/ugursirvermez/PydewValley), both made with students · [Sarcaster-Corvus](https://github.com/ugursirvermez/Sarcaster-Corvus), a bootcamp team game set in a post-apocalyptic metaverse · [FoodVisionApp](https://github.com/ugursirvermez/FoodVisionApp), the FoodVision model from the PyTorch course running on a phone · [Space-Invader-with-Pygame](https://github.com/ugursirvermez/Space-Invader-with-Pygame) · class material in [Unity-Egitim-Materyalleri](https://github.com/ugursirvermez/Unity-Egitim-Materyalleri) and [Python_BeginnerEducation](https://github.com/ugursirvermez/Python_BeginnerEducation).
 
-### `04` Loadout
+<h3>
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="assets/sections/05-dark.svg">
+  <img alt="05 · Skill tree" src="assets/sections/05-light.svg" width="100%">
+</picture>
+</h3>
+
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="assets/skilltree-dark.svg">
+  <img alt="Skill tree. Game dev, machine learning and research branches meet in Unity Sentis, ML-Agents, game-based learning and AI literacy research." src="assets/skilltree-light.svg" width="100%">
+</picture>
+
+<details>
+<summary>Plain-text version</summary>
 
 ```text
 engine      Unity (C#) · URP
@@ -78,7 +123,63 @@ app / web   React Native (Expo) · Next.js · TypeScript
 research    systematic reviews · bibliometrics · survey and predictive models
 ```
 
-### `05` Writing
+</details>
+
+<h3>
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="assets/sections/06-dark.svg">
+  <img alt="06 · Pop quiz" src="assets/sections/06-light.svg" width="100%">
+</picture>
+</h3>
+
+The only part of this page you can play without leaving it. Think of an answer, then click.
+
+<details>
+<summary><b>1.</b> “Texture ile Material aynı şey değil mi hocam?” <sub>(Isn't a texture the same thing as a material?)</sub></summary>
+<br>
+
+No. A texture is just an image. A material decides how a surface looks under light: it picks a shader and feeds it settings, and textures are only some of those settings. One texture can be shared by many materials, and a material doesn't need a texture at all. This question got [a whole blog post](https://medium.com/@ugursirvermez/texture-ile-material-ayn%C4%B1-%C5%9Fey-de%C4%9Fil-mi-hocam-1ba7978abcfa).
+
+</details>
+
+<details>
+<summary><b>2.</b> Why do we multiply movement by <code>Time.deltaTime</code>?</summary>
+<br>
+
+Because a frame doesn't take the same time on every machine. "Move 4 units per frame" is fast on a fast computer and slow on a slow one. Multiplying by the time since the last frame turns it into "4 units per second", which is the same everywhere.
+
+</details>
+
+<details>
+<summary><b>3.</b> A headset runs at 90 Hz. How long do you get to draw one frame?</summary>
+<br>
+
+1000 / 90 ≈ 11.1 ms, for both eyes, plus everything else the game does in that frame. Miss it and the image judders, which feels much worse in a headset than on a monitor. [Tunnel Vision](https://ugursirvermez.github.io/ugursirvermez/) draws the real number in its corner.
+
+</details>
+
+<details>
+<summary><b>4.</b> What turns a simulation into a game?</summary>
+<br>
+
+Not a different model. The pendulum on the course site runs the same equation in both modes. The game only adds a goal and feedback on how close you are. In an educational game, that goal should point at the learning outcome, otherwise students get good at the game and not at the subject.
+
+</details>
+
+<details>
+<summary><b>5.</b> Training loss keeps going down, validation loss starts going up. What happened?</summary>
+<br>
+
+Overfitting: the model has started memorising the training set instead of learning something that generalises. Stop earlier, get more data or augment it, or regularise (dropout, weight decay). The dashed curve on the PyTorch card bends up at the end for this reason.
+
+</details>
+
+<h3>
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="assets/sections/07-dark.svg">
+  <img alt="07 · Writing" src="assets/sections/07-light.svg" width="100%">
+</picture>
+</h3>
 
 I write on [Medium](https://medium.com/@ugursirvermez) in Turkish, mostly about teaching game development and machine learning:
 
