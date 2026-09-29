@@ -52,7 +52,7 @@ Two things I made to teach an idea by letting people poke at it. A README can't 
 
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="assets/timeline-dark.svg">
-  <img alt="Timeline from 2018 to now: BSc 2018–2021 (top of the class), MSc 2021–2024, PhD since 2024; seven publications from 2023 to 2026; teaching Unity and Python since 2023; projects from Sarcaster-Corvus to GameEngineStudio." src="assets/timeline-light.svg" width="100%">
+  <img alt="Timeline from 2017 to now: teaching Unity and Python since 2017; BSc 2018–2021 (top of the class), MSc 2021–2024, PhD since 2024; seven publications from 2023 to 2026; projects from Sarcaster-Corvus to GameEngineStudio." src="assets/timeline-light.svg" width="100%">
 </picture>
 
 <h3>

@@ -921,7 +921,7 @@ def footer(tn):
 # --------------------------------------------------------------------------
 SECTIONS = [
     ("01", "Learn by playing", "two things built to teach, both playable"),
-    ("02", "Timeline", "2018 → now, scrubbed like a Unity Timeline"),
+    ("02", "Timeline", "2017 → now, scrubbed like a Unity Timeline"),
     ("03", "Research", "game engines · virtual environments · digital citizenship"),
     ("04", "Other things I've built", "side projects, fan work, experiments"),
     ("05", "Skill tree", "where the branches meet"),
@@ -1141,7 +1141,7 @@ def timeline(tn):
     S = SCREEN
     W, H = 1200, 386
     X0, X1 = 214, 1172
-    Y0, Y1 = 2018.0, 2027.0
+    Y0, Y1 = 2017.0, 2027.0
     xa = lambda yr: X0 + (yr - Y0) / (Y1 - Y0) * (X1 - X0)
     TB, RB = 42, 78          # toolbar bottom, ruler bottom
     TH = 66                  # track height
@@ -1169,23 +1169,23 @@ def timeline(tn):
     b.append(f'<rect x="{bx + 92}" y="10" width="74" height="24" rx="4" fill="{S["bg"]}" stroke="{S["faint"]}"/>')
     RUN, CYC = 14.0, 16.8
     t_of = lambda yr: (yr - Y0) / (NOW - Y0) * RUN
-    years = list(range(2018, 2027))
+    years = list(range(int(Y0), 2027))
     for i, yv in enumerate(years):
         p_, _ = text("mono-bold", str(yv), 12, bx + 129, 27, S["ink"], anchor="middle")
-        t_on = 0 if yv == 2018 else t_of(yv)
+        t_on = 0 if yv == Y0 else t_of(yv)
         t_off = t_of(yv + 1) if yv < 2026 else RUN
         if yv == 2026:
             vals, tms, base = [0, 1], [0, t_on], 1
         else:
             vals, tms, base = [1, 0], [0, t_off], 0
-            if yv > 2018:
+            if yv > Y0:
                 vals, tms = [0, 1, 0], [0, t_on, t_off]
         b.append(f'<g opacity="{base}">{p_}' + discrete("opacity", vals, tms, CYC) + "</g>")
     dr, _ = text("mono", "Uğur (Playable Director)", 11.5, W - 24, 27, S["muted"], anchor="end")
     b.append(dr)
     # ruler
     b.append(f'<rect x="0" y="{TB}" width="{W}" height="{RB - TB}" fill="#101115"/>')
-    for yv in range(2018, 2028):
+    for yv in range(int(Y0), 2028):
         x = xa(yv)
         b.append(f'<path d="M{n(x)} {RB - 14}V{RB}" stroke="{S["muted"]}"/>')
         if yv < 2027:
@@ -1235,7 +1235,7 @@ def timeline(tn):
     area.append(l1 + l2)
     # teaching
     y = ty(2) + 13
-    a, z = 2023.3, Y1 + 0.2
+    a, z = 2017.0, Y1 + 0.2
     area.append(f'<rect x="{n(xa(a))}" y="{y}" width="{n(xa(z) - xa(a))}" height="{ch}" rx="5" fill="{S["cyan"]}" '
                 f'fill-opacity="0.12" stroke="{S["cyan"]}" stroke-opacity="0.6"/>')
     area.append(f'<rect x="{n(xa(a))}" y="{y}" width="4" height="{ch}" rx="2" fill="{S["cyan"]}"/>')
@@ -1281,7 +1281,7 @@ def timeline(tn):
                  10.5, 28, H - 14, S["muted"])
     b.append(lg)
 
-    # playhead: scrubs 2018 -> now, then holds
+    # playhead: scrubs 2017 -> now, then holds
     D = xa(NOW) - xa(Y0)
     ph = (f'<g transform="translate({n(D)} 0)"><animateTransform attributeName="transform" type="translate" '
           f'values="0 0;{n(D)} 0;{n(D)} 0" keyTimes="0;{RUN / CYC:.4f};1" dur="{CYC}s" repeatCount="indefinite"/>'
@@ -1290,7 +1290,8 @@ def timeline(tn):
     b.append(ph)
 
     # achievement toasts, stacked in two slots like the real thing
-    toasts = [(2021.5, "Top of the class", "BSc · Bursa Uludağ University"),
+    toasts = [(2017.35, "New class: Teacher", "Unity & Python, since 2017"),
+              (2021.5, "Top of the class", "BSc · Bursa Uludağ University"),
               (2023.8, "Published", "Springer · Studies in Big Data"),
               (2024.6, "New quest: PhD", "MSc done, doctorate started"),
               (2025.7, "Fan favourite", "FBC_OS · most-starred repo"),
@@ -1316,8 +1317,8 @@ def timeline(tn):
                  f'<rect x="{tx_}" y="{yy}" width="3" height="{th_}" rx="1.5" fill="{S["accent"]}"/>{trophy}{a1}{a2}{a3}</g>')
 
     body = f'<g clip-path="url(#tlw)">{"".join(b)}</g><rect x="0.5" y="0.5" width="{W - 1}" height="{H - 1}" rx="18" fill="none" stroke="{th["stroke"]}"/>'
-    return svg(W, H, "Timeline, 2018 to now: BSc (top of the class) 2018–2021, MSc 2021–2024, PhD since 2024; "
-                     "seven publications 2023–2026; teaching Unity and Python since 2023; projects from Sarcaster-Corvus "
+    return svg(W, H, "Timeline, 2017 to now: teaching Unity and Python since 2017; BSc (top of the class) 2018–2021, "
+                     "MSc 2021–2024, PhD since 2024; seven publications 2023–2026; projects from Sarcaster-Corvus "
                      "to GameEngineStudio.", body, "".join(defs))
 
 
