@@ -128,51 +128,16 @@ research    systematic reviews · bibliometrics · survey and predictive models
 <h3>
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="assets/sections/06-dark.svg">
-  <img alt="06 · Pop quiz" src="assets/sections/06-light.svg" width="100%">
+  <img alt="06 · Contribution level" src="assets/sections/06-light.svg" width="100%">
 </picture>
 </h3>
 
-The only part of this page you can play without leaving it. Think of an answer, then click.
+My GitHub activity for the last year, played as a level. Every week is a column that grows with that week's contributions, and the five best weeks hold the coins. A GitHub Action rebuilds it every night, so the level changes as I work.
 
-<details>
-<summary><b>1.</b> “Texture ile Material aynı şey değil mi hocam?” <sub>(Isn't a texture the same thing as a material?)</sub></summary>
-<br>
-
-No. A texture is just an image. A material decides how a surface looks under light: it picks a shader and feeds it settings, and textures are only some of those settings. One texture can be shared by many materials, and a material doesn't need a texture at all. This question got [a whole blog post](https://medium.com/@ugursirvermez/texture-ile-material-ayn%C4%B1-%C5%9Fey-de%C4%9Fil-mi-hocam-1ba7978abcfa).
-
-</details>
-
-<details>
-<summary><b>2.</b> Why do we multiply movement by <code>Time.deltaTime</code>?</summary>
-<br>
-
-Because a frame doesn't take the same time on every machine. "Move 4 units per frame" is fast on a fast computer and slow on a slow one. Multiplying by the time since the last frame turns it into "4 units per second", which is the same everywhere.
-
-</details>
-
-<details>
-<summary><b>3.</b> A headset runs at 90 Hz. How long do you get to draw one frame?</summary>
-<br>
-
-1000 / 90 ≈ 11.1 ms, for both eyes, plus everything else the game does in that frame. Miss it and the image judders, which feels much worse in a headset than on a monitor. [Tunnel Vision](https://ugursirvermez.github.io/ugursirvermez/) draws the real number in its corner.
-
-</details>
-
-<details>
-<summary><b>4.</b> What turns a simulation into a game?</summary>
-<br>
-
-Not a different model. The pendulum on the course site runs the same equation in both modes. The game only adds a goal and feedback on how close you are. In an educational game, that goal should point at the learning outcome, otherwise students get good at the game and not at the subject.
-
-</details>
-
-<details>
-<summary><b>5.</b> Training loss keeps going down, validation loss starts going up. What happened?</summary>
-<br>
-
-Overfitting: the model has started memorising the training set instead of learning something that generalises. Stop earlier, get more data or augment it, or regularise (dropout, weight decay). The dashed curve on the PyTorch card bends up at the end for this reason.
-
-</details>
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="assets/level-dark.svg">
+  <img alt="My GitHub contributions for the last 12 months as a platformer level. A small character with a VR headset runs across weekly columns, collects coins above the best weeks and reaches a flag on the current week." src="assets/level-light.svg" width="100%">
+</picture>
 
 <h3>
 <picture>

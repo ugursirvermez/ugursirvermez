@@ -1,0 +1,58 @@
+name: Contribution level
+
+on:
+  schedule:
+    - cron: "23 3 * * *"        # every night, 03:23 UTC
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - scripts/contrib_level.py
+      - .github/workflows/contrib-level.yml
+
+permissions:
+  contents: write
+
+concurrency:
+  group: contrib-level
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - run: pip install fonttools brotli
+
+      # IBM Plex Mono (OFL) for the HUD text. If the download fails the
+      # script falls back to plain <text>, so this step may not fail the run.
+      - name: Fonts
+        run: |
+          mkdir -p scripts/fonts
+          for f in IBMPlexMono-Regular IBMPlexMono-Bold; do
+            curl -fsSL -o "scripts/fonts/$f.ttf" \
+              "https://raw.githubusercontent.com/google/fonts/main/ofl/ibmplexmono/$f.ttf" || rm -f "scripts/fonts/$f.ttf"
+          done
+
+      - name: Build the level
+        run: python3 scripts/contrib_level.py
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_USER: ${{ github.repository_owner }}
+
+      - name: Commit if it changed
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add assets/level-dark.svg assets/level-light.svg
+          if git diff --cached --quiet; then
+            echo "no change"
+          else
+            git commit -m "Update contribution level"
+            git push
+          fi

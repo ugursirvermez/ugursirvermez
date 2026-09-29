@@ -1,22 +1,23 @@
 """Text -> SVG path outlines, so the SVGs render identically everywhere
 (GitHub shows README SVGs through <img>, which can't load web fonts)."""
+import os
 from functools import lru_cache
+
 from fontTools.ttLib import TTFont
 from fontTools.varLib import instancer
 from fontTools.pens.svgPathPen import SVGPathPen
 from fontTools.pens.transformPen import TransformPen
 
-import os
-
 # Fonts are not committed (see .gitignore). All three are OFL and on Google
-# Fonts: Source Serif 4 (variable), IBM Plex Mono Regular and Bold.
+# Fonts: Source Serif 4 (variable), IBM Plex Mono Regular and Bold. Either the
+# .woff2 or the .ttf from github.com/google/fonts works.
 FONT_DIR = os.environ.get("FONT_DIR", os.path.join(os.path.dirname(__file__), "fonts"))
 
 FONTS = {
-    "serif": ("SourceSerif4-Variable.woff2", {"wght": 600, "opsz": 60}),
-    "serif-reg": ("SourceSerif4-Variable.woff2", {"wght": 420, "opsz": 28}),
-    "mono": ("IBMPlexMono-Regular.woff2", None),
-    "mono-bold": ("IBMPlexMono-Bold.woff2", None),
+    "serif": (("SourceSerif4-Variable.woff2", "SourceSerif4[opsz,wght].ttf"), {"wght": 600, "opsz": 60}),
+    "serif-reg": (("SourceSerif4-Variable.woff2", "SourceSerif4[opsz,wght].ttf"), {"wght": 420, "opsz": 28}),
+    "mono": (("IBMPlexMono-Regular.woff2", "IBMPlexMono-Regular.ttf"), None),
+    "mono-bold": (("IBMPlexMono-Bold.woff2", "IBMPlexMono-Bold.ttf"), None),
 }
 
 
@@ -31,8 +32,12 @@ def _num(v):
 
 class Face:
     def __init__(self, key):
-        name, loc = FONTS[key]
-        f = TTFont(os.path.join(FONT_DIR, name))
+        names, loc = FONTS[key]
+        paths = [os.path.join(FONT_DIR, nm) for nm in names]
+        found = [p for p in paths if os.path.exists(p)]
+        if not found:
+            raise FileNotFoundError(f"none of {names} in {FONT_DIR}")
+        f = TTFont(found[0])
         if loc:
             f = instancer.instantiateVariableFont(f, loc)
         self.font = f

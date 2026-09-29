@@ -925,7 +925,7 @@ SECTIONS = [
     ("03", "Research", "game engines · virtual environments · digital citizenship"),
     ("04", "Other things I've built", "side projects, fan work, experiments"),
     ("05", "Skill tree", "where the branches meet"),
-    ("06", "Pop quiz", "questions students actually ask"),
+    ("06", "Contribution level", "the last 12 months of GitHub, rebuilt every night"),
     ("07", "Writing", "in Turkish, on Medium"),
 ]
 
