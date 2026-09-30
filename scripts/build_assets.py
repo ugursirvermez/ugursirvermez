@@ -1032,6 +1032,9 @@ def _ach_icon(key, col):
     if key == "doi":
         return (f'<circle cx="12" cy="12" r="9" {st}/><path d="M9 12.2A3.2 3.2 0 1 1 12.2 15.4" {st}/>'
                 f'<path d="M12.2 15.4V9" {st}/>')
+    if key == "chip":
+        return (f'<rect x="6" y="6" width="12" height="12" rx="2" {st}/><rect x="9.5" y="9.5" width="5" height="5" {st}/>'
+                f'<path d="M9 3V6M15 3V6M9 18V21M15 18V21M3 9H6M3 15H6M18 9H21M18 15H21" {st}/>')
     if key == "clip":
         return (f'<rect x="5" y="4.5" width="14" height="17" rx="2" {st}/><path d="M9 4.5V3H15V4.5" {st}/>'
                 f'<path d="M8.5 13L11 15.5L15.5 10.5" {st}/>')
@@ -1042,10 +1045,10 @@ def _ach_icon(key, col):
 
 ACHIEVEMENTS = [
     ("medal", "2021", "Top of the class", "BSc · graduated first"),
-    ("diploma", "2024", "Master's degree", "MSc · same department"),
-    ("book", "2023–26", "Seven works", "journals, chapters, OER"),
-    ("doi", "2026", "Open resource", "PyTorch OER with a DOI"),
-    ("clip", "cert.", "Project management", "certified"),
+    ("diploma", "2024", "Master's degree", "thesis: digital citizenship"),
+    ("book", "2023–26", "Seven works", "+ 3 conference papers"),
+    ("chip", "2025", "AI Engineering", "IBM · 13 courses"),
+    ("clip", "2022", "Project management", "Google certificate"),
     ("lock", "2024–", "Doctor of Philosophy", "in progress"),
 ]
 
@@ -1132,8 +1135,8 @@ def player(tn):
                         f'dur="8s" repeatCount="indefinite"/></rect></g>')
     body.append(fborder)
     return svg(W, H, "player_1.sav: Uğur Sırvermez. Researcher, developer, teacher. Achievements: top of the class (BSc 2021), "
-                     "master's degree (2024), seven published works, an open resource with a DOI, certified in project "
-                     "management; PhD in progress.", "".join(body), "".join(defs))
+                     "master's degree (2024), seven published works and three conference papers, IBM AI Engineering "
+                     "(13 courses), Google Project Management; PhD in progress.", "".join(body), "".join(defs))
 
 
 # --------------------------------------------------------------------------

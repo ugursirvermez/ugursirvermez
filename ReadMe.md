@@ -17,7 +17,7 @@ I study game engines and virtual environments as places where people learn, buil
 <a href="https://ugursirvermez.github.io/ugursirvermez/cv/">
   <picture>
     <source media="(prefers-color-scheme: dark)" srcset="assets/player-dark.svg">
-    <img alt="player_1.sav: researcher, developer, teacher at Bursa Uludağ University. Achievements: top of the class (BSc 2021), master's degree (2024), seven published works, an open resource with a DOI, certified in project management. PhD in progress. Opens the full CV." src="assets/player-light.svg" width="100%">
+    <img alt="player_1.sav: researcher, developer, teacher at Bursa Uludağ University. Achievements: top of the class (BSc 2021), master's degree (2024), seven published works and three conference papers, IBM AI Engineering (13 courses), Google Project Management. PhD in progress. Opens the full CV." src="assets/player-light.svg" width="100%">
   </picture>
 </a>
 

@@ -14,7 +14,7 @@
 <style>
   :root {
     --bg: #f6f3ec; --panel: #fbf9f4; --line: #dcd5c8; --ink: #17171b; --muted: #6b665d;
-    --faint: #e7e1d5; --accent: #d7263d; --cyan: #0096a8; --chip: #efeadf;
+    --faint: #e7e1d5; --accent: #d7263d; --cyan: #0096a8; --chip: #efeadf; --gold: #b7791f;
     --serif: "Source Serif 4", "Iowan Old Style", Georgia, serif;
     --mono: "IBM Plex Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
     --sans: "IBM Plex Sans", -apple-system, "Segoe UI", Roboto, sans-serif;
@@ -23,12 +23,12 @@
   @media (prefers-color-scheme: dark) {
     :root:not([data-theme="light"]) {
       --bg: #0f1013; --panel: #15161a; --line: #272a31; --ink: #ece8e1; --muted: #8d8980;
-      --faint: #1d1f24; --accent: #f2464a; --cyan: #2fd3d8; --chip: #1b1c21; color-scheme: dark;
+      --faint: #1d1f24; --accent: #f2464a; --cyan: #2fd3d8; --chip: #1b1c21; --gold: #e0a84a; color-scheme: dark;
     }
   }
   :root[data-theme="dark"] {
     --bg: #0f1013; --panel: #15161a; --line: #272a31; --ink: #ece8e1; --muted: #8d8980;
-    --faint: #1d1f24; --accent: #f2464a; --cyan: #2fd3d8; --chip: #1b1c21; color-scheme: dark;
+    --faint: #1d1f24; --accent: #f2464a; --cyan: #2fd3d8; --chip: #1b1c21; --gold: #e0a84a; color-scheme: dark;
   }
 
   * { box-sizing: border-box; }
@@ -43,35 +43,41 @@
   button { font: inherit; color: inherit; }
   :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 4px; }
 
-  /* top bar */
+  /* ---------- top bar ---------- */
   .bar {
-    position: sticky; top: 0; z-index: 10; display: flex; align-items: center; gap: 16px;
-    padding: 12px max(16px, calc((100vw - 1000px) / 2)); background: color-mix(in srgb, var(--bg) 88%, transparent);
+    position: sticky; top: 0; z-index: 20; display: flex; align-items: center; gap: 12px;
+    padding: 10px max(16px, calc((100vw - 1060px) / 2)); background: color-mix(in srgb, var(--bg) 88%, transparent);
     border-bottom: 1px solid var(--line); -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px);
   }
   .bar .home { font: 600 12px/1 var(--mono); letter-spacing: .06em; text-decoration: none; white-space: nowrap; }
-  .toc { display: flex; gap: 4px; overflow-x: auto; scrollbar-width: none; flex: 1; }
+  .toc { display: flex; gap: 2px; overflow-x: auto; scrollbar-width: none; flex: 1; }
   .toc::-webkit-scrollbar { display: none; }
   .toc a {
-    font: 500 12px/1 var(--mono); letter-spacing: .06em; text-transform: uppercase; text-decoration: none;
-    color: var(--muted); padding: 8px 10px; border-radius: 6px; white-space: nowrap;
+    position: relative; font: 500 11.5px/1 var(--mono); letter-spacing: .06em; text-transform: uppercase; text-decoration: none;
+    color: var(--muted); padding: 9px 9px; border-radius: 6px; white-space: nowrap;
   }
   .toc a.on { color: var(--ink); background: var(--chip); }
-  .tools { display: flex; gap: 6px; }
+  .toc a.seen::after { content: ""; position: absolute; right: 3px; top: 5px; width: 4px; height: 4px; border-radius: 50%; background: var(--accent); }
+  .tools { display: flex; gap: 6px; align-items: center; }
   .tool {
     font: 600 11px/1 var(--mono); letter-spacing: .08em; background: none; border: 1px solid var(--line);
     border-radius: 6px; padding: 8px 9px; cursor: pointer; color: var(--muted); white-space: nowrap;
   }
-  .tool:hover, .tool[aria-pressed="true"] { color: var(--ink); border-color: var(--muted); }
+  .tool:hover { color: var(--ink); border-color: var(--muted); }
   .tool.primary { background: var(--accent); border-color: var(--accent); color: #fff; }
+  .tool kbd { font: inherit; opacity: .7; margin-left: 6px; }
+  .explore { display: flex; align-items: center; gap: 6px; font: 600 11px/1 var(--mono); color: var(--muted); white-space: nowrap; }
+  .explore svg { width: 20px; height: 20px; transform: rotate(-90deg); }
+  .explore .track { stroke: var(--line); }
+  .explore .fill { stroke: var(--accent); transition: stroke-dashoffset .5s ease; }
 
-  main { max-width: 1000px; margin: 0 auto; padding: 0 16px 80px; }
+  main { max-width: 1060px; margin: 0 auto; padding: 0 16px 80px; }
 
-  /* intro */
-  .intro { display: grid; grid-template-columns: 1fr auto; gap: 24px; align-items: center; padding: 56px 0 28px; }
+  /* ---------- intro ---------- */
+  .intro { display: grid; grid-template-columns: 1fr auto; gap: 24px; align-items: center; padding: 48px 0 24px; }
   .kicker { font: 600 12px/1.4 var(--mono); letter-spacing: .14em; text-transform: uppercase; color: var(--accent); }
-  h1 { font: 600 clamp(42px, 7vw, 72px)/1.02 var(--serif); margin: 12px 0 16px; letter-spacing: -.01em; }
-  .lede { font-size: 19px; max-width: 620px; margin: 0; }
+  h1 { font: 600 clamp(42px, 7vw, 74px)/1.02 var(--serif); margin: 12px 0 16px; letter-spacing: -.01em; }
+  .lede { font-size: 19px; max-width: 640px; margin: 0; }
   .links { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 22px; }
   .links a {
     font: 600 12px/1 var(--mono); letter-spacing: .08em; text-transform: uppercase; text-decoration: none;
@@ -81,57 +87,83 @@
   #d20 { width: 180px; height: 180px; cursor: grab; touch-action: none; }
   #d20:active { cursor: grabbing; }
   .d20cap { font: 11px/1.3 var(--mono); color: var(--muted); text-align: center; margin-top: 4px; }
+  .hint-k { font: 12px/1.4 var(--mono); color: var(--muted); margin-top: 14px; }
+  .hint-k kbd, .k { font: 600 11px/1 var(--mono); border: 1px solid var(--line); border-bottom-width: 2px; border-radius: 4px; padding: 2px 5px; color: var(--ink); background: var(--panel); }
 
-  .stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin: 8px 0 12px; }
-  .stat { background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 16px 18px; }
-  .stat b { display: block; font: 600 34px/1.1 var(--serif); }
-  .stat span { font: 12px/1.35 var(--mono); color: var(--muted); }
+  .stats { display: grid; grid-template-columns: repeat(6, 1fr); gap: 10px; margin: 6px 0 8px; }
+  .stat { background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 14px 14px 12px; }
+  .stat b { display: block; font: 600 30px/1.1 var(--serif); font-variant-numeric: tabular-nums; }
+  .stat span { font: 11.5px/1.35 var(--mono); color: var(--muted); display: block; margin-top: 4px; }
 
-  /* sections */
-  section { padding-top: 44px; }
+  /* ---------- sections ---------- */
+  section { padding-top: 48px; }
   .sec-head { display: flex; align-items: baseline; gap: 14px; border-bottom: 1px solid var(--line); padding-bottom: 10px; margin-bottom: 20px; position: relative; }
   .sec-head::after { content: ""; position: absolute; left: 0; bottom: -2px; width: 56px; height: 3px; background: var(--accent); }
   .sec-head .num { font: 600 12px/1 var(--mono); color: var(--accent); letter-spacing: .14em; }
   h2 { font: 600 34px/1.1 var(--serif); margin: 0; }
+  h3.sub { font: 600 11.5px/1 var(--mono); letter-spacing: .14em; text-transform: uppercase; color: var(--muted); margin: 30px 0 12px; }
   .sec-head .aside { margin-left: auto; font: 12px/1.3 var(--mono); color: var(--muted); text-align: right; }
-
   .js .reveal { opacity: 0; transform: translateY(12px); transition: opacity .5s ease, transform .5s ease; }
-  .reveal.in { opacity: 1; transform: none; }
-  @media (prefers-reduced-motion: reduce) { .reveal { opacity: 1; transform: none; transition: none; } html { scroll-behavior: auto; } }
+  .reveal.in { opacity: 1 !important; transform: none !important; }
+  .flash { animation: flash 1.6s ease; }
+  @keyframes flash { 0%, 30% { box-shadow: 0 0 0 3px var(--accent); } 100% { box-shadow: 0 0 0 0 transparent; } }
+  @media (prefers-reduced-motion: reduce) { .js .reveal { opacity: 1; transform: none; transition: none; } html { scroll-behavior: auto; } .flash { animation: none; outline: 2px solid var(--accent); } }
 
-  /* timeline (education, experience) */
+  .card { background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 16px 18px; }
+  .card .when { font: 600 11.5px/1 var(--mono); letter-spacing: .08em; color: var(--accent); text-transform: uppercase; }
+  .card h3 { font: 600 19px/1.3 var(--serif); margin: 8px 0 4px; }
+  .card p { margin: 0; color: var(--muted); font-size: 15px; }
+  .go { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 12px; font: 600 11.5px/1 var(--mono); letter-spacing: .08em; text-transform: uppercase; }
+  .go a { text-decoration: none; color: var(--accent); }
+  .go a:hover { text-decoration: underline; }
+  .k2 { font: 600 10.5px/1 var(--mono); letter-spacing: .12em; text-transform: uppercase; color: var(--accent); }
+
+  /* ---------- career replay ---------- */
+  .replay { background: var(--panel); border: 1px solid var(--line); border-radius: 14px; padding: 16px 18px 14px; }
+  .replay .controls { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; }
+  .replay .play { width: 42px; height: 42px; border-radius: 50%; border: none; background: var(--accent); color: #fff; cursor: pointer; display: grid; place-items: center; flex: none; }
+  .replay .year { font: 600 40px/1 var(--serif); font-variant-numeric: tabular-nums; min-width: 96px; }
+  .replay input[type=range] { flex: 1; min-width: 160px; accent-color: var(--accent); }
+  .hud { display: flex; flex-wrap: wrap; gap: 16px; font: 12px/1 var(--mono); color: var(--muted); }
+  .hud b { color: var(--ink); font-size: 15px; margin-right: 4px; font-variant-numeric: tabular-nums; }
+  .lanes { display: flex; flex-wrap: wrap; gap: 6px; margin: 12px 0 4px; }
+  .lane-btn { font: 500 12px/1 var(--mono); border: 1px solid var(--line); background: none; border-radius: 999px; padding: 7px 11px; cursor: pointer; color: var(--muted); }
+  .lane-btn[aria-pressed="true"] { color: var(--ink); border-color: var(--muted); }
+  .lane-btn i { display: inline-block; width: 9px; height: 9px; border-radius: 50%; margin-right: 6px; vertical-align: 0; }
+  .tlwrap { overflow-x: auto; margin: 6px -4px 0; }
+  #tl { display: block; min-width: 760px; width: 100%; height: auto; }
+  #tl .ev { cursor: pointer; transition: opacity .25s; }
+  #tl .ev:hover, #tl .ev.sel { stroke: var(--ink); stroke-width: 2.5; }
+  #tl text { font-family: var(--mono); fill: var(--muted); }
+  .detail { margin-top: 10px; min-height: 64px; display: grid; grid-template-columns: auto 1fr auto; gap: 14px; align-items: center; border-top: 1px dashed var(--line); padding-top: 12px; }
+  .detail .d-date { font: 600 12px/1.2 var(--mono); color: var(--accent); letter-spacing: .06em; text-transform: uppercase; }
+  .detail .d-title { font: 600 17px/1.35 var(--serif); }
+  .detail .d-lane { font: 11.5px var(--mono); color: var(--muted); }
+
+  /* ---------- education ---------- */
   .tl { list-style: none; margin: 0; padding: 0 0 0 22px; border-left: 2px solid var(--line); }
   .tl li { position: relative; padding: 0 0 22px 18px; }
-  .tl li::before {
-    content: ""; position: absolute; left: -30px; top: 6px; width: 12px; height: 12px; border-radius: 50%;
-    background: var(--bg); border: 2px solid var(--muted);
-  }
+  .tl li::before { content: ""; position: absolute; left: -30px; top: 6px; width: 12px; height: 12px; border-radius: 50%; background: var(--bg); border: 2px solid var(--muted); }
   .tl li.now::before { border-color: var(--accent); background: var(--accent); box-shadow: 0 0 0 5px color-mix(in srgb, var(--accent) 22%, transparent); }
   .tl .when { font: 600 12px/1 var(--mono); letter-spacing: .08em; color: var(--muted); }
   .tl .what { font: 600 20px/1.3 var(--serif); margin: 6px 0 2px; }
   .tl .where { color: var(--muted); font-size: 15px; }
-  .badge {
-    display: inline-block; font: 600 10.5px/1 var(--mono); letter-spacing: .1em; text-transform: uppercase;
-    border: 1px solid currentColor; border-radius: 4px; padding: 4px 6px; margin-left: 8px; vertical-align: 3px; color: var(--accent);
-  }
+  .tl .thesis { margin-top: 8px; font-size: 15px; border-left: 2px solid var(--accent); padding: 2px 0 2px 12px; }
+  .tl .thesis i { font-family: var(--serif); font-size: 16.5px; }
+  .tl .thesis small { color: var(--muted); font-size: 14px; }
+  .badge { display: inline-block; font: 600 10.5px/1 var(--mono); letter-spacing: .1em; text-transform: uppercase; border: 1px solid currentColor; border-radius: 4px; padding: 4px 6px; margin-left: 8px; vertical-align: 3px; color: var(--accent); }
 
-  /* chips / filters */
+  /* ---------- chips ---------- */
   .filters { display: flex; flex-wrap: wrap; gap: 6px; margin: 0 0 18px; }
-  .chip {
-    font: 500 12.5px/1 var(--mono); background: var(--chip); border: 1px solid var(--line); border-radius: 999px;
-    padding: 8px 12px; cursor: pointer; color: var(--ink);
-  }
+  .chip { font: 500 12.5px/1 var(--mono); background: var(--chip); border: 1px solid var(--line); border-radius: 999px; padding: 8px 12px; cursor: pointer; color: var(--ink); }
   .chip[aria-pressed="true"] { background: var(--ink); color: var(--bg); border-color: var(--ink); }
-  .chip .count { color: var(--muted); margin-left: 4px; }
+  .chip .count { color: var(--muted); margin-left: 5px; }
   .chip[aria-pressed="true"] .count { color: inherit; opacity: .7; }
   .dot { display: inline-block; width: 9px; height: 9px; border-radius: 2px; margin-right: 7px; vertical-align: 0; }
 
-  /* publications */
+  /* ---------- research ---------- */
   .pubs { list-style: none; margin: 0; padding: 0; display: grid; gap: 12px; }
-  .pub {
-    display: grid; grid-template-columns: 64px 1fr; gap: 16px; background: var(--panel); border: 1px solid var(--line);
-    border-left: 4px solid var(--c); border-radius: 12px; padding: 16px 18px;
-  }
+  .pub { display: grid; grid-template-columns: 64px 1fr; gap: 16px; background: var(--panel); border: 1px solid var(--line); border-left: 4px solid var(--c); border-radius: 12px; padding: 16px 18px; }
   .pub .yr { font: 600 26px/1 var(--serif); color: var(--c); }
   .pub .type { font: 600 10.5px/1.3 var(--mono); letter-spacing: .1em; text-transform: uppercase; color: var(--muted); margin-top: 6px; }
   .pub h3 { font: 600 19px/1.35 var(--serif); margin: 0 0 6px; }
@@ -142,22 +174,54 @@
   .pub .venue { font-size: 14.5px; color: var(--muted); }
   .pub .row { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-top: 10px; }
   .pub .doi { font: 12px/1 var(--mono); color: var(--muted); }
-  .mini {
-    font: 600 11px/1 var(--mono); letter-spacing: .08em; text-transform: uppercase; background: none; cursor: pointer;
-    border: 1px solid var(--line); border-radius: 6px; padding: 7px 9px; color: var(--muted);
-  }
+  .mini { font: 600 11px/1 var(--mono); letter-spacing: .08em; text-transform: uppercase; background: none; cursor: pointer; border: 1px solid var(--line); border-radius: 6px; padding: 7px 9px; color: var(--muted); text-decoration: none; display: inline-block; }
   .mini:hover { color: var(--ink); border-color: var(--muted); }
   .mini.done { color: var(--cyan); border-color: var(--cyan); }
   .role { font: 600 10.5px/1 var(--mono); letter-spacing: .1em; text-transform: uppercase; color: var(--c); }
+  .talks { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+  .talk .event { font: 600 11.5px/1 var(--mono); color: var(--accent); letter-spacing: .08em; }
+  .talk h3 { font: 600 16.5px/1.35 var(--serif); margin: 8px 0 6px; }
+  .talk .place { font: 12px var(--mono); color: var(--muted); }
 
-  /* experience list */
-  .exp { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
-  .card { background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 16px 18px; }
-  .card .when { font: 600 11.5px/1 var(--mono); letter-spacing: .08em; color: var(--accent); text-transform: uppercase; }
-  .card h3 { font: 600 19px/1.3 var(--serif); margin: 8px 0 4px; }
-  .card p { margin: 0; color: var(--muted); font-size: 15px; }
+  /* ---------- certificates ---------- */
+  .certs { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+  .cert { display: flex; flex-direction: column; background: var(--panel); border: 1px solid var(--line); border-radius: 12px; overflow: hidden; transition: transform .2s ease, border-color .2s; }
+  .cert:hover { transform: translateY(-2px); border-color: var(--muted); }
+  .cert[hidden] { display: none; }
+  .thumb { position: relative; aspect-ratio: 4 / 3; background: var(--faint); border: 0; padding: 0; cursor: zoom-in; overflow: hidden; display: block; width: 100%; }
+  .thumb img { position: relative; z-index: 1; width: 100%; height: 100%; object-fit: cover; object-position: top center; display: block; transition: transform .4s ease; }
+  .cert:hover .thumb img { transform: scale(1.03); }
+  .thumb .ph { position: absolute; inset: 0; display: grid; place-items: center; font: 600 13px/1.3 var(--mono); color: var(--muted); text-align: center; padding: 16px; }
+  .thumb .tag-cat { position: absolute; z-index: 2; left: 10px; top: 10px; font: 600 10px/1 var(--mono); letter-spacing: .1em; text-transform: uppercase; background: var(--bg); color: var(--ink); border-radius: 4px; padding: 5px 6px; }
+  .cert .body { padding: 14px 16px 16px; display: flex; flex-direction: column; flex: 1; }
+  .cert .issuer { font: 600 11px/1.2 var(--mono); letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+  .cert h3 { font: 600 17px/1.3 var(--serif); margin: 6px 0 6px; }
+  .cert p { margin: 0 0 8px; color: var(--muted); font-size: 14px; }
+  .cert .meta { font: 12px/1.4 var(--mono); color: var(--muted); margin-top: auto; padding-top: 6px; }
+  .cert .acts { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
+  .cert.wide { grid-column: span 3; display: grid; grid-template-columns: 320px 1fr; }
+  .cert.wide .thumb { aspect-ratio: auto; height: 100%; min-height: 240px; }
+  .path { margin: 10px 0 4px; }
+  .path .nodes { display: flex; align-items: center; }
+  .path .node { flex: 1; position: relative; height: 26px; display: grid; place-items: center; }
+  .path .node::before { content: ""; position: absolute; left: 0; right: 0; top: 50%; height: 2px; background: var(--accent); opacity: .5; }
+  .path .node:first-child::before { left: 50%; } .path .node:last-child::before { right: 50%; }
+  .path .node a { position: relative; width: 16px; height: 16px; border-radius: 50%; background: var(--accent); border: 3px solid var(--panel); box-shadow: 0 0 0 1px var(--accent); display: block; transition: transform .15s; }
+  .path .node a:hover, .path .node a:focus-visible { transform: scale(1.4); }
+  .path .cap { display: flex; justify-content: space-between; gap: 8px; font: 11px var(--mono); color: var(--muted); margin-top: 4px; }
+  details.courses summary { cursor: pointer; font: 600 11.5px/1 var(--mono); letter-spacing: .08em; text-transform: uppercase; color: var(--accent); margin-top: 10px; }
+  details.courses ol { margin: 10px 0 0; padding-left: 22px; font-size: 14px; columns: 2; column-gap: 28px; }
+  details.courses li { break-inside: avoid; margin-bottom: 5px; }
+  details.courses li a { text-decoration: none; } details.courses li a:hover { text-decoration: underline; }
+  details.courses .d { font: 11px var(--mono); color: var(--muted); }
 
-  /* projects */
+  /* ---------- teaching ---------- */
+  .grid2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
+  .terms { list-style: none; padding: 0; margin: 10px 0 0; }
+  .terms li { display: grid; grid-template-columns: 136px 1fr; gap: 10px; padding: 7px 0; border-top: 1px dashed var(--line); font-size: 14.5px; }
+  .terms li span:first-child { font: 12px/1.5 var(--mono); color: var(--muted); }
+
+  /* ---------- projects ---------- */
   .projects { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
   .proj { display: flex; flex-direction: column; background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 16px 18px; transition: transform .2s ease, border-color .2s ease; }
   .proj:hover { transform: translateY(-2px); border-color: var(--muted); }
@@ -168,19 +232,24 @@
   .proj p { margin: 8px 0 12px; font-size: 14.5px; color: var(--muted); flex: 1; }
   .tags { display: flex; flex-wrap: wrap; gap: 5px; }
   .tag { font: 11px/1 var(--mono); border: 1px solid var(--line); border-radius: 4px; padding: 4px 6px; color: var(--muted); }
-  .proj .go { display: flex; gap: 12px; margin-top: 12px; font: 600 11.5px/1 var(--mono); letter-spacing: .08em; text-transform: uppercase; }
-  .proj .go a { text-decoration: none; color: var(--accent); }
   .empty { font: 13px var(--mono); color: var(--muted); }
 
-  /* skills */
-  .skills { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
-  .skills h3 { font: 600 11.5px/1 var(--mono); letter-spacing: .14em; text-transform: uppercase; color: var(--muted); margin: 0 0 12px; }
-  .skills .chips { display: flex; flex-wrap: wrap; gap: 6px; }
-  .skills .chip.static { cursor: default; }
-  .skills .chip.link::after { content: " →"; color: var(--accent); }
-  .hint { font: 12px/1.4 var(--mono); color: var(--muted); margin-top: 12px; }
+  /* ---------- skills / evidence ---------- */
+  .skills-wrap { display: grid; grid-template-columns: 1.1fr 1fr; gap: 16px; align-items: start; }
+  .skill-groups { display: grid; gap: 12px; }
+  .skill-groups h3 { font: 600 11.5px/1 var(--mono); letter-spacing: .14em; text-transform: uppercase; color: var(--muted); margin: 0 0 12px; }
+  .skill-groups .chips { display: flex; flex-wrap: wrap; gap: 6px; }
+  .chip .ev-n { display: inline-grid; place-items: center; min-width: 18px; height: 18px; border-radius: 9px; background: var(--accent); color: #fff; font-size: 10.5px; margin-left: 6px; padding: 0 5px; }
+  .chip.static { cursor: default; opacity: .75; }
+  .evidence { position: sticky; top: 84px; }
+  .evidence h3 { font: 600 24px/1.2 var(--serif); margin: 6px 0 4px; }
+  .evidence ul { list-style: none; padding: 0; margin: 12px 0 0; }
+  .evidence li { display: grid; grid-template-columns: 92px 1fr; gap: 10px; padding: 8px 0; border-top: 1px dashed var(--line); font-size: 14.5px; }
+  .evidence li .t { font: 600 10.5px/1.6 var(--mono); letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+  .evidence li a { text-decoration: none; } .evidence li a:hover { text-decoration: underline; }
+  .evidence li .on-page { font: 11px var(--mono); color: var(--muted); margin-left: 6px; }
 
-  /* writing */
+  /* ---------- writing ---------- */
   .posts { list-style: none; padding: 0; margin: 0; }
   .posts li { display: grid; grid-template-columns: 90px 1fr auto; gap: 14px; align-items: baseline; padding: 12px 0; border-bottom: 1px dashed var(--line); }
   .posts .when { font: 12px/1 var(--mono); color: var(--muted); }
@@ -190,40 +259,76 @@
   footer { margin-top: 56px; padding-top: 20px; border-top: 1px solid var(--line); display: flex; flex-wrap: wrap; gap: 16px; justify-content: space-between; font: 12px/1.5 var(--mono); color: var(--muted); }
   footer a { color: var(--muted); }
 
-  .toast {
-    position: fixed; left: 50%; bottom: 24px; transform: translate(-50%, 20px); opacity: 0; pointer-events: none;
-    background: var(--ink); color: var(--bg); font: 600 12px/1 var(--mono); letter-spacing: .06em; padding: 12px 16px;
-    border-radius: 8px; transition: opacity .2s, transform .2s;
-  }
+  /* ---------- overlays ---------- */
+  .overlay { position: fixed; inset: 0; z-index: 50; background: color-mix(in srgb, #000 55%, transparent); display: grid; place-items: start center; padding: 10vh 16px 16px; }
+  .overlay[hidden] { display: none; }
+  .palette { width: min(640px, 100%); background: var(--panel); border: 1px solid var(--line); border-radius: 14px; box-shadow: 0 30px 80px rgba(0,0,0,.35); overflow: hidden; }
+  .palette input { width: 100%; border: 0; border-bottom: 1px solid var(--line); background: none; color: var(--ink); font: 500 18px/1 var(--sans); padding: 18px 20px; outline: none; }
+  .palette ul { list-style: none; margin: 0; padding: 6px; max-height: 52vh; overflow: auto; }
+  .palette li { display: grid; grid-template-columns: 96px 1fr; gap: 10px; align-items: baseline; padding: 10px 12px; border-radius: 8px; cursor: pointer; }
+  .palette li[aria-selected="true"] { background: var(--chip); }
+  .palette li .t { font: 600 10.5px/1.5 var(--mono); letter-spacing: .08em; text-transform: uppercase; color: var(--accent); }
+  .palette li .s { font-size: 14.5px; }
+  .palette li .s small { display: block; color: var(--muted); font: 12px var(--mono); margin-top: 2px; }
+  .palette .foot { display: flex; gap: 14px; padding: 10px 16px; border-top: 1px solid var(--line); font: 11.5px var(--mono); color: var(--muted); }
+  .help { width: min(520px, 100%); background: var(--panel); border: 1px solid var(--line); border-radius: 14px; padding: 20px 22px; }
+  .help h3 { font: 600 24px var(--serif); margin: 0 0 12px; }
+  .help dl { display: grid; grid-template-columns: 120px 1fr; gap: 8px 12px; margin: 0; font-size: 14.5px; }
+  .help dt { text-align: right; }
+  .lightbox { place-items: center; padding: 16px; }
+  .lb-inner { position: relative; width: min(1100px, 100%); max-height: 94vh; display: grid; grid-template-rows: 1fr auto; background: var(--panel); border: 1px solid var(--line); border-radius: 14px; overflow: hidden; }
+  .lb-img { background: #0b0c0f; display: grid; place-items: center; min-height: 240px; max-height: 74vh; overflow: auto; }
+  .lb-img img { max-width: 100%; max-height: 74vh; display: block; }
+  .lb-bar { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 16px; padding: 12px 16px; }
+  .lb-bar .lb-t { font: 600 17px/1.3 var(--serif); flex: 1; min-width: 200px; }
+  .lb-bar .lb-t small { display: block; font: 12px var(--mono); color: var(--muted); margin-top: 3px; }
+  .lb-nav { position: absolute; top: 38%; width: 44px; height: 44px; border-radius: 50%; border: 1px solid var(--line); background: var(--panel); color: var(--ink); cursor: pointer; font: 600 18px/1 var(--mono); }
+  .lb-prev { left: 10px; } .lb-next { right: 10px; }
+  .lb-close { position: absolute; top: 10px; right: 10px; background: var(--panel); }
+  .toast { position: fixed; left: 50%; bottom: 24px; z-index: 60; transform: translate(-50%, 20px); opacity: 0; pointer-events: none;
+    background: var(--ink); color: var(--bg); font: 600 12px/1.3 var(--mono); letter-spacing: .04em; padding: 12px 16px; border-radius: 10px; transition: opacity .2s, transform .2s; display: flex; gap: 10px; align-items: center; max-width: 92vw; }
   .toast.show { opacity: 1; transform: translate(-50%, 0); }
+  .toast .ach { color: var(--gold); letter-spacing: .12em; }
 
-  @media (max-width: 820px) {
-    .intro { grid-template-columns: 1fr; padding-top: 36px; }
+  @media (max-width: 900px) {
+    .intro { grid-template-columns: 1fr; padding-top: 32px; }
     .intro .d20wrap { display: none; }
-    .stats { grid-template-columns: repeat(2, 1fr); }
-    .projects { grid-template-columns: repeat(2, 1fr); }
-    .exp, .skills { grid-template-columns: 1fr; }
+    .stats { grid-template-columns: repeat(3, 1fr); }
+    .projects, .certs, .talks { grid-template-columns: repeat(2, 1fr); }
+    .cert.wide { grid-column: span 2; grid-template-columns: 1fr; }
+    .cert.wide .thumb { aspect-ratio: 16 / 9; min-height: 0; }
+    .grid2, .skills-wrap { grid-template-columns: 1fr; }
+    .evidence { position: static; }
+    .explore span { display: none; }
   }
-  @media (max-width: 560px) {
-    .bar .home { display: none; }
-    .projects { grid-template-columns: 1fr; }
+  @media (max-width: 600px) {
+    .bar .home, .explore { display: none; }
+    .tool kbd { display: none; }
+    .projects, .certs, .talks { grid-template-columns: 1fr; }
+    .cert.wide { grid-column: span 1; }
+    .stats { grid-template-columns: repeat(2, 1fr); }
     .pub { grid-template-columns: 1fr; gap: 6px; }
     .posts li { grid-template-columns: 1fr; gap: 4px; }
     .sec-head .aside { display: none; }
+    details.courses ol { columns: 1; }
     h2 { font-size: 28px; }
+    .detail { grid-template-columns: 1fr; gap: 6px; }
+    .terms li { grid-template-columns: 1fr; gap: 2px; }
   }
 
   @media print {
-    :root, :root[data-theme="dark"] { --bg: #fff; --panel: #fff; --line: #ccc; --ink: #111; --muted: #555; --chip: #fff; --accent: #b3122a; --cyan: #006b78; color-scheme: light; }
-    body { background: #fff; font-size: 11pt; }
-    .bar, .filters, .mini, .d20wrap, .hint, .toast, .no-print { display: none !important; }
-    .reveal { opacity: 1 !important; transform: none !important; }
+    :root, :root[data-theme="dark"] { --bg: #fff; --panel: #fff; --line: #ccc; --ink: #111; --muted: #555; --chip: #fff; --accent: #b3122a; --cyan: #006b78; --gold: #8a5a12; color-scheme: light; }
+    body { background: #fff; font-size: 10.5pt; }
+    .bar, .filters, .mini, .d20wrap, .hint-k, .toast, .no-print, .overlay, #replay, .evidence, .thumb, .path { display: none !important; }
+    .js .reveal { opacity: 1 !important; transform: none !important; }
     main { max-width: none; padding: 0; }
-    .intro { padding: 0 0 10px; }
-    section { padding-top: 16px; break-inside: auto; }
-    .pub, .card, .proj, .stat { break-inside: avoid; }
-    .proj[hidden] { display: flex !important; }
-    .projects { grid-template-columns: repeat(2, 1fr); }
+    .intro { padding: 0 0 8px; }
+    section { padding-top: 14px; }
+    .pub, .card, .proj, .stat, .cert, .talk { break-inside: avoid; }
+    .proj[hidden], .cert[hidden] { display: flex !important; }
+    .projects, .certs, .talks { grid-template-columns: repeat(2, 1fr); }
+    .cert.wide { grid-template-columns: 1fr; grid-column: span 2; }
+    .skills-wrap { grid-template-columns: 1fr; }
     a { text-decoration: none; }
   }
 </style>
@@ -233,22 +338,29 @@
 <header class="bar">
   <a class="home" href="https://github.com/ugursirvermez">← ugursirvermez</a>
   <nav class="toc" aria-label="Sections">
+    <a href="#replay" data-i18n="nav.replay">Replay</a>
     <a href="#education" data-i18n="nav.education">Education</a>
-    <a href="#publications" data-i18n="nav.publications">Publications</a>
-    <a href="#experience" data-i18n="nav.experience">Teaching &amp; work</a>
+    <a href="#research" data-i18n="nav.research">Research</a>
+    <a href="#certificates" data-i18n="nav.certificates">Certificates</a>
+    <a href="#teaching" data-i18n="nav.teaching">Teaching</a>
     <a href="#projects" data-i18n="nav.projects">Projects</a>
     <a href="#skills" data-i18n="nav.skills">Skills</a>
     <a href="#writing" data-i18n="nav.writing">Writing</a>
   </nav>
   <div class="tools">
+    <div class="explore" title="Explored sections">
+      <svg viewBox="0 0 20 20" aria-hidden="true"><circle class="track" cx="10" cy="10" r="8" fill="none" stroke-width="2.5"/><circle class="fill" id="exploreRing" cx="10" cy="10" r="8" fill="none" stroke-width="2.5" stroke-dasharray="50.27" stroke-dashoffset="50.27" stroke-linecap="round"/></svg>
+      <span id="exploreTxt">0/8</span>
+    </div>
+    <button class="tool" id="searchBtn" type="button" aria-label="Search"><span data-i18n="ui.search">Search</span><kbd>⌘K</kbd></button>
     <button class="tool" id="lang" type="button" aria-label="Language">TR</button>
     <button class="tool" id="theme" type="button" aria-label="Theme">◐</button>
-    <button class="tool primary" id="print" type="button" data-i18n="ui.pdf">PDF</button>
+    <button class="tool primary" id="print" type="button">PDF</button>
   </div>
 </header>
 
 <main>
-  <section class="intro" style="padding-top:48px">
+  <section class="intro" style="padding-top:44px">
     <div>
       <div class="kicker" data-i18n="intro.kicker">PhD student · Computer &amp; Instructional Technologies Education</div>
       <h1>Uğur Sırvermez</h1>
@@ -261,6 +373,7 @@
         <a href="https://github.com/ugursirvermez">GitHub</a>
         <a href="https://medium.com/@ugursirvermez">Medium</a>
       </div>
+      <p class="hint-k" id="kbdHint"></p>
     </div>
     <div class="d20wrap">
       <canvas id="d20" width="360" height="360" aria-label="A spinning d20 drawn as a red/cyan anaglyph. Drag to spin it."></canvas>
@@ -268,45 +381,65 @@
     </div>
   </section>
 
-  <div class="stats reveal">
-    <div class="stat"><b>7</b><span data-i18n="stats.works">published works, 2023–2026</span></div>
-    <div class="stat"><b>6</b><span data-i18n="stats.first">as first or sole author</span></div>
-    <div class="stat"><b>2017</b><span data-i18n="stats.teaching">the year I started teaching Unity &amp; Python</span></div>
-    <div class="stat"><b>1st</b><span data-i18n="stats.top">in class, BSc 2021</span></div>
-  </div>
+  <div class="stats reveal" id="stats"></div>
+
+  <section id="replay" class="reveal">
+    <div class="sec-head"><span class="num">01</span><h2 data-i18n="replay.title">Career replay</h2><span class="aside" data-i18n="replay.aside">press play, or drag the year</span></div>
+    <div class="replay">
+      <div class="controls">
+        <button class="play" id="playBtn" type="button" aria-label="Play"><svg width="16" height="16" viewBox="0 0 16 16" id="playIcon"><path d="M4 2.5L13 8L4 13.5Z" fill="currentColor"/></svg></button>
+        <div class="year" id="yearOut">2026</div>
+        <input type="range" id="yearRange" min="2013" max="2026.99" step="0.01" value="2026.99" aria-label="Year">
+        <div class="hud" id="hud"></div>
+      </div>
+      <div class="lanes" id="laneBtns"></div>
+      <div class="tlwrap"><svg id="tl" viewBox="0 0 1000 290" role="img" aria-label="Career timeline"></svg></div>
+      <div class="detail" id="evDetail" aria-live="polite"></div>
+    </div>
+  </section>
 
   <section id="education" class="reveal">
-    <div class="sec-head"><span class="num">01</span><h2 data-i18n="nav.education">Education</h2><span class="aside" data-i18n="edu.aside">Bursa Uludağ University</span></div>
+    <div class="sec-head"><span class="num">02</span><h2 data-i18n="nav.education">Education</h2><span class="aside" data-i18n="edu.aside">Bursa Uludağ University</span></div>
     <ul class="tl" id="edu"></ul>
   </section>
 
-  <section id="publications" class="reveal">
-    <div class="sec-head"><span class="num">02</span><h2 data-i18n="nav.publications">Publications</h2><span class="aside" data-i18n="pubs.aside">from Crossref · DataCite</span></div>
+  <section id="research" class="reveal">
+    <div class="sec-head"><span class="num">03</span><h2 data-i18n="nav.research">Research</h2><span class="aside" data-i18n="pubs.aside">from Crossref · DataCite</span></div>
     <div class="filters" id="pubFilters" role="group" aria-label="Filter publications"></div>
     <ol class="pubs" id="pubs"></ol>
-    <p class="hint"><button class="mini" id="copyAll" type="button" data-i18n="pubs.copyAll">Copy all as APA</button></p>
+    <p class="hint-k"><button class="mini" id="copyAll" type="button" data-i18n="pubs.copyAll">Copy all as APA</button></p>
+    <h3 class="sub" data-i18n="talks.title">Conference papers</h3>
+    <div class="talks" id="talks"></div>
   </section>
 
-  <section id="experience" class="reveal">
-    <div class="sec-head"><span class="num">03</span><h2 data-i18n="nav.experience">Teaching &amp; work</h2></div>
-    <div class="exp" id="exp"></div>
+  <section id="certificates" class="reveal">
+    <div class="sec-head"><span class="num">04</span><h2 data-i18n="nav.certificates">Certificates</h2><span class="aside" data-i18n="certs.aside">click a certificate to enlarge</span></div>
+    <div class="filters" id="certFilters" role="group" aria-label="Filter certificates"></div>
+    <div class="certs" id="certGrid"></div>
+  </section>
+
+  <section id="teaching" class="reveal">
+    <div class="sec-head"><span class="num">05</span><h2 data-i18n="teach.title">Teaching &amp; service</h2></div>
+    <div class="grid2" id="teachGrid"></div>
   </section>
 
   <section id="projects" class="reveal">
-    <div class="sec-head"><span class="num">04</span><h2 data-i18n="nav.projects">Projects</h2><span class="aside" data-i18n="proj.aside">public repos, by year</span></div>
+    <div class="sec-head"><span class="num">06</span><h2 data-i18n="nav.projects">Projects</h2><span class="aside" data-i18n="proj.aside">public repos, by year</span></div>
     <div class="filters" id="projFilters" role="group" aria-label="Filter projects"></div>
-    <div class="projects" id="projects-grid"></div>
+    <div class="projects" id="projGrid"></div>
     <p class="empty" id="projEmpty" hidden data-i18n="proj.empty">Nothing public under this tag yet.</p>
   </section>
 
   <section id="skills" class="reveal">
-    <div class="sec-head"><span class="num">05</span><h2 data-i18n="nav.skills">Skills</h2></div>
-    <div class="skills" id="skillGroups"></div>
-    <p class="hint" data-i18n="skills.hint">Skills with an arrow jump to the projects that use them.</p>
+    <div class="sec-head"><span class="num">07</span><h2 data-i18n="nav.skills">Skills</h2><span class="aside" data-i18n="skills.aside">pick a skill, see the proof</span></div>
+    <div class="skills-wrap">
+      <div class="skill-groups" id="skillGroups"></div>
+      <aside class="card evidence" id="evidence" aria-live="polite"></aside>
+    </div>
   </section>
 
   <section id="writing" class="reveal">
-    <div class="sec-head"><span class="num">06</span><h2 data-i18n="nav.writing">Writing</h2><span class="aside" data-i18n="writing.aside">Medium · in Turkish</span></div>
+    <div class="sec-head"><span class="num">08</span><h2 data-i18n="nav.writing">Writing</h2><span class="aside" data-i18n="writing.aside">Medium · in Turkish</span></div>
     <ul class="posts" id="posts"></ul>
   </section>
 
@@ -320,16 +453,48 @@
   </footer>
 </main>
 
+<div class="overlay" id="palette" hidden>
+  <div class="palette" role="dialog" aria-modal="true" aria-label="Search">
+    <input id="pq" type="search" autocomplete="off" spellcheck="false" aria-controls="pres">
+    <ul id="pres" role="listbox"></ul>
+    <div class="foot"><span>↑↓</span><span>enter</span><span>esc</span><span id="pcount"></span></div>
+  </div>
+</div>
+
+<div class="overlay" id="help" hidden>
+  <div class="help" role="dialog" aria-modal="true" aria-labelledby="helpT">
+    <h3 id="helpT" data-i18n="help.title">Keyboard</h3>
+    <dl id="helpList"></dl>
+  </div>
+</div>
+
+<div class="overlay lightbox" id="lightbox" hidden>
+  <div class="lb-inner" role="dialog" aria-modal="true" aria-label="Certificate">
+    <div class="lb-img"><img id="lbImg" alt="" referrerpolicy="no-referrer"></div>
+    <div class="lb-bar">
+      <div class="lb-t" id="lbT"></div>
+      <span id="lbActs" style="display:flex;gap:6px;flex-wrap:wrap"></span>
+    </div>
+    <button class="lb-nav lb-prev" id="lbPrev" type="button" aria-label="Previous">←</button>
+    <button class="lb-nav lb-next" id="lbNext" type="button" aria-label="Next">→</button>
+    <button class="tool lb-close" id="lbClose" type="button" aria-label="Close">ESC ✕</button>
+  </div>
+</div>
+
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
 <script>
 'use strict';
 
-// ---------------------------------------------------------------------------
-// data. Publications: Crossref and DataCite metadata. Everything else: ORCID,
-// the public repos, and the course site.
-// ---------------------------------------------------------------------------
+// ===========================================================================
+// DATA
+// Publications: Crossref / DataCite. Certificates, talks, reviewing and the
+// TÜBİTAK letter: the "Sertifika ve Belgelerim" Drive folder (shared as
+// view-only). Everything else: ORCID, the public repos and the course site.
+// ===========================================================================
 const ME = /S[ıi]rvermez/;
+const DRIVE_VIEW = (id) => `https://drive.google.com/file/d/${id}/view`;
+const DRIVE_THUMB = (id, w = 640) => `https://drive.google.com/thumbnail?id=${id}&sz=w${w}`;
 
 const THEMES = {
   dc: { en: 'Digital citizenship & AI literacy', tr: 'Dijital vatandaşlık ve YZ okuryazarlığı', color: 'var(--accent)' },
@@ -338,159 +503,213 @@ const THEMES = {
 };
 
 const PUBS = [
-  { year: 2026, theme: 'dc', type: 'article', role: 'first',
+  { id: 'p-ijces', date: '2026-07', year: 2026, theme: 'dc', type: 'article', role: 'first', tags: ['research', 'ai'],
     authors: ['Sırvermez, U.', 'Şengel, E.'],
     title: 'Predicting Pre-service Teachers’ AI Literacy: The Role of Digital Literacy and Demographic Factors',
-    venue: 'International Journal of Current Educational Studies', details: '5, e2026005',
-    doi: '10.46328/ijces.277',
+    venue: 'International Journal of Current Educational Studies', details: '5, e2026005', doi: '10.46328/ijces.277',
     apa: 'Sırvermez, U., & Şengel, E. (2026). Predicting pre-service teachers’ AI literacy: The role of digital literacy and demographic factors. International Journal of Current Educational Studies, 5, e2026005. https://doi.org/10.46328/ijces.277' },
-  { year: 2026, theme: 'dc', type: 'article', role: 'first', lang: 'tr',
+  { id: 'p-med', date: '2026-05', year: 2026, theme: 'dc', type: 'article', role: 'first', lang: 'tr', tags: ['research'],
     authors: ['Sırvermez, U.', 'Baltacı, Ş.', 'Coşkun Onan, B.', 'Güleç, S.'],
     title: 'Türkiye’de Dijital Vatandaşlık Eğitimi: Avrupa Konseyi Çerçevesi ile MEB Ders Kitaplarının Karşılaştırılması',
-    venue: 'Milli Eğitim Dergisi', details: '55(250), 875–922',
-    doi: '10.37669/milliegitim.1666472',
+    venue: 'Milli Eğitim Dergisi', details: '55(250), 875–922', doi: '10.37669/milliegitim.1666472',
     apa: 'Sırvermez, U., Baltacı, Ş., Coşkun Onan, B., & Güleç, S. (2026). Türkiye’de dijital vatandaşlık eğitimi: Avrupa Konseyi çerçevesi ile MEB ders kitaplarının karşılaştırılması. Milli Eğitim Dergisi, 55(250), 875–922. https://doi.org/10.37669/milliegitim.1666472' },
-  { year: 2026, theme: 'dc', type: 'chapter', role: 'first',
+  { id: 'p-igi', date: '2026-04', year: 2026, theme: 'dc', type: 'chapter', role: 'first', tags: ['research', 'ai', 'ethics'],
     authors: ['Sırvermez, U.', 'Baltacı, Ş.', 'Coşkun Onan, B.'],
     title: 'Artificial Intelligence Ethics in Digital Citizenship Education',
-    venue: 'Media Literacy and the Politics of Digital Misinformation · IGI Global', details: 'pp. 239–270',
-    doi: '10.4018/979-8-3373-6566-4.ch008',
+    venue: 'Media Literacy and the Politics of Digital Misinformation · IGI Global', details: 'pp. 239–270', doi: '10.4018/979-8-3373-6566-4.ch008',
     apa: 'Sırvermez, U., Baltacı, Ş., & Coşkun Onan, B. (2026). Artificial intelligence ethics in digital citizenship education. In Media literacy and the politics of digital misinformation (pp. 239–270). IGI Global Scientific Publishing. https://doi.org/10.4018/979-8-3373-6566-4.ch008' },
-  { year: 2026, theme: 'om', type: 'software', role: 'sole', lang: 'tr',
+  { id: 'p-zenodo', date: '2026-03', year: 2026, theme: 'om', type: 'software', role: 'sole', lang: 'tr', tags: ['pytorch', 'python', 'teaching'],
     authors: ['Sırvermez, U.'],
     title: 'PyTorch Eğitim Kaynakları (PyTorch Education Open Educational Resource)',
-    venue: 'Zenodo', details: 'version 1.1.0',
-    doi: '10.5281/zenodo.19015554',
+    venue: 'Zenodo', details: 'version 1.1.0', doi: '10.5281/zenodo.19015554',
     apa: 'Sırvermez, U. (2026). PyTorch eğitim kaynakları (PyTorch education open educational resource) (Version 1.1.0) [Computer software]. Zenodo. https://doi.org/10.5281/zenodo.19015554' },
-  { year: 2026, theme: 've', type: 'article', role: 'second',
+  { id: 'p-jetol', date: '2026-01', year: 2026, theme: 've', type: 'article', role: 'second', tags: ['research', 'id'],
     authors: ['Doğan, C.', 'Sırvermez, U.', 'Birişçi, S.'],
     title: 'Exploring the impact of computer-supported collaborative instructional design on the development of creative and critical thinking skills',
-    venue: 'Journal of Educational Technology and Online Learning', details: '9(1), 1–21',
-    doi: '10.31681/jetol.1576510',
+    venue: 'Journal of Educational Technology and Online Learning', details: '9(1), 1–21', doi: '10.31681/jetol.1576510',
     apa: 'Doğan, C., Sırvermez, U., & Birişçi, S. (2026). Exploring the impact of computer-supported collaborative instructional design on the development of creative and critical thinking skills. Journal of Educational Technology and Online Learning, 9(1), 1–21. https://doi.org/10.31681/jetol.1576510' },
-  { year: 2026, theme: 'dc', type: 'article', role: 'first',
+  { id: 'p-ile', date: '2025-08', year: 2026, theme: 'dc', type: 'article', role: 'first', tags: ['research'],
     authors: ['Sırvermez, U.', 'Baltacı, Ş.', 'Coşkun Onan, B.'],
     title: 'Digital citizenship education: an in-depth study of teaching practices and research insights',
-    venue: 'Interactive Learning Environments', details: '34(4), 2162–2177 · online 2025',
-    doi: '10.1080/10494820.2025.2542890',
+    venue: 'Interactive Learning Environments', details: '34(4), 2162–2177 · online 2025', doi: '10.1080/10494820.2025.2542890',
     apa: 'Sırvermez, U., Baltacı, Ş., & Coşkun Onan, B. (2026). Digital citizenship education: An in-depth study of teaching practices and research insights. Interactive Learning Environments, 34(4), 2162–2177. https://doi.org/10.1080/10494820.2025.2542890' },
-  { year: 2023, theme: 've', type: 'chapter', role: 'first',
+  { id: 'p-springer', date: '2023-10', year: 2023, theme: 've', type: 'chapter', role: 'first', tags: ['research', 'xr'],
     authors: ['Sırvermez, U.', 'Baltacı, Ş.'],
     title: 'Metaverse Applications in Education: Systematic Literature Review and Bibliographic Analysis of 2010–2022',
-    venue: 'Metaverse · Studies in Big Data · Springer', details: 'pp. 397–417',
-    doi: '10.1007/978-981-99-4641-9_27',
+    venue: 'Metaverse · Studies in Big Data · Springer', details: 'pp. 397–417', doi: '10.1007/978-981-99-4641-9_27',
     apa: 'Sırvermez, U., & Baltacı, Ş. (2023). Metaverse applications in education: Systematic literature review and bibliographic analysis of 2010–2022. In Metaverse (pp. 397–417). Springer Nature Singapore. https://doi.org/10.1007/978-981-99-4641-9_27' },
 ];
 
+// ICETOL: International Conference of Educational Technology and Online Learning
+const TALKS = [
+  { id: 't-2024', date: '2024-05', event: 'ICETOL 2024', place: 'Eskişehir · 15–17 May 2024', drive: '1mRaEFRvRir6BYhsTkHcs77WGxpJtNPX7', related: 'p-ijces', tags: ['research', 'ai'],
+    title: 'Öğretmen Adaylarının Dijital Okuryazarlık Düzeyleri ile Yapay Zekâ Okuryazarlığı Düzeyleri Arasındaki İlişkinin İncelenmesi' },
+  { id: 't-2023', date: '2023-06', event: 'ICETOL 2023', place: 'Cunda, Ayvalık · 20–23 June 2023', drive: '1vFnvaChJ2_RcxJzJUTcI-0jf96XvKbf6', related: 'p-med', tags: ['research'],
+    title: 'Dijital Vatandaşlık Öğretim Materyallerinin Sistematik Analizi' },
+  { id: 't-2022', date: '2022-06', event: 'ICETOL 2022', place: 'Ören, Burhaniye · 23–26 June 2022', drive: '1qsrfe8XAIcShZ46rods8c9SWFvVOqn4_', related: 'p-springer', tags: ['research', 'xr'],
+    title: 'Eğitimde Metaverse Destekli Oyunlaştırma Uygulamalarının Sistematik ve Bibliyometrik Analizi' },
+];
+
+// [date, course, Coursera verify code, Drive file]
+const IBM_COURSES = [
+  ['2025-06-06', 'Machine Learning with Python', '4NJ11NKUQDCF', '1p8ozHw0uhserLFd7WEHlXpYqNgJP46yL'],
+  ['2025-06-06', 'Introduction to Deep Learning & Neural Networks with Keras', '8L20WT17WRRL', '15z__rf-6A4bRjMqWiVv5ZQV0vLflLTEO'],
+  ['2025-06-10', 'Deep Learning with Keras and TensorFlow', 'CW1YBS3HD8QB', '1xwJA_0iwfLmF_laY0Rtoshy2-eXasJwS'],
+  ['2025-06-15', 'Introduction to Neural Networks and PyTorch', 'ARCBO4L1YE32', '1CXXxeoHsq5YY2tvbtdEo1xHP6qcfJ55w'],
+  ['2025-06-30', 'Deep Learning with PyTorch', 'S6BI4MF17B2X', '1NVxtOZS_GI2nrhP_R42ypX5LnnrQCEk1'],
+  ['2025-06-30', 'AI Capstone Project with Deep Learning', 'RQRF91KBGYTK', '1tQbeFE80sT3zzbMLf0Dwrxi2AaW5276c'],
+  ['2025-07-01', 'Generative AI and LLMs: Architecture and Data Preparation', 'EJT8IZ5L72JU', '1Pr-jiQYIvHhoPC0gYnm1DArzY_k4ONVj'],
+  ['2025-07-01', 'Gen AI Foundational Models for NLP & Language Understanding', 'K5HYBT44UGWM', '1W-WFFscUfoXzs7cx6C3hm_OqHW-Ehh_Z'],
+  ['2025-07-02', 'Generative AI Language Modeling with Transformers', '6KG3KYW3DV8B', '1WKJxa-u7-aez1o_qNtZgz-OfhqTmXwum'],
+  ['2025-07-02', 'Generative AI Engineering and Fine-Tuning Transformers', 'OQV9N3Q250UP', '1xo6gJMATaVgB2qZKYYqwR5ehALYjB-Hg'],
+  ['2025-07-03', 'Fundamentals of AI Agents Using RAG and LangChain', 'ZEFAMQ09TMX6', '1--hJkU50ekxG2SSp5l8Ry6AWCJ6NLNmO'],
+  ['2025-07-04', 'Generative AI Advance Fine-Tuning for LLMs', 'NE6QAQIR4BV0', '1mSgFdqu2Vy4kfMFWVpd_-vvE5tntjUee'],
+  ['2025-07-05', 'Project: Generative AI Applications with RAG and LangChain', 'VZ108TLVDP94', '1e2UQcs-aSJG-C95fEjldELcyAlWNiGE_'],
+];
+
+const CERT_CATS = {
+  ai: { en: 'AI & machine learning', tr: 'Yapay zekâ ve makine öğrenmesi' },
+  pm: { en: 'Project management', tr: 'Proje yönetimi' },
+  edu: { en: 'Education', tr: 'Eğitim' },
+  it: { en: 'IT', tr: 'Bilişim' },
+};
+
+const CERTS = [
+  { id: 'c-ibm', cat: 'ai', date: '2025-07-05', issuer: 'IBM · Coursera', wide: true, tags: ['ml', 'pytorch', 'keras', 'genai', 'rag', 'python'],
+    title: 'IBM AI Engineering Professional Certificate',
+    note: { en: '13 courses: machine learning, deep learning with Keras, TensorFlow and PyTorch, generative AI, LLM fine-tuning, and a RAG + LangChain project. Every dot below is one verified course.',
+            tr: '13 kurs: makine öğrenmesi; Keras, TensorFlow ve PyTorch ile derin öğrenme; üretken YZ, LLM ince ayarı ve bir RAG + LangChain projesi. Aşağıdaki her nokta doğrulanabilir bir kurs.' },
+    verify: 'https://coursera.org/verify/professional-cert/41QNXDZABJIU', drive: '1Z2PbW88RrQWRUGq97fl2sLx_IFHq_5hC', courses: IBM_COURSES },
+  { id: 'c-credly', cat: 'ai', date: '2025-06-22', issuer: 'IBM · Credly', tags: ['ml', 'python'],
+    title: 'Machine Learning with Python (V2)', note: { en: 'Digital badge.', tr: 'Dijital rozet.' },
+    verify: 'https://www.credly.com/badges/cb84223d-6dd7-4939-8a7f-054d89b1b444', drive: '1UIcwybCmTVSFt5QBXqNLhmZfanEswUcn' },
+  { id: 'c-lf116', cat: 'ai', date: '2025-03-21', issuer: 'The Linux Foundation', tags: ['pytorch'],
+    title: 'PyTorch and Deep Learning for Decision Makers (LFS116)', credential: 'LF-vcr66gs6oc', drive: '1hLhY3nEz8suYyTlLmEVlR0MrzCKTgo8Q' },
+  { id: 'c-lf112', cat: 'ai', date: '2025-03-20', issuer: 'The Linux Foundation', tags: ['ethics', 'ml'],
+    title: 'Ethics in AI and Data Science (LFS112)', credential: 'LF-zgndvsez61', drive: '1U3iLg1UPiXDBT6yHfJONFC3cVZjGyTgA' },
+  { id: 'c-gpm', cat: 'pm', date: '2022-04-13', issuer: 'Google · Coursera', tags: ['pm'],
+    title: 'Google Project Management Professional Certificate',
+    note: { en: '6 courses, taken in Turkish: foundations, initiation, planning, execution, agile, capstone.',
+            tr: '6 kurs, Türkçe: temeller, başlatma, planlama, yürütme, çevik yönetim, bitirme projesi.' },
+    verify: 'https://coursera.org/verify/professional-cert/HJTEFEYKZ5N3', drive: '1yd-usHb_sVDJSIlFL4bJAFviWvdXCK_X' },
+  { id: 'c-anadolu', cat: 'edu', date: '2021-09-26', issuer: 'Anadolu University', tags: ['teaching'],
+    title: { en: 'Certificate Program in School-Age Development Support for Teachers and Specialists', tr: 'Eğitimci ve Uzmanlar için Okul Dönemi Gelişimsel Destek Sertifika Programı' },
+    credential: '2021-3256224', drive: '1hGoqr8Ip5liQ8ZuiYdayPxLG5_g9fXlh' },
+  { id: 'c-cisco', cat: 'it', date: '2013-12-08', issuer: 'Cisco Networking Academy', tags: ['it'],
+    title: 'IT Essentials: PC Hardware and Software', drive: '1hLD2qPjlKVqcIpaP2M7iwqxDasYRwqAZ' },
+];
+
 const EDU = [
-  { when: { en: '2024 – present', tr: '2024 – devam ediyor' }, now: true,
+  { id: 'e-phd', when: { en: '2024 – present', tr: '2024 – devam ediyor' }, now: true,
     what: { en: 'PhD, Computer and Instructional Technologies Education', tr: 'Doktora, Bilgisayar ve Öğretim Teknolojileri Eğitimi' },
     where: { en: 'Bursa Uludağ University, Institute of Educational Sciences', tr: 'Bursa Uludağ Üniversitesi, Eğitim Bilimleri Enstitüsü' } },
-  { when: { en: '2021 – 2024', tr: '2021 – 2024' },
+  { id: 'e-msc', when: { en: '2021 – 2024', tr: '2021 – 2024' },
     what: { en: 'MSc, Computer and Instructional Technologies Education', tr: 'Yüksek Lisans, Bilgisayar ve Öğretim Teknolojileri Eğitimi' },
-    where: { en: 'Bursa Uludağ University', tr: 'Bursa Uludağ Üniversitesi' } },
-  { when: { en: '2018 – 2021', tr: '2018 – 2021' }, badge: { en: 'top of class', tr: 'bölüm birincisi' },
+    where: { en: 'Bursa Uludağ University', tr: 'Bursa Uludağ Üniversitesi' },
+    thesis: { title: 'Dijital Vatandaşlık İçeriklerinin Ortaokul Öğretim Süreçlerine Yansımaları: Bütünleşik Bir Durum Çalışması',
+              en: 'How digital citizenship content shows up in middle-school teaching: an embedded case study. Advisor: Prof. Dr. Şehnaz Baltacı.',
+              tr: 'Danışman: Prof. Dr. Şehnaz Baltacı.' } },
+  { id: 'e-bsc', when: { en: '2018 – 2021', tr: '2018 – 2021' }, badge: { en: 'top of class', tr: 'bölüm birincisi' },
     what: { en: 'BSc, Computer and Instructional Technologies Education', tr: 'Lisans, Bilgisayar ve Öğretim Teknolojileri Eğitimi' },
     where: { en: 'Bursa Uludağ University · graduated first in class', tr: 'Bursa Uludağ Üniversitesi · bölüm birincisi olarak mezun' } },
 ];
 
-const EXP = [
-  { when: { en: 'since 2017', tr: '2017’den beri' },
+const TEACH = [
+  { id: 'x-teach', when: { en: 'since 2017', tr: '2017’den beri' }, tags: ['unity', 'python', 'teaching'],
     what: { en: 'Teaching Unity and Python', tr: 'Unity ve Python eğitmenliği' },
     body: { en: 'Game development and programming with students. Some of their games are public: RunToLife, PydewValley.',
             tr: 'Öğrencilerle oyun geliştirme ve programlama. Oyunlarından bazıları açık: RunToLife, PydewValley.' } },
-  { when: { en: '2025–26 fall', tr: '2025–26 güz' },
+  { id: 'x-ulutek', when: { en: '2022 – 2025', tr: '2022 – 2025' }, tags: ['unity', 'arduino', 'python', 'teaching'],
+    what: { en: 'Maker workshops for kids · Ulutek Maker Çocuk', tr: 'Çocuklar için maker atölyeleri · Ulutek Maker Çocuk' },
+    body: { en: 'Run with D&S Software at the Ulutek technology development zone in Bursa.', tr: 'Bursa’da Ulutek Teknoloji Geliştirme Bölgesi’nde D&S Software ile yürütüldü.' },
+    terms: [
+      ['Feb – Apr 2022', { en: 'Unity game programming', tr: 'Unity ile oyun programlama' }],
+      ['Sep 2022 – Jun 2023', { en: 'Scratch, Arduino, Kodu Game Lab, mBot · 64 hours', tr: 'Scratch, Arduino, Kodu Game Lab, mBot · 64 saat' }],
+      ['Nov – Dec 2022', { en: 'Arduino electronics and Unity game programming', tr: 'Arduino ile elektronik ve Unity ile oyun programlama' }],
+      ['Jun 2023', { en: 'Arduino, text-based programming', tr: 'Arduino ile metin tabanlı programlama' }],
+      ['2025', { en: 'Python course materials', tr: 'Python ders materyalleri' }],
+    ],
+    link: 'https://github.com/ugursirvermez/Python_BeginnerEducation' },
+  { id: 'x-course', when: { en: '2025–26 fall', tr: '2025–26 güz' }, tags: ['unity', 'teaching', 'id'],
     what: { en: 'Course site: Modeling and Design in Education', tr: 'Ders sitesi: Eğitimde Modelleme ve Tasarım' },
     body: { en: 'GameEngineStudio. 14 weeks of Unity 6 for future teachers, with demos that run in the browser.',
             tr: 'GameEngineStudio. Öğretmen adayları için 14 haftalık Unity 6 dersi; tarayıcıda çalışan demolarla.' },
     link: 'https://ugursirvermez.github.io/GameEngineStudio/' },
-  { when: { en: '2025', tr: '2025' },
-    what: { en: 'Python course materials', tr: 'Python ders materyalleri' },
-    body: { en: 'Materials for the Python courses of Ulutek Maker Çocuk · Dad & Sons Software.',
-            tr: 'Ulutek Maker Çocuk · Dad & Sons Software Python eğitimleri için hazırlanan materyaller.' },
-    link: 'https://github.com/ugursirvermez/Python_BeginnerEducation' },
-  { when: { en: 'industry', tr: 'sektör' },
+  { id: 'x-tubitak', when: { en: 'June 2025', tr: 'Haziran 2025' }, tags: ['ai', 'teaching'],
+    what: { en: 'TÜBİTAK 4004 · AI workshops', tr: 'TÜBİTAK 4004 · Yapay zekâ atölyeleri' },
+    body: { en: 'Activity-based AI workshops for secondary school students, alongside green technology and environmental education. Yalova Provincial Directorate of National Education, 23–27 June 2025. Letter of thanks.',
+            tr: 'Ortaöğretimde etkinlik temelli yapay zekâ atölyeleri ile yeşil teknoloji ve çevre eğitimi. Yalova İl Millî Eğitim Müdürlüğü, 23–27 Haziran 2025. Teşekkür belgesi.' },
+    drive: '1UQXkzvmexxdXqf-803nHOgp_9syudzXH' },
+  { id: 'x-review', when: { en: '2024', tr: '2024' }, tags: ['research'],
+    what: { en: 'Reviewer · Turkish Journal of Education', tr: 'Hakem · Turkish Journal of Education' },
+    body: { en: 'Two review rounds for one manuscript, May and July 2024. Both certificates can be verified on DergiPark.',
+            tr: 'Bir makale için iki değerlendirme turu, Mayıs ve Temmuz 2024. İki sertifika da DergiPark’ta doğrulanabilir.' },
+    verify: ['https://dergipark.org.tr/en/verify-reviewer-certificate/1723642-77e5', 'https://dergipark.org.tr/en/verify-reviewer-certificate/1791942-bee3'] },
+  { id: 'x-industry', when: { en: 'industry', tr: 'sektör' }, tags: ['xr', 'unity'],
     what: { en: 'VR and AR application development', tr: 'VR ve AR uygulama geliştirme' },
     body: { en: 'VR and AR applications built in the private sector.', tr: 'Özel sektörde geliştirilen VR ve AR uygulamaları.' } },
-  { when: { en: 'certification', tr: 'sertifika' },
-    what: { en: 'Project management', tr: 'Proje yönetimi' },
-    body: { en: 'Certified in project management.', tr: 'Proje yönetimi sertifikası.' } },
-  { when: { en: 'interests', tr: 'ilgi alanları' },
-    what: { en: 'Research interests', tr: 'Araştırma ilgi alanları' },
-    body: { en: 'Digital citizenship, virtual environment design, autonomous virtual environments, machine learning, RAG.',
-            tr: 'Dijital vatandaşlık, sanal ortam tasarımı, otonom sanal ortamlar, makine öğrenmesi, RAG.' } },
 ];
 
 const PROJECTS = [
-  { name: 'GameEngineStudio', year: 2026, tags: ['unity', 'teaching', 'web'],
-    en: 'Course site for Modeling and Design in Education, with in-browser demos.',
-    tr: 'Eğitimde Modelleme ve Tasarım dersinin sitesi; tarayıcıda çalışan demolarla.',
+  { id: 'r-ges', name: 'GameEngineStudio', year: 2026, date: '2026-06', tags: ['unity', 'teaching', 'web', 'id'],
+    en: 'Course site for Modeling and Design in Education, with in-browser demos.', tr: 'Eğitimde Modelleme ve Tasarım dersinin sitesi; tarayıcıda çalışan demolarla.',
     live: 'https://ugursirvermez.github.io/GameEngineStudio/', repo: 'GameEngineStudio' },
-  { name: 'Tunnel Vision', year: 2026, tags: ['xr', 'game', 'web', 'teaching'],
-    en: 'A small browser game about VR comfort: vection, comfort vignettes, frame budgets.',
-    tr: 'VR konforu üzerine küçük bir tarayıcı oyunu: vection, konfor vinyeti, kare bütçesi.',
+  { id: 'r-tv', name: 'Tunnel Vision', year: 2026, date: '2026-09', tags: ['xr', 'game', 'web', 'teaching'],
+    en: 'A small browser game about VR comfort: vection, comfort vignettes, frame budgets.', tr: 'VR konforu üzerine küçük bir tarayıcı oyunu: vection, konfor vinyeti, kare bütçesi.',
     live: '../', repo: 'ugursirvermez' },
-  { name: 'BlazeFace_NMS_Sentis', year: 2025, tags: ['unity', 'ml'],
-    en: 'The BlazeFace ONNX model running in Unity Sentis, with non-max suppression moved into Unity.',
-    tr: 'BlazeFace ONNX modelini Unity Sentis’te çalıştırır; NMS adımı Unity tarafına taşındı.',
+  { id: 'r-nms', name: 'BlazeFace_NMS_Sentis', year: 2025, date: '2025-12', tags: ['unity', 'ml', 'onnx'],
+    en: 'The BlazeFace ONNX model running in Unity Sentis, with non-max suppression moved into Unity.', tr: 'BlazeFace ONNX modelini Unity Sentis’te çalıştırır; NMS adımı Unity tarafına taşındı.',
     repo: 'BlazeFace_NMS_Sentis' },
-  { name: 'FBC_OS', year: 2025, tags: ['python', 'game'],
-    en: 'A retro fictional OS from Remedy’s Control: CRT look, documents, audio logs, hotline archive.',
-    tr: 'Remedy’nin Control evreninden retro, kurgusal bir işletim sistemi: CRT görünüm, belgeler, ses kayıtları.',
+  { id: 'r-fbc', name: 'FBC_OS', year: 2025, date: '2025-09', tags: ['python', 'game'],
+    en: 'A retro fictional OS from Remedy’s Control: CRT look, documents, audio logs, hotline archive.', tr: 'Remedy’nin Control evreninden retro, kurgusal bir işletim sistemi: CRT görünüm, belgeler, ses kayıtları.',
     repo: 'FBC_OS-Fan-Project' },
-  { name: 'FoodVisionApp', year: 2025, tags: ['ml', 'web'],
-    en: 'The FoodVision model from the PyTorch course, in a React Native app.',
-    tr: 'PyTorch eğitimindeki FoodVision modeli, React Native uygulaması olarak.',
+  { id: 'r-food', name: 'FoodVisionApp', year: 2025, date: '2025-03', tags: ['ml', 'pytorch', 'web'],
+    en: 'The FoodVision model from the PyTorch course, in a React Native app.', tr: 'PyTorch eğitimindeki FoodVision modeli, React Native uygulaması olarak.',
     repo: 'FoodVisionApp' },
-  { name: 'PydewValley', year: 2025, tags: ['python', 'game', 'teaching'],
-    en: 'Pydew Valley from freeCodeCamp, built with my students.',
-    tr: 'freeCodeCamp’in Pydew Valley projesi, öğrencilerimle birlikte.',
+  { id: 'r-pydew', name: 'PydewValley', year: 2025, date: '2025-03', tags: ['python', 'game', 'teaching'],
+    en: 'Pydew Valley from freeCodeCamp, built with my students.', tr: 'freeCodeCamp’in Pydew Valley projesi, öğrencilerimle birlikte.',
     repo: 'PydewValley' },
-  { name: 'Python_BeginnerEducation', year: 2025, tags: ['python', 'teaching'],
-    en: 'Materials for the Python courses of Ulutek Maker Çocuk · Dad & Sons Software.',
-    tr: 'Ulutek Maker Çocuk · Dad & Sons Software Python eğitimlerinin materyalleri.',
+  { id: 'r-pyedu', name: 'Python_BeginnerEducation', year: 2025, date: '2025-05', tags: ['python', 'teaching'],
+    en: 'Materials for the Python courses of Ulutek Maker Çocuk · D&S Software.', tr: 'Ulutek Maker Çocuk · D&S Software Python eğitimlerinin materyalleri.',
     repo: 'Python_BeginnerEducation' },
-  { name: 'PyTorch_Education', year: 2024, tags: ['ml', 'python', 'teaching'],
-    en: 'PyTorch course material in Turkish, citable on Zenodo.',
-    tr: 'Türkçe PyTorch eğitim materyali; Zenodo’da DOI ile atıf yapılabilir.',
+  { id: 'r-torch', name: 'PyTorch_Education', year: 2024, date: '2024-09', tags: ['ml', 'pytorch', 'python', 'teaching'],
+    en: 'PyTorch course material in Turkish, citable on Zenodo.', tr: 'Türkçe PyTorch eğitim materyali; Zenodo’da DOI ile atıf yapılabilir.',
     live: 'https://ugursirvermez.github.io/PyTorch_Education/', repo: 'PyTorch_Education' },
-  { name: 'Unity-Egitim-Materyalleri', year: 2024, tags: ['unity', 'teaching'],
-    en: 'Unity Learn material I share with my class.',
-    tr: 'Sınıfımla paylaştığım Unity Learn materyalleri.',
+  { id: 'r-unityedu', name: 'Unity-Egitim-Materyalleri', year: 2024, date: '2024-07', tags: ['unity', 'teaching'],
+    en: 'Unity Learn material I share with my class.', tr: 'Sınıfımla paylaştığım Unity Learn materyalleri.',
     repo: 'Unity-Egitim-Materyalleri' },
-  { name: 'Unity-ML-Test-Project', year: 2023, tags: ['unity', 'ml'],
-    en: 'A Unity ML-Agents test: an agent trained to reach a target in a maze.',
-    tr: 'Unity ML-Agents denemesi: labirentte hedefe ulaşmayı öğrenen bir ajan.',
+  { id: 'r-mla', name: 'Unity-ML-Test-Project', year: 2023, date: '2023-07', tags: ['unity', 'ml'],
+    en: 'A Unity ML-Agents test: an agent trained to reach a target in a maze.', tr: 'Unity ML-Agents denemesi: labirentte hedefe ulaşmayı öğrenen bir ajan.',
     repo: 'Unity-ML-Test-Project' },
-  { name: 'RunToLife', year: 2023, tags: ['game', 'teaching'],
-    en: 'An educational 2D game made by my students.',
-    tr: 'Öğrencilerimin geliştirdiği eğitsel 2B oyun.',
+  { id: 'r-run', name: 'RunToLife', year: 2023, date: '2023-05', tags: ['game', 'teaching'],
+    en: 'An educational 2D game made by my students.', tr: 'Öğrencilerimin geliştirdiği eğitsel 2B oyun.',
     repo: 'RunToLife' },
-  { name: 'Space-Invader-with-Pygame', year: 2023, tags: ['python', 'game'],
-    en: 'A 2D shooter in Pygame, from a freeCodeCamp course.',
-    tr: 'freeCodeCamp eğitimiyle yapılmış 2B Pygame nişancı oyunu.',
+  { id: 'r-space', name: 'Space-Invader-with-Pygame', year: 2023, date: '2023-07', tags: ['python', 'game'],
+    en: 'A 2D shooter in Pygame, from a freeCodeCamp course.', tr: 'freeCodeCamp eğitimiyle yapılmış 2B Pygame nişancı oyunu.',
     repo: 'Space-Invader-with-Pygame' },
-  { name: 'Sarcaster-Corvus', year: 2022, tags: ['unity', 'game'],
-    en: 'Game and App Academy bootcamp, team 20: a post-apocalyptic metaverse with turn-based fights.',
-    tr: 'Oyun ve Uygulama Akademisi bootcamp’i, 20 numaralı takım: sıra tabanlı dövüşlü kıyamet sonrası bir metaverse.',
+  { id: 'r-sarc', name: 'Sarcaster-Corvus', year: 2022, date: '2022-04', tags: ['unity', 'game'],
+    en: 'Game and App Academy bootcamp, team 20: a post-apocalyptic metaverse with turn-based fights.', tr: 'Oyun ve Uygulama Akademisi bootcamp’i, 20 numaralı takım: sıra tabanlı dövüşlü kıyamet sonrası bir metaverse.',
     repo: 'Sarcaster-Corvus' },
 ];
 
-const TAGS = {
-  unity: { en: 'Unity', tr: 'Unity' }, ml: { en: 'Machine learning', tr: 'Makine öğrenmesi' },
-  xr: { en: 'VR / AR', tr: 'VR / AR' }, python: { en: 'Python', tr: 'Python' },
-  teaching: { en: 'Teaching', tr: 'Öğretim' }, game: { en: 'Games', tr: 'Oyunlar' }, web: { en: 'Web & mobile', tr: 'Web ve mobil' },
+const PROJ_TAGS = {
+  unity: { en: 'Unity', tr: 'Unity' }, ml: { en: 'Machine learning', tr: 'Makine öğrenmesi' }, xr: { en: 'VR / AR', tr: 'VR / AR' },
+  python: { en: 'Python', tr: 'Python' }, teaching: { en: 'Teaching', tr: 'Öğretim' }, game: { en: 'Games', tr: 'Oyunlar' },
+  web: { en: 'Web & mobile', tr: 'Web ve mobil' },
 };
 
+// [id, label, tags that count as evidence]
 const SKILLS = [
-  { en: 'Game development', tr: 'Oyun geliştirme',
-    items: [['Unity', 'unity'], ['C#', 'unity'], ['URP'], ['VR / AR', 'xr'], ['ML-Agents', 'ml'], ['Unity Sentis', 'ml'], ['Blender']] },
-  { en: 'Machine learning', tr: 'Makine öğrenmesi',
-    items: [['Python', 'python'], ['PyTorch', 'ml'], ['Keras'], ['CUDA'], ['ONNX', 'ml'], ['RAG'], ['LangChain']] },
-  { en: 'Web & mobile', tr: 'Web ve mobil',
-    items: [['React Native · Expo', 'web'], ['Next.js'], ['TypeScript'], ['JavaScript', 'web']] },
-  { en: 'Research', tr: 'Araştırma',
-    items: [['Systematic reviews'], ['Bibliometrics'], ['Survey & predictive models'], ['Document analysis'], ['Instructional design', 'teaching']] },
+  { en: 'Game development', tr: 'Oyun geliştirme', items: [
+    ['unity', 'Unity · C#', ['unity']], ['xr', 'VR / AR', ['xr']], ['sentis', 'Unity Sentis · ONNX', ['onnx']], ['blender', 'Blender', []], ['urp', 'URP', []] ] },
+  { en: 'Machine learning', tr: 'Makine öğrenmesi', items: [
+    ['python', 'Python', ['python']], ['pytorch', 'PyTorch', ['pytorch']], ['keras', 'Keras · TensorFlow', ['keras']],
+    ['genai', { en: 'Generative AI · LLMs', tr: 'Üretken YZ · LLM' }, ['genai']], ['rag', 'RAG · LangChain', ['rag']], ['ethics', { en: 'AI ethics', tr: 'YZ etiği' }, ['ethics']] ] },
+  { en: 'Research & teaching', tr: 'Araştırma ve öğretim', items: [
+    ['research', { en: 'Educational research', tr: 'Eğitim araştırmaları' }, ['research']], ['id', { en: 'Instructional design', tr: 'Öğretim tasarımı' }, ['id']],
+    ['teaching', { en: 'Teaching', tr: 'Öğretim' }, ['teaching']], ['arduino', 'Arduino · Scratch · mBot', ['arduino']], ['pm', { en: 'Project management', tr: 'Proje yönetimi' }, ['pm']] ] },
+  { en: 'Web & mobile', tr: 'Web ve mobil', items: [
+    ['web', 'React Native · Next.js · TypeScript', ['web']] ] },
 ];
 
 const POSTS = [
@@ -508,63 +727,147 @@ const POSTS = [
     url: 'https://medium.com/@ugursirvermez/subaylar%C4%B1n-ve-komutanlar%C4%B1n-zaferi-%C3%A7anakkalenin-ruhu-ve-dehas%C4%B1na-bir-bak%C4%B1%C5%9F-793cfd50abb9' },
 ];
 
+// Career replay lanes and moments. `ref` is the element id the moment points at.
+const LANES = {
+  edu: { en: 'Education', tr: 'Eğitim', color: 'var(--ink)' },
+  res: { en: 'Research', tr: 'Araştırma', color: 'var(--accent)' },
+  tea: { en: 'Teaching & service', tr: 'Öğretim ve hizmet', color: 'var(--cyan)' },
+  cer: { en: 'Certificates', tr: 'Sertifikalar', color: 'var(--gold)' },
+  bld: { en: 'Projects', tr: 'Projeler', color: 'var(--muted)' },
+};
+const EVENTS = [
+  { d: '2013-12', lane: 'cer', ref: 'c-cisco', en: 'Cisco IT Essentials', tr: 'Cisco IT Essentials' },
+  { d: '2017-09', lane: 'tea', ref: 'x-teach', en: 'Started teaching Unity and Python', tr: 'Unity ve Python öğretmeye başladı' },
+  { d: '2018-09', lane: 'edu', ref: 'e-bsc', en: 'BSc begins', tr: 'Lisans başladı' },
+  { d: '2021-06', lane: 'edu', ref: 'e-bsc', en: 'BSc, graduated first in class', tr: 'Lisans, bölüm birincisi' },
+  { d: '2021-09', lane: 'cer', ref: 'c-anadolu', en: 'Anadolu University certificate program', tr: 'Anadolu Üniversitesi sertifika programı' },
+  { d: '2021-10', lane: 'edu', ref: 'e-msc', en: 'MSc begins', tr: 'Yüksek lisans başladı' },
+  { d: '2022-02', lane: 'tea', ref: 'x-ulutek', en: 'Unity workshops at Ulutek Maker Çocuk', tr: 'Ulutek Maker Çocuk’ta Unity atölyeleri' },
+  { d: '2022-04', lane: 'cer', ref: 'c-gpm', en: 'Google Project Management', tr: 'Google Proje Yönetimi' },
+  { d: '2022-04', lane: 'bld', ref: 'r-sarc', en: 'Sarcaster-Corvus (bootcamp)', tr: 'Sarcaster-Corvus (bootcamp)' },
+  { d: '2022-06', lane: 'res', ref: 't-2022', en: 'ICETOL 2022: metaverse gamification review', tr: 'ICETOL 2022: metaverse oyunlaştırma incelemesi' },
+  { d: '2022-09', lane: 'tea', ref: 'x-ulutek', en: 'Scratch, Arduino, Kodu, mBot · 64 hours', tr: 'Scratch, Arduino, Kodu, mBot · 64 saat' },
+  { d: '2023-05', lane: 'bld', ref: 'r-run', en: 'RunToLife, with students', tr: 'RunToLife, öğrencilerle' },
+  { d: '2023-06', lane: 'res', ref: 't-2023', en: 'ICETOL 2023: digital citizenship materials', tr: 'ICETOL 2023: dijital vatandaşlık materyalleri' },
+  { d: '2023-07', lane: 'bld', ref: 'r-mla', en: 'Unity ML-Agents maze', tr: 'Unity ML-Agents labirenti' },
+  { d: '2023-10', lane: 'res', ref: 'p-springer', en: 'Springer chapter: metaverse in education', tr: 'Springer bölümü: eğitimde metaverse' },
+  { d: '2024-05', lane: 'res', ref: 't-2024', en: 'ICETOL 2024: AI literacy of pre-service teachers', tr: 'ICETOL 2024: öğretmen adaylarının YZ okuryazarlığı' },
+  { d: '2024-05', lane: 'tea', ref: 'x-review', en: 'Reviewer, Turkish Journal of Education', tr: 'Hakem, Turkish Journal of Education' },
+  { d: '2024-08', lane: 'edu', ref: 'e-msc', en: 'MSc thesis on digital citizenship', tr: 'Dijital vatandaşlık üzerine yüksek lisans tezi' },
+  { d: '2024-09', lane: 'edu', ref: 'e-phd', en: 'PhD begins', tr: 'Doktora başladı' },
+  { d: '2024-09', lane: 'bld', ref: 'r-torch', en: 'PyTorch_Education', tr: 'PyTorch_Education' },
+  { d: '2025-03', lane: 'cer', ref: 'c-lf116', en: 'Linux Foundation: PyTorch, AI ethics', tr: 'Linux Foundation: PyTorch, YZ etiği' },
+  { d: '2025-06', lane: 'tea', ref: 'x-tubitak', en: 'TÜBİTAK 4004 AI workshops', tr: 'TÜBİTAK 4004 YZ atölyeleri' },
+  { d: '2025-07', lane: 'cer', ref: 'c-ibm', en: 'IBM AI Engineering, 13 courses', tr: 'IBM AI Engineering, 13 kurs' },
+  { d: '2025-08', lane: 'res', ref: 'p-ile', en: 'Interactive Learning Environments article', tr: 'Interactive Learning Environments makalesi' },
+  { d: '2025-09', lane: 'bld', ref: 'r-fbc', en: 'FBC_OS', tr: 'FBC_OS' },
+  { d: '2025-10', lane: 'tea', ref: 'x-course', en: 'Modeling and Design in Education course site', tr: 'Eğitimde Modelleme ve Tasarım ders sitesi' },
+  { d: '2025-12', lane: 'bld', ref: 'r-nms', en: 'BlazeFace in Unity Sentis', tr: 'Unity Sentis’te BlazeFace' },
+  { d: '2026-01', lane: 'res', ref: 'p-jetol', en: 'JETOL article', tr: 'JETOL makalesi' },
+  { d: '2026-03', lane: 'res', ref: 'p-zenodo', en: 'PyTorch OER on Zenodo', tr: 'Zenodo’da PyTorch açık kaynağı' },
+  { d: '2026-04', lane: 'res', ref: 'p-igi', en: 'IGI Global chapter: AI ethics', tr: 'IGI Global bölümü: YZ etiği' },
+  { d: '2026-05', lane: 'res', ref: 'p-med', en: 'Milli Eğitim Dergisi article', tr: 'Milli Eğitim Dergisi makalesi' },
+  { d: '2026-06', lane: 'bld', ref: 'r-ges', en: 'GameEngineStudio', tr: 'GameEngineStudio' },
+  { d: '2026-07', lane: 'res', ref: 'p-ijces', en: 'IJCES article: AI literacy', tr: 'IJCES makalesi: YZ okuryazarlığı' },
+];
+
 const UI = {
   en: {
-    'nav.education': 'Education', 'nav.publications': 'Publications', 'nav.experience': 'Teaching & work',
-    'nav.projects': 'Projects', 'nav.skills': 'Skills', 'nav.writing': 'Writing', 'ui.pdf': 'PDF',
+    'nav.replay': 'Replay', 'nav.education': 'Education', 'nav.research': 'Research', 'nav.certificates': 'Certificates',
+    'nav.teaching': 'Teaching', 'nav.projects': 'Projects', 'nav.skills': 'Skills', 'nav.writing': 'Writing', 'ui.search': 'Search',
     'intro.kicker': 'PhD student · Computer & Instructional Technologies Education',
     'intro.lede': 'I study game engines and virtual environments as places where people learn, build in Unity, and have been teaching Unity and Python since 2017.',
-    'intro.d20': 'drag to roll · red/cyan anaglyph',
-    'stats.works': 'published works, 2023–2026', 'stats.first': 'as first or sole author',
-    'stats.teaching': 'the year I started teaching Unity & Python', 'stats.top': 'in class, BSc 2021',
-    'pubs.aside': 'from Crossref · DataCite', 'edu.aside': 'Bursa Uludağ University', 'pubs.copyAll': 'Copy all as APA', 'pubs.all': 'All',
-    'pubs.cite': 'Copy APA', 'pubs.copied': 'Copied', 'pubs.toast': 'APA reference copied', 'pubs.toastAll': 'All references copied',
+    'intro.d20': 'drag to roll · red/cyan anaglyph', 'intro.keys': 'Press {k1} to search everything, {k2} for shortcuts.',
+    'stats.works': 'published works', 'stats.first': 'as first or sole author', 'stats.talks': 'conference papers',
+    'stats.certs': 'certificates, incl. 13 IBM courses', 'stats.top': 'in class, BSc 2021', 'stats.teaching': 'the year I started teaching',
+    'replay.title': 'Career replay', 'replay.aside': 'press play, or drag the year', 'replay.pick': 'Press play, or pick a dot to see what happened.',
+    'replay.go': 'Show me', 'hud.works': 'works', 'hud.talks': 'talks', 'hud.certs': 'certificates', 'hud.projects': 'projects',
+    'edu.aside': 'Bursa Uludağ University', 'edu.thesis': 'MSc thesis',
+    'pubs.aside': 'from Crossref · DataCite', 'pubs.copyAll': 'Copy all as APA', 'pubs.all': 'All', 'pubs.cite': 'Copy APA', 'pubs.copied': 'Copied',
+    'pubs.toast': 'APA reference copied', 'pubs.toastAll': 'All references copied',
     'type.article': 'article', 'type.chapter': 'chapter', 'type.software': 'software',
     'role.first': 'first author', 'role.second': 'second author', 'role.sole': 'sole author', 'lang.tr': 'in Turkish',
-    'proj.aside': 'public repos, by year', 'proj.all': 'All', 'proj.empty': 'Nothing public under this tag yet.',
-    'proj.live': 'Open', 'proj.repo': 'Repo', 'skills.hint': 'Skills with an arrow jump to the projects that use them.',
+    'talks.title': 'Conference papers · ICETOL', 'talks.cert': 'Certificate', 'talks.related': 'Related publication',
+    'certs.aside': 'click a certificate to enlarge', 'certs.all': 'All', 'certs.verify': 'Verify', 'certs.view': 'View', 'certs.id': 'ID',
+    'certs.courses': 'Show all 13 courses', 'certs.path': '13 / 13 courses', 'certs.first': 'first course', 'certs.last': 'certificate',
+    'teach.title': 'Teaching & service', 'teach.open': 'Open', 'teach.doc': 'Letter', 'teach.verify': 'Verify',
+    'proj.aside': 'public repos, by year', 'proj.all': 'All', 'proj.empty': 'Nothing public under this tag yet.', 'proj.live': 'Open', 'proj.repo': 'Repo',
+    'skills.aside': 'pick a skill, see the proof', 'skills.pick': 'Pick a skill', 'skills.pickBody': 'Skills with a number have proof on this page: certificates, projects, papers or teaching. Click one.',
+    'skills.proof': 'Evidence', 'skills.onpage': 'on page', 'kind.pub': 'paper', 'kind.talk': 'talk', 'kind.cert': 'certificate', 'kind.course': 'course',
+    'kind.proj': 'project', 'kind.teach': 'teaching', 'kind.post': 'post', 'kind.section': 'section',
     'writing.aside': 'Medium · in Turkish', 'foot.updated': 'Updated September 2026', 'foot.source': 'source',
+    'help.title': 'Keyboard', 'search.ph': 'Search papers, certificates, courses, projects…', 'search.n': '{n} results',
+    'ach': 'Achievement', 'ach.search': 'Found the command palette', 'ach.cert': 'Checked a certificate',
+    'ach.replay': 'Watched the whole replay', 'ach.all': 'Explored every section', 'ach.skill': 'Asked for proof',
   },
   tr: {
-    'nav.education': 'Eğitim', 'nav.publications': 'Yayınlar', 'nav.experience': 'Öğretim ve iş',
-    'nav.projects': 'Projeler', 'nav.skills': 'Yetenekler', 'nav.writing': 'Yazılar', 'ui.pdf': 'PDF',
+    'nav.replay': 'Özet', 'nav.education': 'Eğitim', 'nav.research': 'Araştırma', 'nav.certificates': 'Sertifikalar',
+    'nav.teaching': 'Öğretim', 'nav.projects': 'Projeler', 'nav.skills': 'Yetenekler', 'nav.writing': 'Yazılar', 'ui.search': 'Ara',
     'intro.kicker': 'Doktora öğrencisi · Bilgisayar ve Öğretim Teknolojileri Eğitimi',
     'intro.lede': 'Oyun motorlarını ve sanal ortamları, insanların öğrendiği yerler olarak inceliyorum. Unity’de geliştiriyorum ve 2017’den beri Unity ve Python öğretiyorum.',
-    'intro.d20': 'sürükleyip at · kırmızı/camgöbeği anaglif',
-    'stats.works': 'yayımlanmış çalışma, 2023–2026', 'stats.first': 'birinci ya da tek yazar',
-    'stats.teaching': 'Unity ve Python öğretmeye başladığım yıl', 'stats.top': 'bölüm birincisi, lisans 2021',
-    'pubs.aside': 'kaynak: Crossref · DataCite', 'edu.aside': 'Bursa Uludağ Üniversitesi', 'pubs.copyAll': 'Tümünü APA olarak kopyala', 'pubs.all': 'Tümü',
-    'pubs.cite': 'APA kopyala', 'pubs.copied': 'Kopyalandı', 'pubs.toast': 'APA künyesi kopyalandı', 'pubs.toastAll': 'Tüm künyeler kopyalandı',
+    'intro.d20': 'sürükleyip at · kırmızı/camgöbeği anaglif', 'intro.keys': 'Her şeyde aramak için {k1}, kısayollar için {k2}.',
+    'stats.works': 'yayımlanmış çalışma', 'stats.first': 'birinci ya da tek yazar', 'stats.talks': 'kongre bildirisi',
+    'stats.certs': 'sertifika, 13 IBM kursu dahil', 'stats.top': 'bölüm birincisi, lisans 2021', 'stats.teaching': 'öğretmeye başladığım yıl',
+    'replay.title': 'Kariyer özeti', 'replay.aside': 'oynat ya da yılı sürükle', 'replay.pick': 'Oynat ya da ne olduğunu görmek için bir noktaya tıkla.',
+    'replay.go': 'Göster', 'hud.works': 'çalışma', 'hud.talks': 'bildiri', 'hud.certs': 'sertifika', 'hud.projects': 'proje',
+    'edu.aside': 'Bursa Uludağ Üniversitesi', 'edu.thesis': 'Yüksek lisans tezi',
+    'pubs.aside': 'kaynak: Crossref · DataCite', 'pubs.copyAll': 'Tümünü APA olarak kopyala', 'pubs.all': 'Tümü', 'pubs.cite': 'APA kopyala', 'pubs.copied': 'Kopyalandı',
+    'pubs.toast': 'APA künyesi kopyalandı', 'pubs.toastAll': 'Tüm künyeler kopyalandı',
     'type.article': 'makale', 'type.chapter': 'kitap bölümü', 'type.software': 'yazılım',
     'role.first': 'birinci yazar', 'role.second': 'ikinci yazar', 'role.sole': 'tek yazar', 'lang.tr': 'Türkçe',
-    'proj.aside': 'açık repolar, yıla göre', 'proj.all': 'Tümü', 'proj.empty': 'Bu etikette henüz açık bir proje yok.',
-    'proj.live': 'Aç', 'proj.repo': 'Repo', 'skills.hint': 'Oklu yetenekler, onları kullanan projelere götürür.',
+    'talks.title': 'Kongre bildirileri · ICETOL', 'talks.cert': 'Katılım belgesi', 'talks.related': 'İlgili yayın',
+    'certs.aside': 'büyütmek için sertifikaya tıkla', 'certs.all': 'Tümü', 'certs.verify': 'Doğrula', 'certs.view': 'Görüntüle', 'certs.id': 'No',
+    'certs.courses': '13 kursun tamamını göster', 'certs.path': '13 / 13 kurs', 'certs.first': 'ilk kurs', 'certs.last': 'sertifika',
+    'teach.title': 'Öğretim ve hizmet', 'teach.open': 'Aç', 'teach.doc': 'Belge', 'teach.verify': 'Doğrula',
+    'proj.aside': 'açık repolar, yıla göre', 'proj.all': 'Tümü', 'proj.empty': 'Bu etikette henüz açık bir proje yok.', 'proj.live': 'Aç', 'proj.repo': 'Repo',
+    'skills.aside': 'bir yetenek seç, kanıtını gör', 'skills.pick': 'Bir yetenek seç', 'skills.pickBody': 'Sayılı yeteneklerin bu sayfada kanıtı var: sertifika, proje, yayın ya da öğretim. Birine tıkla.',
+    'skills.proof': 'Kanıtlar', 'skills.onpage': 'sayfada', 'kind.pub': 'yayın', 'kind.talk': 'bildiri', 'kind.cert': 'sertifika', 'kind.course': 'kurs',
+    'kind.proj': 'proje', 'kind.teach': 'öğretim', 'kind.post': 'yazı', 'kind.section': 'bölüm',
     'writing.aside': 'Medium · Türkçe', 'foot.updated': 'Güncelleme: Eylül 2026', 'foot.source': 'kaynak kod',
+    'help.title': 'Klavye', 'search.ph': 'Yayın, sertifika, kurs, proje ara…', 'search.n': '{n} sonuç',
+    'ach': 'Başarım', 'ach.search': 'Komut paletini buldun', 'ach.cert': 'Bir sertifikayı inceledin',
+    'ach.replay': 'Özetin tamamını izledin', 'ach.all': 'Tüm bölümleri gezdin', 'ach.skill': 'Kanıt istedin',
   },
 };
 
-// ---------------------------------------------------------------------------
-// state + helpers
-// ---------------------------------------------------------------------------
+// ===========================================================================
+// HELPERS
+// ===========================================================================
 const store = {
   get(k, d) { try { const v = localStorage.getItem(k); return v == null ? d : v; } catch (e) { return d; } },
   set(k, v) { try { localStorage.setItem(k, v); } catch (e) { /* private mode */ } },
 };
 let lang = store.get('cv.lang', (navigator.language || 'en').toLowerCase().startsWith('tr') ? 'tr' : 'en');
-let pubFilter = 'all';
-let projFilter = 'all';
+const state = { pub: 'all', cert: 'all', proj: 'all', skill: null, year: 2026.99, lanes: new Set(Object.keys(LANES)), sel: null };
 
-const $ = (s) => document.querySelector(s);
+const $ = (s, r = document) => r.querySelector(s);
 const t = (k) => UI[lang][k] || UI.en[k] || k;
 const L = (o) => (o && typeof o === 'object' ? (o[lang] || o.en) : o);
-const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+const esc = (s) => String(s ?? '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+const fold = (s) => String(s).toLocaleLowerCase('tr').normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/ı/g, 'i');
+const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const decYear = (d) => { const [y, m = 6] = d.split('-').map(Number); return y + (m - 0.5) / 12; };
+function fmtDate(d) {
+  const [y, m, day] = d.split('-').map(Number);
+  if (!m) return String(y);
+  const opts = day ? { day: 'numeric', month: 'short', year: 'numeric' } : { month: 'short', year: 'numeric' };
+  return new Date(y, m - 1, day || 1).toLocaleDateString(lang === 'tr' ? 'tr-TR' : 'en-GB', opts);
+}
+const byId = {};
+[...PUBS, ...TALKS, ...CERTS, ...EDU, ...TEACH, ...PROJECTS].forEach((x) => { byId[x.id] = x; });
 
-function toast(msg) {
+function toast(html, ms = 1800) {
   const el = $('#toast');
-  el.textContent = msg;
+  el.innerHTML = html;
   el.classList.add('show');
   clearTimeout(toast.t);
-  toast.t = setTimeout(() => el.classList.remove('show'), 1600);
+  toast.t = setTimeout(() => el.classList.remove('show'), ms);
+}
+const got = new Set();
+function achieve(key) {
+  if (got.has(key)) return;
+  got.add(key);
+  setTimeout(() => toast(`<span class="ach">★ ${esc(t('ach'))}</span><span>${esc(t('ach.' + key))}</span>`, 2600), 300);
 }
 
 async function copy(text) {
@@ -575,22 +878,158 @@ async function copy(text) {
   }
 }
 
-// ---------------------------------------------------------------------------
-// render
-// ---------------------------------------------------------------------------
+// scroll to an item anywhere on the page, clearing filters that hide it
+function focusItem(id) {
+  let el = document.getElementById(id);
+  if (!el) return;
+  if (el.hidden) { state.cert = 'all'; state.proj = 'all'; renderCerts(); renderProjects(); el = document.getElementById(id); }
+  const sec = el.closest('section');
+  if (sec) sec.classList.add('in');
+  el.scrollIntoView({ behavior: reduced ? 'auto' : 'smooth', block: SECTION_IDS.includes(id) ? 'start' : 'center' });
+  el.classList.remove('flash');
+  void el.offsetWidth;
+  el.classList.add('flash');
+}
+
+// ===========================================================================
+// RENDER
+// ===========================================================================
 function renderStatic() {
   document.documentElement.lang = lang;
   for (const el of document.querySelectorAll('[data-i18n]')) el.textContent = t(el.dataset.i18n);
   $('#lang').textContent = lang === 'en' ? 'TR' : 'EN';
   $('#lang').setAttribute('aria-label', lang === 'en' ? 'Türkçe' : 'English');
+  $('#kbdHint').innerHTML = esc(t('intro.keys')).replace('{k1}', '<kbd>/</kbd>').replace('{k2}', '<kbd>?</kbd>');
+  $('#pq').placeholder = t('search.ph');
 }
 
+const STATS = [
+  { n: PUBS.length, k: 'stats.works' },
+  { n: PUBS.filter((p) => p.role !== 'second').length, k: 'stats.first' },
+  { n: TALKS.length, k: 'stats.talks' },
+  { n: CERTS.length, k: 'stats.certs' },
+  { n: 1, k: 'stats.top', suffix: { en: 'st', tr: '.' } },
+  { n: 2017, k: 'stats.teaching', from: 2008 },
+];
+function renderStats() {
+  $('#stats').innerHTML = STATS.map((s, i) => `<div class="stat"><b data-i="${i}">${s.n}${esc(L(s.suffix) || '')}</b><span>${esc(t(s.k))}</span></div>`).join('');
+}
+function countUp() {
+  if (reduced) return;
+  for (const b of document.querySelectorAll('#stats b')) {
+    const s = STATS[+b.dataset.i], start = s.from || 0, t0 = performance.now(), dur = 1000;
+    if (s.n - start < 5) continue;   // counting 0 → 1 just flickers
+    const step = (now) => {
+      const p = Math.min(1, (now - t0) / dur), e = 1 - Math.pow(1 - p, 3);
+      b.textContent = Math.round(start + (s.n - start) * e) + (L(s.suffix) || '');
+      if (p < 1) requestAnimationFrame(step);
+    };
+    requestAnimationFrame(step);
+  }
+}
+
+// ---------------------------------------------------------------------------
+// career replay
+// ---------------------------------------------------------------------------
+const TL = { x0: 150, x1: 985, y0: 34, lane: 46, from: 2013, to: 2027 };
+const tx = (y) => TL.x0 + (y - TL.from) / (TL.to - TL.from) * (TL.x1 - TL.x0);
+
+function renderLaneBtns() {
+  $('#laneBtns').innerHTML = Object.entries(LANES).map(([k, v]) =>
+    `<button class="lane-btn" type="button" data-lane="${k}" aria-pressed="${state.lanes.has(k)}"><i style="background:${v.color}"></i>${esc(L(v))}</button>`).join('');
+}
+
+function renderTimeline() {
+  const keys = Object.keys(LANES);
+  const H = TL.y0 + keys.length * TL.lane + 20;
+  const svg = $('#tl');
+  svg.setAttribute('viewBox', `0 0 1000 ${H}`);
+  let s = '';
+  for (let y = TL.from; y <= 2026; y++) {
+    const x = tx(y);
+    s += `<line x1="${x}" x2="${x}" y1="18" y2="${H - 14}" stroke="var(--line)" stroke-dasharray="2 4"/>`;
+    if (y % 2 === 1 || y === 2026) s += `<text x="${x + 3}" y="14" font-size="11">${y}</text>`;
+  }
+  keys.forEach((k, i) => {
+    const y = TL.y0 + i * TL.lane + TL.lane / 2;
+    const on = state.lanes.has(k);
+    s += `<text x="0" y="${y + 4}" font-size="11.5" style="fill:${on ? 'var(--ink)' : 'var(--muted)'};opacity:${on ? 1 : 0.5}">${esc(L(LANES[k]))}</text>`;
+    s += `<line x1="${TL.x0}" x2="${TL.x1}" y1="${y}" y2="${y}" stroke="var(--line)"/>`;
+  });
+  const seen = {};
+  EVENTS.forEach((ev, i) => {
+    const li = keys.indexOf(ev.lane);
+    const key = ev.lane + ev.d;
+    const off = (seen[key] = (seen[key] || 0) + 1) - 1;   // nudge moments that share a month
+    const x = tx(decYear(ev.d)) + off * 8;
+    const y = TL.y0 + li * TL.lane + TL.lane / 2;
+    s += `<circle class="ev" data-i="${i}" cx="${x}" cy="${y}" r="7" fill="${LANES[ev.lane].color}" tabindex="0" role="button" aria-label="${esc(fmtDate(ev.d))}: ${esc(L(ev))}"><title>${esc(fmtDate(ev.d))} · ${esc(L(ev))}</title></circle>`;
+  });
+  s += `<g id="playhead"><line x1="0" x2="0" y1="18" y2="${H - 10}" stroke="var(--accent)" stroke-width="2"/><path d="M-6 18H6L0 26Z" fill="var(--accent)"/></g>`;
+  svg.innerHTML = s;
+  updateReplay();
+}
+
+function updateReplay() {
+  const yr = state.year;
+  $('#yearOut').textContent = Math.floor(yr);
+  $('#yearRange').value = yr;
+  const ph = $('#playhead');
+  if (ph) ph.setAttribute('transform', `translate(${tx(yr)} 0)`);
+  for (const c of document.querySelectorAll('#tl .ev')) {
+    const ev = EVENTS[+c.dataset.i];
+    const past = decYear(ev.d) <= yr;
+    const vis = state.lanes.has(ev.lane);
+    c.style.opacity = !vis ? 0.06 : past ? 1 : 0.18;
+    c.setAttribute('r', past && vis ? 7 : 4.5);
+    c.classList.toggle('sel', state.sel === +c.dataset.i);
+  }
+  const upTo = (arr) => arr.filter((x) => decYear(x.date) <= yr).length;
+  $('#hud').innerHTML = [[upTo(PUBS), 'hud.works'], [upTo(TALKS), 'hud.talks'], [upTo(CERTS), 'hud.certs'], [upTo(PROJECTS), 'hud.projects']]
+    .map(([n, k]) => `<span><b>${n}</b>${esc(t(k))}</span>`).join('');
+}
+
+function showEvent(i) {
+  state.sel = i;
+  const ev = EVENTS[i];
+  $('#evDetail').innerHTML = `
+    <span class="d-date">${esc(fmtDate(ev.d))}</span>
+    <div><div class="d-title">${esc(L(ev))}</div><div class="d-lane">${esc(L(LANES[ev.lane]))}</div></div>
+    <button class="mini" type="button" data-goto="${esc(ev.ref)}">${esc(t('replay.go'))} →</button>`;
+  updateReplay();
+}
+
+let playing = false, raf = 0;
+function setPlaying(on) {
+  playing = on;
+  $('#playIcon').innerHTML = on ? '<path d="M4 3H7V13H4ZM9 3H12V13H9Z" fill="currentColor"/>' : '<path d="M4 2.5L13 8L4 13.5Z" fill="currentColor"/>';
+  $('#playBtn').setAttribute('aria-label', on ? 'Pause' : 'Play');
+  cancelAnimationFrame(raf);
+  if (!on) return;
+  if (state.year >= 2026.9) state.year = TL.from;
+  let last = performance.now();
+  const latest = () => { let k = -1; EVENTS.forEach((e, i) => { if (decYear(e.d) <= state.year && state.lanes.has(e.lane)) k = i; }); return k; };
+  const tick = (now) => {
+    const dt = Math.min(0.1, (now - last) / 1000); last = now;
+    state.year = Math.min(2026.99, state.year + dt * 1.1);
+    const k = latest();
+    if (k >= 0 && k !== state.sel) showEvent(k); else updateReplay();
+    if (state.year >= 2026.99) { setPlaying(false); achieve('replay'); return; }
+    raf = requestAnimationFrame(tick);
+  };
+  raf = requestAnimationFrame(tick);
+}
+
+// ---------------------------------------------------------------------------
+// sections
+// ---------------------------------------------------------------------------
 function renderEdu() {
   $('#edu').innerHTML = EDU.map((e) => `
-    <li class="${e.now ? 'now' : ''}">
+    <li id="${e.id}" class="${e.now ? 'now' : ''}">
       <div class="when">${esc(L(e.when))}</div>
       <div class="what">${esc(L(e.what))}${e.badge ? `<span class="badge">${esc(L(e.badge))}</span>` : ''}</div>
       <div class="where">${esc(L(e.where))}</div>
+      ${e.thesis ? `<div class="thesis"><span class="k2">${esc(t('edu.thesis'))}</span><br><i>${esc(e.thesis.title)}</i><br><small>${esc(L(e.thesis))}</small></div>` : ''}
     </li>`).join('');
 }
 
@@ -598,160 +1037,368 @@ function renderPubs() {
   const counts = { all: PUBS.length };
   for (const p of PUBS) counts[p.theme] = (counts[p.theme] || 0) + 1;
   $('#pubFilters').innerHTML = ['all', 'dc', 've', 'om'].map((k) => `
-    <button class="chip" type="button" data-f="${k}" aria-pressed="${pubFilter === k}">
-      ${k === 'all' ? '' : `<span class="dot" style="background:${THEMES[k].color}"></span>`}${esc(k === 'all' ? t('pubs.all') : L(THEMES[k]))}<span class="count">${counts[k]}</span>
-    </button>`).join('');
-  const list = PUBS.filter((p) => pubFilter === 'all' || p.theme === pubFilter);
-  $('#pubs').innerHTML = list.map((p) => {
-    const i = PUBS.indexOf(p);
-    const authors = p.authors.map((a) => (ME.test(a) ? `<b>${esc(a)}</b>` : esc(a))).join(', ');
-    return `
-    <li class="pub" style="--c:${THEMES[p.theme].color}">
+    <button class="chip" type="button" data-f="${k}" aria-pressed="${state.pub === k}">${k === 'all' ? '' : `<span class="dot" style="background:${THEMES[k].color}"></span>`}${esc(k === 'all' ? t('pubs.all') : L(THEMES[k]))}<span class="count">${counts[k]}</span></button>`).join('');
+  $('#pubs').innerHTML = PUBS.filter((p) => state.pub === 'all' || p.theme === state.pub).map((p) => `
+    <li class="pub" id="${p.id}" style="--c:${THEMES[p.theme].color}">
       <div><div class="yr">${p.year}</div><div class="type">${esc(t('type.' + p.type))}</div></div>
       <div>
         <h3><a href="https://doi.org/${esc(p.doi)}">${esc(p.title)}</a></h3>
-        <div class="authors">${authors}</div>
+        <div class="authors">${p.authors.map((a) => (ME.test(a) ? `<b>${esc(a)}</b>` : esc(a))).join(', ')}</div>
         <div class="venue"><i>${esc(p.venue)}</i>, ${esc(p.details)}${p.lang === 'tr' ? ' · ' + esc(t('lang.tr')) : ''}</div>
-        <div class="row">
-          <span class="role">${esc(t('role.' + p.role))}</span>
-          <span class="doi">doi:${esc(p.doi)}</span>
-          <button class="mini" type="button" data-cite="${i}">${esc(t('pubs.cite'))}</button>
-        </div>
+        <div class="row"><span class="role">${esc(t('role.' + p.role))}</span><span class="doi">doi:${esc(p.doi)}</span>
+          <button class="mini" type="button" data-cite="${p.id}">${esc(t('pubs.cite'))}</button></div>
       </div>
-    </li>`;
+    </li>`).join('');
+}
+
+function renderTalks() {
+  $('#talks').innerHTML = TALKS.map((x) => `
+    <article class="card talk" id="${x.id}">
+      <div class="event">${esc(x.event)}</div>
+      <h3>${esc(x.title)}</h3>
+      <div class="place">${esc(x.place)} · ${esc(t('lang.tr'))}</div>
+      <div class="go"><a href="${DRIVE_VIEW(x.drive)}">${esc(t('talks.cert'))} ↗</a>${x.related ? `<a href="#${x.related}" data-goto="${x.related}">${esc(t('talks.related'))} →</a>` : ''}</div>
+    </article>`).join('');
+}
+
+const certActs = (c) => `${c.verify ? `<a class="mini" href="${esc(c.verify)}">${esc(t('certs.verify'))} ↗</a>` : ''}<a class="mini" href="${DRIVE_VIEW(c.drive)}">${esc(t('certs.view'))} ↗</a>`;
+function renderCerts() {
+  $('#certFilters').innerHTML = ['all', ...Object.keys(CERT_CATS)].map((k) => {
+    const n = k === 'all' ? CERTS.length : CERTS.filter((c) => c.cat === k).length;
+    return `<button class="chip" type="button" data-c="${k}" aria-pressed="${state.cert === k}">${esc(k === 'all' ? t('certs.all') : L(CERT_CATS[k]))}<span class="count">${n}</span></button>`;
+  }).join('');
+  $('#certGrid').innerHTML = CERTS.map((c, i) => {
+    const show = state.cert === 'all' || c.cat === state.cert;
+    const title = L(c.title);
+    const path = c.courses ? `
+      <div class="path">
+        <div class="nodes">${c.courses.map(([d, name, v]) => `<div class="node"><a href="https://coursera.org/verify/${v}" title="${esc(name)} · ${esc(fmtDate(d))}" aria-label="${esc(name)}"></a></div>`).join('')}</div>
+        <div class="cap"><span>${esc(fmtDate(c.courses[0][0]))} · ${esc(t('certs.first'))}</span><span>${esc(t('certs.path'))}</span><span>${esc(fmtDate(c.date))} · ${esc(t('certs.last'))}</span></div>
+      </div>
+      <details class="courses"><summary>${esc(t('certs.courses'))}</summary><ol>${c.courses.map(([d, name, v]) =>
+        `<li><a href="https://coursera.org/verify/${v}">${esc(name)}</a> <span class="d">${esc(fmtDate(d))}</span></li>`).join('')}</ol></details>` : '';
+    return `
+    <article class="cert${c.wide ? ' wide' : ''}" id="${c.id}"${show ? '' : ' hidden'}>
+      <button class="thumb" type="button" data-lb="${i}" aria-label="${esc(title)}">
+        <span class="ph" aria-hidden="true">${esc(c.issuer)}</span>
+        <img loading="lazy" referrerpolicy="no-referrer" src="${DRIVE_THUMB(c.drive, c.wide ? 900 : 640)}" alt="" onerror="this.remove()">
+        <span class="tag-cat">${esc(L(CERT_CATS[c.cat]))}</span>
+      </button>
+      <div class="body">
+        <div class="issuer">${esc(c.issuer)}</div>
+        <h3>${esc(title)}</h3>
+        ${c.note ? `<p>${esc(L(c.note))}</p>` : ''}
+        ${path}
+        <div class="meta">${esc(fmtDate(c.date))}${c.credential ? ` · ${esc(t('certs.id'))} ${esc(c.credential)}` : ''}</div>
+        <div class="acts">${certActs(c)}</div>
+      </div>
+    </article>`;
   }).join('');
 }
 
-function renderExp() {
-  $('#exp').innerHTML = EXP.map((e) => `
-    <div class="card">
-      <div class="when">${esc(L(e.when))}</div>
-      <h3>${e.link ? `<a href="${esc(e.link)}">${esc(L(e.what))}</a>` : esc(L(e.what))}</h3>
-      <p>${esc(L(e.body))}</p>
-    </div>`).join('');
+function renderTeach() {
+  $('#teachGrid').innerHTML = TEACH.map((x) => `
+    <article class="card" id="${x.id}">
+      <div class="when">${esc(L(x.when))}</div>
+      <h3>${esc(L(x.what))}</h3>
+      <p>${esc(L(x.body))}</p>
+      ${x.terms ? `<ul class="terms">${x.terms.map(([d, v]) => `<li><span>${esc(d)}</span><span>${esc(L(v))}</span></li>`).join('')}</ul>` : ''}
+      <div class="go">
+        ${x.link ? `<a href="${esc(x.link)}">${esc(t('teach.open'))} ↗</a>` : ''}
+        ${x.drive ? `<a href="${DRIVE_VIEW(x.drive)}">${esc(t('teach.doc'))} ↗</a>` : ''}
+        ${(x.verify || []).map((u, i) => `<a href="${esc(u)}">${esc(t('teach.verify'))} ${i + 1} ↗</a>`).join('')}
+      </div>
+    </article>`).join('');
 }
 
 function renderProjects() {
-  const used = ['all', ...Object.keys(TAGS).filter((k) => PROJECTS.some((p) => p.tags.includes(k)))];
+  const used = ['all', ...Object.keys(PROJ_TAGS).filter((k) => PROJECTS.some((p) => p.tags.includes(k)))];
   $('#projFilters').innerHTML = used.map((k) => {
     const n = k === 'all' ? PROJECTS.length : PROJECTS.filter((p) => p.tags.includes(k)).length;
-    return `<button class="chip" type="button" data-p="${k}" aria-pressed="${projFilter === k}">${esc(k === 'all' ? t('proj.all') : L(TAGS[k]))}<span class="count">${n}</span></button>`;
+    return `<button class="chip" type="button" data-p="${k}" aria-pressed="${state.proj === k}">${esc(k === 'all' ? t('proj.all') : L(PROJ_TAGS[k]))}<span class="count">${n}</span></button>`;
   }).join('');
-  $('#projects-grid').innerHTML = PROJECTS.map((p) => {
-    const show = projFilter === 'all' || p.tags.includes(projFilter);
-    const repo = `https://github.com/ugursirvermez/${p.repo}`;
+  $('#projGrid').innerHTML = PROJECTS.map((p) => {
+    const show = state.proj === 'all' || p.tags.includes(state.proj);
     return `
-    <article class="proj"${show ? '' : ' hidden'}>
+    <article class="proj" id="${p.id}"${show ? '' : ' hidden'}>
       <div class="top"><h3>${esc(p.name)}</h3><span class="yr">${p.year}</span></div>
       <p>${esc(p[lang] || p.en)}</p>
-      <div class="tags">${p.tags.map((k) => `<span class="tag">${esc(L(TAGS[k]))}</span>`).join('')}</div>
-      <div class="go">${p.live ? `<a href="${esc(p.live)}">${esc(t('proj.live'))} ↗</a>` : ''}<a href="${esc(repo)}">${esc(t('proj.repo'))} ↗</a></div>
+      <div class="tags">${p.tags.filter((k) => PROJ_TAGS[k]).map((k) => `<span class="tag">${esc(L(PROJ_TAGS[k]))}</span>`).join('')}</div>
+      <div class="go">${p.live ? `<a href="${esc(p.live)}">${esc(t('proj.live'))} ↗</a>` : ''}<a href="https://github.com/ugursirvermez/${esc(p.repo)}">${esc(t('proj.repo'))} ↗</a></div>
     </article>`;
   }).join('');
-  $('#projEmpty').hidden = PROJECTS.some((p) => projFilter === 'all' || p.tags.includes(projFilter));
+  $('#projEmpty').hidden = PROJECTS.some((p) => state.proj === 'all' || p.tags.includes(state.proj));
 }
 
+// Evidence for a skill = everything on the page tagged with one of its tags.
+function evidenceFor(tags) {
+  const hit = (x) => (x.tags || []).some((k) => tags.includes(k));
+  const out = [];
+  CERTS.filter(hit).forEach((c) => out.push({ kind: 'cert', id: c.id, label: L(c.title), href: c.verify || DRIVE_VIEW(c.drive) }));
+  PROJECTS.filter(hit).forEach((p) => out.push({ kind: 'proj', id: p.id, label: p.name, href: `https://github.com/ugursirvermez/${p.repo}` }));
+  PUBS.filter(hit).forEach((p) => out.push({ kind: 'pub', id: p.id, label: p.title, href: `https://doi.org/${p.doi}` }));
+  TALKS.filter(hit).forEach((x) => out.push({ kind: 'talk', id: x.id, label: x.title, href: DRIVE_VIEW(x.drive) }));
+  TEACH.filter(hit).forEach((x) => out.push({ kind: 'teach', id: x.id, label: L(x.what) }));
+  return out;
+}
 function renderSkills() {
   $('#skillGroups').innerHTML = SKILLS.map((g) => `
-    <div class="card">
-      <h3>${esc(L(g))}</h3>
-      <div class="chips">${g.items.map(([name, tag]) => tag
-        ? `<button class="chip link" type="button" data-skill="${tag}">${esc(name)}</button>`
-        : `<span class="chip static">${esc(name)}</span>`).join('')}</div>
-    </div>`).join('');
+    <div class="card"><h3>${esc(L(g))}</h3><div class="chips">${g.items.map(([id, name, tags]) => {
+      const n = tags.length ? evidenceFor(tags).length : 0;
+      return n ? `<button class="chip" type="button" data-skill="${id}" aria-pressed="${state.skill === id}">${esc(L(name))}<span class="ev-n">${n}</span></button>`
+               : `<span class="chip static">${esc(L(name))}</span>`;
+    }).join('')}</div></div>`).join('');
+  renderEvidence();
+}
+function renderEvidence() {
+  const el = $('#evidence');
+  const item = SKILLS.flatMap((g) => g.items).find(([id]) => id === state.skill);
+  if (!item) {
+    el.innerHTML = `<div class="k2">${esc(t('skills.proof'))}</div><h3>${esc(t('skills.pick'))}</h3><p>${esc(t('skills.pickBody'))}</p>`;
+    return;
+  }
+  const ev = evidenceFor(item[2]);
+  el.innerHTML = `<div class="k2">${esc(t('skills.proof'))} · ${ev.length}</div><h3>${esc(L(item[1]))}</h3>
+    <ul>${ev.map((e) => `<li><span class="t">${esc(t('kind.' + e.kind))}</span><span>${e.href ? `<a href="${esc(e.href)}">${esc(e.label)} ↗</a>` : esc(e.label)}<a class="on-page" href="#${e.id}" data-goto="${e.id}">${esc(t('skills.onpage'))} →</a></span></li>`).join('')}</ul>`;
 }
 
 function renderPosts() {
-  const fmt = (d) => {
-    const [y, m] = d.split('-').map(Number);
-    return new Date(y, m - 1, 1).toLocaleDateString(lang === 'tr' ? 'tr-TR' : 'en-GB', { month: 'short', year: 'numeric' });
-  };
   $('#posts').innerHTML = POSTS.map((p) => `
-    <li><span class="when">${esc(fmt(p.date))}</span><a href="${esc(p.url)}">${esc(p.title)}</a><span class="tag">${esc(L(p.tag))}</span></li>`).join('');
+    <li><span class="when">${esc(fmtDate(p.date))}</span><a href="${esc(p.url)}">${esc(p.title)}</a><span class="tag">${esc(L(p.tag))}</span></li>`).join('');
+}
+
+function renderHelp() {
+  const rows = lang === 'tr'
+    ? [['/  ⌘K', 'Ara'], ['?', 'Bu pencere'], ['1 – 8', 'Bölüme git'], ['space', 'Özeti oynat / durdur'], ['← →', 'Yılı değiştir · sertifikalar arasında gez'], ['L', 'Dil'], ['T', 'Tema'], ['P', 'PDF'], ['esc', 'Kapat']]
+    : [['/  ⌘K', 'Search'], ['?', 'This window'], ['1 – 8', 'Jump to a section'], ['space', 'Play / pause the replay'], ['← →', 'Change year · browse certificates'], ['L', 'Language'], ['T', 'Theme'], ['P', 'PDF'], ['esc', 'Close']];
+  $('#helpList').innerHTML = rows.map(([k, v]) => `<dt><span class="k">${esc(k)}</span></dt><dd style="margin:0">${esc(v)}</dd>`).join('');
 }
 
 function renderAll() {
-  renderStatic(); renderEdu(); renderPubs(); renderExp(); renderProjects(); renderSkills(); renderPosts();
+  renderStatic(); renderStats(); renderLaneBtns(); renderTimeline(); renderEdu(); renderPubs(); renderTalks();
+  renderCerts(); renderTeach(); renderProjects(); renderSkills(); renderPosts(); renderHelp();
+  if (state.sel != null) showEvent(state.sel);
+  else $('#evDetail').innerHTML = `<span class="d-lane">${esc(t('replay.pick'))}</span>`;
 }
 
-// ---------------------------------------------------------------------------
-// events
-// ---------------------------------------------------------------------------
+// ===========================================================================
+// COMMAND PALETTE
+// ===========================================================================
+function searchIndex() {
+  const sec = [...document.querySelectorAll('.toc a')].map((a) => ({ kind: 'section', label: a.textContent, go: a.getAttribute('href').slice(1) }));
+  return [
+    ...sec,
+    ...PUBS.map((p) => ({ kind: 'pub', label: p.title, sub: `${p.venue} · ${p.year}`, go: p.id })),
+    ...TALKS.map((x) => ({ kind: 'talk', label: x.title, sub: `${x.event} · ${x.place}`, go: x.id })),
+    ...CERTS.map((c) => ({ kind: 'cert', label: L(c.title), sub: `${c.issuer} · ${fmtDate(c.date)}`, go: c.id })),
+    ...IBM_COURSES.map(([d, name, v]) => ({ kind: 'course', label: name, sub: `IBM AI Engineering · ${fmtDate(d)}`, href: `https://coursera.org/verify/${v}` })),
+    ...PROJECTS.map((p) => ({ kind: 'proj', label: p.name, sub: p[lang] || p.en, go: p.id })),
+    ...TEACH.map((x) => ({ kind: 'teach', label: L(x.what), sub: L(x.when), go: x.id })),
+    ...EDU.map((e) => ({ kind: 'section', label: L(e.what), sub: L(e.when), go: e.id })),
+    ...POSTS.map((p) => ({ kind: 'post', label: p.title, sub: fmtDate(p.date), href: p.url })),
+  ];
+}
+let results = [], cursor = 0;
+function openPalette() {
+  closeOverlays();
+  $('#palette').hidden = false;
+  $('#pq').value = '';
+  runSearch();
+  $('#pq').focus();
+  achieve('search');
+}
+function closeOverlays() { for (const o of document.querySelectorAll('.overlay')) o.hidden = true; }
+function runSearch() {
+  const terms = fold($('#pq').value.trim()).split(/\s+/).filter(Boolean);
+  const all = searchIndex();
+  results = (terms.length
+    ? all.filter((r) => { const h = fold(`${r.label} ${r.sub || ''} ${t('kind.' + r.kind)}`); return terms.every((w) => h.includes(w)); })
+    : all.filter((r) => r.kind === 'section')).slice(0, 40);
+  cursor = 0;
+  paintResults();
+}
+function paintResults() {
+  $('#pres').innerHTML = results.map((r, i) => `<li role="option" aria-selected="${i === cursor}" data-r="${i}"><span class="t">${esc(t('kind.' + r.kind))}</span><span class="s">${esc(r.label)}${r.sub ? `<small>${esc(r.sub)}</small>` : ''}</span></li>`).join('');
+  $('#pcount').textContent = t('search.n').replace('{n}', results.length);
+  const sel = $('#pres [aria-selected="true"]');
+  if (sel) sel.scrollIntoView({ block: 'nearest' });
+}
+function pick(i) {
+  const r = results[i];
+  if (!r) return;
+  closeOverlays();
+  if (r.href) window.open(r.href, '_blank', 'noopener');
+  else focusItem(r.go);
+}
+$('#pq').addEventListener('input', runSearch);
+$('#pq').addEventListener('keydown', (e) => {
+  if (e.key === 'ArrowDown') { cursor = Math.min(results.length - 1, cursor + 1); paintResults(); e.preventDefault(); }
+  if (e.key === 'ArrowUp') { cursor = Math.max(0, cursor - 1); paintResults(); e.preventDefault(); }
+  if (e.key === 'Enter') { pick(cursor); e.preventDefault(); }
+});
+$('#pres').addEventListener('click', (e) => { const li = e.target.closest('[data-r]'); if (li) pick(+li.dataset.r); });
+
+// ===========================================================================
+// LIGHTBOX
+// ===========================================================================
+let lbIndex = 0;
+const visibleCerts = () => CERTS.filter((c) => state.cert === 'all' || c.cat === state.cert);
+function openLightbox(i) {
+  lbIndex = visibleCerts().indexOf(CERTS[i]);
+  paintLightbox();
+  $('#lightbox').hidden = false;
+  $('#lbClose').focus();
+  achieve('cert');
+}
+function paintLightbox() {
+  const list = visibleCerts();
+  lbIndex = (lbIndex + list.length) % list.length;
+  const c = list[lbIndex];
+  $('#lbImg').src = DRIVE_THUMB(c.drive, 1600);
+  $('#lbImg').alt = L(c.title);
+  $('#lbT').innerHTML = `${esc(L(c.title))}<small>${esc(c.issuer)} · ${esc(fmtDate(c.date))}${c.credential ? ` · ${esc(t('certs.id'))} ${esc(c.credential)}` : ''} · ${lbIndex + 1}/${list.length}</small>`;
+  $('#lbActs').innerHTML = certActs(c);
+}
+$('#lbPrev').addEventListener('click', () => { lbIndex--; paintLightbox(); });
+$('#lbNext').addEventListener('click', () => { lbIndex++; paintLightbox(); });
+$('#lbClose').addEventListener('click', closeOverlays);
+for (const o of document.querySelectorAll('.overlay')) o.addEventListener('click', (e) => { if (e.target === o) closeOverlays(); });
+
+// ===========================================================================
+// EVENTS
+// ===========================================================================
 document.addEventListener('click', async (e) => {
+  const g = e.target.closest('[data-goto]');
+  if (g) { e.preventDefault(); focusItem(g.dataset.goto); return; }
   const f = e.target.closest('[data-f]');
-  if (f) { pubFilter = f.dataset.f; renderPubs(); return; }
+  if (f) { state.pub = f.dataset.f; renderPubs(); return; }
+  const c = e.target.closest('[data-c]');
+  if (c) { state.cert = c.dataset.c; renderCerts(); return; }
   const p = e.target.closest('[data-p]');
-  if (p) { projFilter = p.dataset.p; renderProjects(); return; }
+  if (p) { state.proj = p.dataset.p; renderProjects(); return; }
   const s = e.target.closest('[data-skill]');
-  if (s) {
-    projFilter = s.dataset.skill;
-    renderProjects();
-    $('#projects').scrollIntoView({ behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' });
-    return;
+  if (s) { state.skill = state.skill === s.dataset.skill ? null : s.dataset.skill; renderSkills(); achieve('skill'); return; }
+  const lb = e.target.closest('[data-lb]');
+  if (lb) { openLightbox(+lb.dataset.lb); return; }
+  const ln = e.target.closest('[data-lane]');
+  if (ln) {
+    const k = ln.dataset.lane;
+    if (state.lanes.has(k) && state.lanes.size > 1) state.lanes.delete(k); else state.lanes.add(k);
+    renderLaneBtns(); renderTimeline(); return;
   }
-  const c = e.target.closest('[data-cite]');
-  if (c) {
-    if (await copy(PUBS[+c.dataset.cite].apa)) {
-      c.textContent = t('pubs.copied'); c.classList.add('done'); toast(t('pubs.toast'));
-      setTimeout(() => { c.textContent = t('pubs.cite'); c.classList.remove('done'); }, 1600);
-    }
+  const ev = e.target.closest('#tl .ev');
+  if (ev) { setPlaying(false); showEvent(+ev.dataset.i); return; }
+  const ci = e.target.closest('[data-cite]');
+  if (ci && await copy(byId[ci.dataset.cite].apa)) {
+    ci.textContent = t('pubs.copied'); ci.classList.add('done'); toast(esc(t('pubs.toast')));
+    setTimeout(() => { ci.textContent = t('pubs.cite'); ci.classList.remove('done'); }, 1600);
   }
 });
-
+$('#tl').addEventListener('keydown', (e) => {
+  const ev = e.target.closest('.ev');
+  if (ev && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); e.stopPropagation(); setPlaying(false); showEvent(+ev.dataset.i); }
+});
 $('#copyAll').addEventListener('click', async () => {
-  const list = PUBS.filter((p) => pubFilter === 'all' || p.theme === pubFilter).map((p) => p.apa)
-    .sort((a, b) => a.localeCompare(b, 'tr'));
-  if (await copy(list.join('\n\n'))) toast(t('pubs.toastAll'));
+  const list = PUBS.filter((p) => state.pub === 'all' || p.theme === state.pub).map((p) => p.apa).sort((a, b) => a.localeCompare(b, 'tr'));
+  if (await copy(list.join('\n\n'))) toast(esc(t('pubs.toastAll')));
 });
+$('#yearRange').addEventListener('input', (e) => { setPlaying(false); state.year = +e.target.value; updateReplay(); });
+$('#playBtn').addEventListener('click', () => setPlaying(!playing));
+$('#searchBtn').addEventListener('click', openPalette);
 
-$('#lang').addEventListener('click', () => {
-  lang = lang === 'en' ? 'tr' : 'en';
-  store.set('cv.lang', lang);
-  renderAll();
-});
+function toggleLang() { lang = lang === 'en' ? 'tr' : 'en'; store.set('cv.lang', lang); renderAll(); }
+$('#lang').addEventListener('click', toggleLang);
 
 const THEME_ORDER = ['auto', 'dark', 'light'];
+let themeMode = store.get('cv.theme', 'auto');
 function applyTheme(mode) {
   if (mode === 'auto') document.documentElement.removeAttribute('data-theme');
   else document.documentElement.setAttribute('data-theme', mode);
   $('#theme').textContent = { auto: '◐', dark: '●', light: '○' }[mode];
   $('#theme').title = mode;
 }
-let themeMode = store.get('cv.theme', 'auto');
+function cycleTheme() { themeMode = THEME_ORDER[(THEME_ORDER.indexOf(themeMode) + 1) % 3]; store.set('cv.theme', themeMode); applyTheme(themeMode); }
 applyTheme(themeMode);
-$('#theme').addEventListener('click', () => {
-  themeMode = THEME_ORDER[(THEME_ORDER.indexOf(themeMode) + 1) % 3];
-  store.set('cv.theme', themeMode);
-  applyTheme(themeMode);
-});
+$('#theme').addEventListener('click', cycleTheme);
 
-$('#print').addEventListener('click', () => {
-  // print everything, not just the current filter
-  const keep = [pubFilter, projFilter];
-  pubFilter = 'all'; projFilter = 'all'; renderPubs(); renderProjects();
+function doPrint() {
+  const keep = [state.pub, state.cert, state.proj];
+  state.pub = state.cert = state.proj = 'all';
+  renderPubs(); renderCerts(); renderProjects();
+  document.querySelectorAll('details.courses').forEach((d) => { d.open = true; });
   window.print();
-  [pubFilter, projFilter] = keep; renderPubs(); renderProjects();
+  [state.pub, state.cert, state.proj] = keep;
+  renderPubs(); renderCerts(); renderProjects();
+}
+$('#print').addEventListener('click', doPrint);
+
+document.addEventListener('keydown', (e) => {
+  const el = document.activeElement;
+  const typing = el && (el.tagName === 'TEXTAREA' || (el.tagName === 'INPUT' && el.type !== 'range'));
+  const anyOpen = [...document.querySelectorAll('.overlay')].some((o) => !o.hidden);
+  if (e.key === 'Escape') { closeOverlays(); return; }
+  if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') { e.preventDefault(); openPalette(); return; }
+  if (!$('#lightbox').hidden) {
+    if (e.key === 'ArrowLeft') { lbIndex--; paintLightbox(); }
+    if (e.key === 'ArrowRight') { lbIndex++; paintLightbox(); }
+    return;
+  }
+  if (typing || anyOpen || e.metaKey || e.ctrlKey || e.altKey) return;
+  const k = e.key;
+  const onPage = el === document.body || !el;
+  if (k === '/') { e.preventDefault(); openPalette(); }
+  else if (k === '?') { $('#help').hidden = false; }
+  else if (/^[1-8]$/.test(k)) { const a = document.querySelectorAll('.toc a')[+k - 1]; if (a) focusItem(a.getAttribute('href').slice(1)); }
+  else if (k === ' ' && onPage) { e.preventDefault(); setPlaying(!playing); }
+  else if ((k === 'ArrowLeft' || k === 'ArrowRight') && onPage) {
+    setPlaying(false);
+    state.year = Math.max(TL.from, Math.min(2026.99, Math.floor(state.year) + (k === 'ArrowRight' ? 1.5 : -0.5)));
+    updateReplay();
+  }
+  else if (k === 'l' || k === 'L') toggleLang();
+  else if (k === 't' || k === 'T') cycleTheme();
+  else if (k === 'p' || k === 'P') doPrint();
 });
 
-// section reveal + active link in the bar
-if (!('IntersectionObserver' in window)) document.querySelectorAll('.reveal').forEach((el) => el.classList.add('in'));
-const reveal = new IntersectionObserver((entries) => {
-  for (const en of entries) if (en.isIntersecting) { en.target.classList.add('in'); reveal.unobserve(en.target); }
-}, { rootMargin: '0px 0px -8% 0px' });
-document.querySelectorAll('.reveal').forEach((el) => reveal.observe(el));
+// reveal, active link, exploration progress
+const SECTION_IDS = [...document.querySelectorAll('.toc a')].map((a) => a.getAttribute('href').slice(1));
+const seenSections = new Set();
+function markSeen(id) {
+  if (!SECTION_IDS.includes(id) || seenSections.has(id)) return;
+  seenSections.add(id);
+  document.querySelector(`.toc a[href="#${id}"]`).classList.add('seen');
+  const n = seenSections.size, total = SECTION_IDS.length;
+  $('#exploreTxt').textContent = `${n}/${total}`;
+  $('#exploreRing').style.strokeDashoffset = String(50.27 * (1 - n / total));
+  if (n === total) achieve('all');
+}
+let counted = false;
+if (!('IntersectionObserver' in window)) {
+  document.querySelectorAll('.reveal').forEach((el) => el.classList.add('in'));
+} else {
+  const reveal = new IntersectionObserver((entries) => {
+    for (const en of entries) {
+      if (!en.isIntersecting) continue;
+      en.target.classList.add('in');
+      if (en.target.id === 'stats' && !counted) { counted = true; countUp(); }
+      reveal.unobserve(en.target);
+    }
+  }, { rootMargin: '0px 0px -8% 0px' });
+  document.querySelectorAll('.reveal').forEach((el) => reveal.observe(el));
+  const links = [...document.querySelectorAll('.toc a')];
+  const spy = new IntersectionObserver((entries) => {
+    for (const en of entries) {
+      if (!en.isIntersecting) continue;
+      for (const a of links) a.classList.toggle('on', a.getAttribute('href') === '#' + en.target.id);
+      markSeen(en.target.id);
+    }
+  }, { rootMargin: '-40% 0px -50% 0px' });
+  SECTION_IDS.forEach((id) => spy.observe(document.getElementById(id)));
+}
 
-const links = [...document.querySelectorAll('.toc a')];
-const spy = new IntersectionObserver((entries) => {
-  for (const en of entries) {
-    if (!en.isIntersecting) continue;
-    for (const a of links) a.classList.toggle('on', a.getAttribute('href') === '#' + en.target.id);
-  }
-}, { rootMargin: '-45% 0px -50% 0px' });
-document.querySelectorAll('main section[id]').forEach((s) => spy.observe(s));
-
-// ---------------------------------------------------------------------------
+// ===========================================================================
 // the d20: same anaglyph die as the profile banner, but this one you can roll
-// ---------------------------------------------------------------------------
+// ===========================================================================
 (function d20() {
   const cv = $('#d20');
   if (!cv) return;
@@ -764,21 +1411,18 @@ document.querySelectorAll('main section[id]').forEach((s) => spy.observe(s));
     const d = V[i].reduce((s, v, k) => s + (v - V[j][k]) ** 2, 0);
     if (Math.abs(d - 4) < 1e-6) E.push([i, j]);
   }
-  const still = matchMedia('(prefers-reduced-motion: reduce)').matches;
   let ax = 0.5, ay = 0.3, vx = 0.004, vy = 0.009, drag = null;
   cv.addEventListener('pointerdown', (e) => { drag = { x: e.clientX, y: e.clientY }; cv.setPointerCapture(e.pointerId); });
   cv.addEventListener('pointermove', (e) => {
     if (!drag) return;
     vy = (e.clientX - drag.x) * 0.004; vx = (e.clientY - drag.y) * 0.004;
     ay += vy; ax += vx; drag = { x: e.clientX, y: e.clientY };
-    if (still) draw();
+    if (reduced) draw();
   });
   const end = () => { drag = null; };
   cv.addEventListener('pointerup', end); cv.addEventListener('pointercancel', end);
-
   function colors() {
-    const cs = getComputedStyle(document.documentElement);
-    const dark = cs.getPropertyValue('color-scheme').trim() === 'dark';
+    const dark = getComputedStyle(document.documentElement).getPropertyValue('color-scheme').trim() === 'dark';
     return dark ? { red: '#ff4747', cyan: '#2fd3d8', op: 'lighter' } : { red: '#e5303d', cyan: '#0096a8', op: 'multiply' };
   }
   function draw() {
@@ -788,8 +1432,8 @@ document.querySelectorAll('main section[id]').forEach((s) => spy.observe(s));
     ctx.globalCompositeOperation = c.op;
     for (const [eye, col] of [[-0.17, c.red], [0.17, c.cyan]]) {
       const pts = V.map(([x, y, z]) => {
-        let y1 = y * Math.cos(ax) - z * Math.sin(ax), z1 = y * Math.sin(ax) + z * Math.cos(ax);
-        let x2 = x * Math.cos(ay) + z1 * Math.sin(ay), z2 = -x * Math.sin(ay) + z1 * Math.cos(ay);
+        const y1 = y * Math.cos(ax) - z * Math.sin(ax), z1 = y * Math.sin(ax) + z * Math.cos(ax);
+        const x2 = x * Math.cos(ay) + z1 * Math.sin(ay), z2 = -x * Math.sin(ay) + z1 * Math.cos(ay);
         const Z = D + z2;
         return [S / 2 + f * (x2 - eye) / Z + f * eye / D, S / 2 - f * y1 / Z];
       });
@@ -805,8 +1449,7 @@ document.querySelectorAll('main section[id]').forEach((s) => spy.observe(s));
     draw();
     requestAnimationFrame(loop);
   }
-  if (still) draw(); else loop();
-  matchMedia('(prefers-color-scheme: dark)').addEventListener('change', draw);
+  if (reduced) draw(); else loop();
 })();
 
 renderAll();
