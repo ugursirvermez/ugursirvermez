@@ -1,0 +1,815 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Uğur Sırvermez · CV</title>
+<meta name="description" content="Uğur Sırvermez: PhD student in Computer and Instructional Technologies Education at Bursa Uludağ University. Game engines, virtual environments, machine learning, teaching.">
+<meta name="theme-color" content="#0f1013">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%230f1013'/%3E%3Cpath d='M16 5L26 11V21L16 27L6 21V11Z' fill='none' stroke='%23f2464a' stroke-width='2.4' stroke-linejoin='round'/%3E%3C/svg%3E">
+<script>document.documentElement.classList.add('js');</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:wght@400;500;600&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #f6f3ec; --panel: #fbf9f4; --line: #dcd5c8; --ink: #17171b; --muted: #6b665d;
+    --faint: #e7e1d5; --accent: #d7263d; --cyan: #0096a8; --chip: #efeadf;
+    --serif: "Source Serif 4", "Iowan Old Style", Georgia, serif;
+    --mono: "IBM Plex Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+    --sans: "IBM Plex Sans", -apple-system, "Segoe UI", Roboto, sans-serif;
+    color-scheme: light;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #0f1013; --panel: #15161a; --line: #272a31; --ink: #ece8e1; --muted: #8d8980;
+      --faint: #1d1f24; --accent: #f2464a; --cyan: #2fd3d8; --chip: #1b1c21; color-scheme: dark;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #0f1013; --panel: #15161a; --line: #272a31; --ink: #ece8e1; --muted: #8d8980;
+    --faint: #1d1f24; --accent: #f2464a; --cyan: #2fd3d8; --chip: #1b1c21; color-scheme: dark;
+  }
+
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; scroll-padding-top: 76px; }
+  body {
+    margin: 0; background: var(--bg); color: var(--ink); font: 16px/1.6 var(--sans);
+    background-image: radial-gradient(circle at 1px 1px, color-mix(in srgb, var(--ink) 7%, transparent) 1px, transparent 0);
+    background-size: 24px 24px;
+  }
+  a { color: inherit; text-decoration-color: var(--accent); text-underline-offset: 3px; }
+  a:hover { color: var(--accent); }
+  button { font: inherit; color: inherit; }
+  :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 4px; }
+
+  /* top bar */
+  .bar {
+    position: sticky; top: 0; z-index: 10; display: flex; align-items: center; gap: 16px;
+    padding: 12px max(16px, calc((100vw - 1000px) / 2)); background: color-mix(in srgb, var(--bg) 88%, transparent);
+    border-bottom: 1px solid var(--line); -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px);
+  }
+  .bar .home { font: 600 12px/1 var(--mono); letter-spacing: .06em; text-decoration: none; white-space: nowrap; }
+  .toc { display: flex; gap: 4px; overflow-x: auto; scrollbar-width: none; flex: 1; }
+  .toc::-webkit-scrollbar { display: none; }
+  .toc a {
+    font: 500 12px/1 var(--mono); letter-spacing: .06em; text-transform: uppercase; text-decoration: none;
+    color: var(--muted); padding: 8px 10px; border-radius: 6px; white-space: nowrap;
+  }
+  .toc a.on { color: var(--ink); background: var(--chip); }
+  .tools { display: flex; gap: 6px; }
+  .tool {
+    font: 600 11px/1 var(--mono); letter-spacing: .08em; background: none; border: 1px solid var(--line);
+    border-radius: 6px; padding: 8px 9px; cursor: pointer; color: var(--muted); white-space: nowrap;
+  }
+  .tool:hover, .tool[aria-pressed="true"] { color: var(--ink); border-color: var(--muted); }
+  .tool.primary { background: var(--accent); border-color: var(--accent); color: #fff; }
+
+  main { max-width: 1000px; margin: 0 auto; padding: 0 16px 80px; }
+
+  /* intro */
+  .intro { display: grid; grid-template-columns: 1fr auto; gap: 24px; align-items: center; padding: 56px 0 28px; }
+  .kicker { font: 600 12px/1.4 var(--mono); letter-spacing: .14em; text-transform: uppercase; color: var(--accent); }
+  h1 { font: 600 clamp(42px, 7vw, 72px)/1.02 var(--serif); margin: 12px 0 16px; letter-spacing: -.01em; }
+  .lede { font-size: 19px; max-width: 620px; margin: 0; }
+  .links { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 22px; }
+  .links a {
+    font: 600 12px/1 var(--mono); letter-spacing: .08em; text-transform: uppercase; text-decoration: none;
+    border: 1px solid var(--line); border-radius: 999px; padding: 9px 14px; background: var(--panel);
+  }
+  .links a:hover { border-color: var(--accent); }
+  #d20 { width: 180px; height: 180px; cursor: grab; touch-action: none; }
+  #d20:active { cursor: grabbing; }
+  .d20cap { font: 11px/1.3 var(--mono); color: var(--muted); text-align: center; margin-top: 4px; }
+
+  .stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin: 8px 0 12px; }
+  .stat { background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 16px 18px; }
+  .stat b { display: block; font: 600 34px/1.1 var(--serif); }
+  .stat span { font: 12px/1.35 var(--mono); color: var(--muted); }
+
+  /* sections */
+  section { padding-top: 44px; }
+  .sec-head { display: flex; align-items: baseline; gap: 14px; border-bottom: 1px solid var(--line); padding-bottom: 10px; margin-bottom: 20px; position: relative; }
+  .sec-head::after { content: ""; position: absolute; left: 0; bottom: -2px; width: 56px; height: 3px; background: var(--accent); }
+  .sec-head .num { font: 600 12px/1 var(--mono); color: var(--accent); letter-spacing: .14em; }
+  h2 { font: 600 34px/1.1 var(--serif); margin: 0; }
+  .sec-head .aside { margin-left: auto; font: 12px/1.3 var(--mono); color: var(--muted); text-align: right; }
+
+  .js .reveal { opacity: 0; transform: translateY(12px); transition: opacity .5s ease, transform .5s ease; }
+  .reveal.in { opacity: 1; transform: none; }
+  @media (prefers-reduced-motion: reduce) { .reveal { opacity: 1; transform: none; transition: none; } html { scroll-behavior: auto; } }
+
+  /* timeline (education, experience) */
+  .tl { list-style: none; margin: 0; padding: 0 0 0 22px; border-left: 2px solid var(--line); }
+  .tl li { position: relative; padding: 0 0 22px 18px; }
+  .tl li::before {
+    content: ""; position: absolute; left: -30px; top: 6px; width: 12px; height: 12px; border-radius: 50%;
+    background: var(--bg); border: 2px solid var(--muted);
+  }
+  .tl li.now::before { border-color: var(--accent); background: var(--accent); box-shadow: 0 0 0 5px color-mix(in srgb, var(--accent) 22%, transparent); }
+  .tl .when { font: 600 12px/1 var(--mono); letter-spacing: .08em; color: var(--muted); }
+  .tl .what { font: 600 20px/1.3 var(--serif); margin: 6px 0 2px; }
+  .tl .where { color: var(--muted); font-size: 15px; }
+  .badge {
+    display: inline-block; font: 600 10.5px/1 var(--mono); letter-spacing: .1em; text-transform: uppercase;
+    border: 1px solid currentColor; border-radius: 4px; padding: 4px 6px; margin-left: 8px; vertical-align: 3px; color: var(--accent);
+  }
+
+  /* chips / filters */
+  .filters { display: flex; flex-wrap: wrap; gap: 6px; margin: 0 0 18px; }
+  .chip {
+    font: 500 12.5px/1 var(--mono); background: var(--chip); border: 1px solid var(--line); border-radius: 999px;
+    padding: 8px 12px; cursor: pointer; color: var(--ink);
+  }
+  .chip[aria-pressed="true"] { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+  .chip .count { color: var(--muted); margin-left: 4px; }
+  .chip[aria-pressed="true"] .count { color: inherit; opacity: .7; }
+  .dot { display: inline-block; width: 9px; height: 9px; border-radius: 2px; margin-right: 7px; vertical-align: 0; }
+
+  /* publications */
+  .pubs { list-style: none; margin: 0; padding: 0; display: grid; gap: 12px; }
+  .pub {
+    display: grid; grid-template-columns: 64px 1fr; gap: 16px; background: var(--panel); border: 1px solid var(--line);
+    border-left: 4px solid var(--c); border-radius: 12px; padding: 16px 18px;
+  }
+  .pub .yr { font: 600 26px/1 var(--serif); color: var(--c); }
+  .pub .type { font: 600 10.5px/1.3 var(--mono); letter-spacing: .1em; text-transform: uppercase; color: var(--muted); margin-top: 6px; }
+  .pub h3 { font: 600 19px/1.35 var(--serif); margin: 0 0 6px; }
+  .pub h3 a { text-decoration: none; }
+  .pub h3 a:hover { text-decoration: underline; }
+  .pub .authors { font-size: 14.5px; }
+  .pub .authors b { font-weight: 600; background: color-mix(in srgb, var(--accent) 16%, transparent); padding: 0 3px; border-radius: 3px; }
+  .pub .venue { font-size: 14.5px; color: var(--muted); }
+  .pub .row { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-top: 10px; }
+  .pub .doi { font: 12px/1 var(--mono); color: var(--muted); }
+  .mini {
+    font: 600 11px/1 var(--mono); letter-spacing: .08em; text-transform: uppercase; background: none; cursor: pointer;
+    border: 1px solid var(--line); border-radius: 6px; padding: 7px 9px; color: var(--muted);
+  }
+  .mini:hover { color: var(--ink); border-color: var(--muted); }
+  .mini.done { color: var(--cyan); border-color: var(--cyan); }
+  .role { font: 600 10.5px/1 var(--mono); letter-spacing: .1em; text-transform: uppercase; color: var(--c); }
+
+  /* experience list */
+  .exp { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
+  .card { background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 16px 18px; }
+  .card .when { font: 600 11.5px/1 var(--mono); letter-spacing: .08em; color: var(--accent); text-transform: uppercase; }
+  .card h3 { font: 600 19px/1.3 var(--serif); margin: 8px 0 4px; }
+  .card p { margin: 0; color: var(--muted); font-size: 15px; }
+
+  /* projects */
+  .projects { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+  .proj { display: flex; flex-direction: column; background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 16px 18px; transition: transform .2s ease, border-color .2s ease; }
+  .proj:hover { transform: translateY(-2px); border-color: var(--muted); }
+  .proj[hidden] { display: none; }
+  .proj .top { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; }
+  .proj h3 { font: 600 18px/1.25 var(--serif); margin: 0; word-break: break-word; }
+  .proj .yr { font: 12px/1 var(--mono); color: var(--muted); }
+  .proj p { margin: 8px 0 12px; font-size: 14.5px; color: var(--muted); flex: 1; }
+  .tags { display: flex; flex-wrap: wrap; gap: 5px; }
+  .tag { font: 11px/1 var(--mono); border: 1px solid var(--line); border-radius: 4px; padding: 4px 6px; color: var(--muted); }
+  .proj .go { display: flex; gap: 12px; margin-top: 12px; font: 600 11.5px/1 var(--mono); letter-spacing: .08em; text-transform: uppercase; }
+  .proj .go a { text-decoration: none; color: var(--accent); }
+  .empty { font: 13px var(--mono); color: var(--muted); }
+
+  /* skills */
+  .skills { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
+  .skills h3 { font: 600 11.5px/1 var(--mono); letter-spacing: .14em; text-transform: uppercase; color: var(--muted); margin: 0 0 12px; }
+  .skills .chips { display: flex; flex-wrap: wrap; gap: 6px; }
+  .skills .chip.static { cursor: default; }
+  .skills .chip.link::after { content: " →"; color: var(--accent); }
+  .hint { font: 12px/1.4 var(--mono); color: var(--muted); margin-top: 12px; }
+
+  /* writing */
+  .posts { list-style: none; padding: 0; margin: 0; }
+  .posts li { display: grid; grid-template-columns: 90px 1fr auto; gap: 14px; align-items: baseline; padding: 12px 0; border-bottom: 1px dashed var(--line); }
+  .posts .when { font: 12px/1 var(--mono); color: var(--muted); }
+  .posts a { font: 500 17px/1.35 var(--serif); text-decoration: none; }
+  .posts .tag { white-space: nowrap; }
+
+  footer { margin-top: 56px; padding-top: 20px; border-top: 1px solid var(--line); display: flex; flex-wrap: wrap; gap: 16px; justify-content: space-between; font: 12px/1.5 var(--mono); color: var(--muted); }
+  footer a { color: var(--muted); }
+
+  .toast {
+    position: fixed; left: 50%; bottom: 24px; transform: translate(-50%, 20px); opacity: 0; pointer-events: none;
+    background: var(--ink); color: var(--bg); font: 600 12px/1 var(--mono); letter-spacing: .06em; padding: 12px 16px;
+    border-radius: 8px; transition: opacity .2s, transform .2s;
+  }
+  .toast.show { opacity: 1; transform: translate(-50%, 0); }
+
+  @media (max-width: 820px) {
+    .intro { grid-template-columns: 1fr; padding-top: 36px; }
+    .intro .d20wrap { display: none; }
+    .stats { grid-template-columns: repeat(2, 1fr); }
+    .projects { grid-template-columns: repeat(2, 1fr); }
+    .exp, .skills { grid-template-columns: 1fr; }
+  }
+  @media (max-width: 560px) {
+    .bar .home { display: none; }
+    .projects { grid-template-columns: 1fr; }
+    .pub { grid-template-columns: 1fr; gap: 6px; }
+    .posts li { grid-template-columns: 1fr; gap: 4px; }
+    .sec-head .aside { display: none; }
+    h2 { font-size: 28px; }
+  }
+
+  @media print {
+    :root, :root[data-theme="dark"] { --bg: #fff; --panel: #fff; --line: #ccc; --ink: #111; --muted: #555; --chip: #fff; --accent: #b3122a; --cyan: #006b78; color-scheme: light; }
+    body { background: #fff; font-size: 11pt; }
+    .bar, .filters, .mini, .d20wrap, .hint, .toast, .no-print { display: none !important; }
+    .reveal { opacity: 1 !important; transform: none !important; }
+    main { max-width: none; padding: 0; }
+    .intro { padding: 0 0 10px; }
+    section { padding-top: 16px; break-inside: auto; }
+    .pub, .card, .proj, .stat { break-inside: avoid; }
+    .proj[hidden] { display: flex !important; }
+    .projects { grid-template-columns: repeat(2, 1fr); }
+    a { text-decoration: none; }
+  }
+</style>
+</head>
+<body>
+
+<header class="bar">
+  <a class="home" href="https://github.com/ugursirvermez">← ugursirvermez</a>
+  <nav class="toc" aria-label="Sections">
+    <a href="#education" data-i18n="nav.education">Education</a>
+    <a href="#publications" data-i18n="nav.publications">Publications</a>
+    <a href="#experience" data-i18n="nav.experience">Teaching &amp; work</a>
+    <a href="#projects" data-i18n="nav.projects">Projects</a>
+    <a href="#skills" data-i18n="nav.skills">Skills</a>
+    <a href="#writing" data-i18n="nav.writing">Writing</a>
+  </nav>
+  <div class="tools">
+    <button class="tool" id="lang" type="button" aria-label="Language">TR</button>
+    <button class="tool" id="theme" type="button" aria-label="Theme">◐</button>
+    <button class="tool primary" id="print" type="button" data-i18n="ui.pdf">PDF</button>
+  </div>
+</header>
+
+<main>
+  <section class="intro" style="padding-top:48px">
+    <div>
+      <div class="kicker" data-i18n="intro.kicker">PhD student · Computer &amp; Instructional Technologies Education</div>
+      <h1>Uğur Sırvermez</h1>
+      <p class="lede" data-i18n="intro.lede">I study game engines and virtual environments as places where people learn, build in Unity, and have been teaching Unity and Python since 2017.</p>
+      <div class="links">
+        <a href="mailto:ugursirvermez@hotmail.com">ugursirvermez@hotmail.com</a>
+        <a href="https://scholar.google.com/citations?user=_aIQYmwAAAAJ">Scholar</a>
+        <a href="https://orcid.org/0000-0001-7266-6408">ORCID</a>
+        <a href="https://www.linkedin.com/in/u%C4%9Fur-s%C4%B1rvermez-360794151/">LinkedIn</a>
+        <a href="https://github.com/ugursirvermez">GitHub</a>
+        <a href="https://medium.com/@ugursirvermez">Medium</a>
+      </div>
+    </div>
+    <div class="d20wrap">
+      <canvas id="d20" width="360" height="360" aria-label="A spinning d20 drawn as a red/cyan anaglyph. Drag to spin it."></canvas>
+      <div class="d20cap" data-i18n="intro.d20">drag to roll · red/cyan anaglyph</div>
+    </div>
+  </section>
+
+  <div class="stats reveal">
+    <div class="stat"><b>7</b><span data-i18n="stats.works">published works, 2023–2026</span></div>
+    <div class="stat"><b>6</b><span data-i18n="stats.first">as first or sole author</span></div>
+    <div class="stat"><b>2017</b><span data-i18n="stats.teaching">the year I started teaching Unity &amp; Python</span></div>
+    <div class="stat"><b>1st</b><span data-i18n="stats.top">in class, BSc 2021</span></div>
+  </div>
+
+  <section id="education" class="reveal">
+    <div class="sec-head"><span class="num">01</span><h2 data-i18n="nav.education">Education</h2><span class="aside" data-i18n="edu.aside">Bursa Uludağ University</span></div>
+    <ul class="tl" id="edu"></ul>
+  </section>
+
+  <section id="publications" class="reveal">
+    <div class="sec-head"><span class="num">02</span><h2 data-i18n="nav.publications">Publications</h2><span class="aside" data-i18n="pubs.aside">from Crossref · DataCite</span></div>
+    <div class="filters" id="pubFilters" role="group" aria-label="Filter publications"></div>
+    <ol class="pubs" id="pubs"></ol>
+    <p class="hint"><button class="mini" id="copyAll" type="button" data-i18n="pubs.copyAll">Copy all as APA</button></p>
+  </section>
+
+  <section id="experience" class="reveal">
+    <div class="sec-head"><span class="num">03</span><h2 data-i18n="nav.experience">Teaching &amp; work</h2></div>
+    <div class="exp" id="exp"></div>
+  </section>
+
+  <section id="projects" class="reveal">
+    <div class="sec-head"><span class="num">04</span><h2 data-i18n="nav.projects">Projects</h2><span class="aside" data-i18n="proj.aside">public repos, by year</span></div>
+    <div class="filters" id="projFilters" role="group" aria-label="Filter projects"></div>
+    <div class="projects" id="projects-grid"></div>
+    <p class="empty" id="projEmpty" hidden data-i18n="proj.empty">Nothing public under this tag yet.</p>
+  </section>
+
+  <section id="skills" class="reveal">
+    <div class="sec-head"><span class="num">05</span><h2 data-i18n="nav.skills">Skills</h2></div>
+    <div class="skills" id="skillGroups"></div>
+    <p class="hint" data-i18n="skills.hint">Skills with an arrow jump to the projects that use them.</p>
+  </section>
+
+  <section id="writing" class="reveal">
+    <div class="sec-head"><span class="num">06</span><h2 data-i18n="nav.writing">Writing</h2><span class="aside" data-i18n="writing.aside">Medium · in Turkish</span></div>
+    <ul class="posts" id="posts"></ul>
+  </section>
+
+  <footer>
+    <span data-i18n="foot.updated">Updated September 2026</span>
+    <span>
+      <a href="https://github.com/ugursirvermez">GitHub</a> ·
+      <a href="../">Tunnel Vision</a> ·
+      <a href="https://github.com/ugursirvermez/ugursirvermez/blob/main/docs/cv/index.html" data-i18n="foot.source">source</a>
+    </span>
+  </footer>
+</main>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+'use strict';
+
+// ---------------------------------------------------------------------------
+// data. Publications: Crossref and DataCite metadata. Everything else: ORCID,
+// the public repos, and the course site.
+// ---------------------------------------------------------------------------
+const ME = /S[ıi]rvermez/;
+
+const THEMES = {
+  dc: { en: 'Digital citizenship & AI literacy', tr: 'Dijital vatandaşlık ve YZ okuryazarlığı', color: 'var(--accent)' },
+  ve: { en: 'Virtual environments & instructional design', tr: 'Sanal ortamlar ve öğretim tasarımı', color: 'var(--cyan)' },
+  om: { en: 'Open material', tr: 'Açık materyal', color: 'var(--ink)' },
+};
+
+const PUBS = [
+  { year: 2026, theme: 'dc', type: 'article', role: 'first',
+    authors: ['Sırvermez, U.', 'Şengel, E.'],
+    title: 'Predicting Pre-service Teachers’ AI Literacy: The Role of Digital Literacy and Demographic Factors',
+    venue: 'International Journal of Current Educational Studies', details: '5, e2026005',
+    doi: '10.46328/ijces.277',
+    apa: 'Sırvermez, U., & Şengel, E. (2026). Predicting pre-service teachers’ AI literacy: The role of digital literacy and demographic factors. International Journal of Current Educational Studies, 5, e2026005. https://doi.org/10.46328/ijces.277' },
+  { year: 2026, theme: 'dc', type: 'article', role: 'first', lang: 'tr',
+    authors: ['Sırvermez, U.', 'Baltacı, Ş.', 'Coşkun Onan, B.', 'Güleç, S.'],
+    title: 'Türkiye’de Dijital Vatandaşlık Eğitimi: Avrupa Konseyi Çerçevesi ile MEB Ders Kitaplarının Karşılaştırılması',
+    venue: 'Milli Eğitim Dergisi', details: '55(250), 875–922',
+    doi: '10.37669/milliegitim.1666472',
+    apa: 'Sırvermez, U., Baltacı, Ş., Coşkun Onan, B., & Güleç, S. (2026). Türkiye’de dijital vatandaşlık eğitimi: Avrupa Konseyi çerçevesi ile MEB ders kitaplarının karşılaştırılması. Milli Eğitim Dergisi, 55(250), 875–922. https://doi.org/10.37669/milliegitim.1666472' },
+  { year: 2026, theme: 'dc', type: 'chapter', role: 'first',
+    authors: ['Sırvermez, U.', 'Baltacı, Ş.', 'Coşkun Onan, B.'],
+    title: 'Artificial Intelligence Ethics in Digital Citizenship Education',
+    venue: 'Media Literacy and the Politics of Digital Misinformation · IGI Global', details: 'pp. 239–270',
+    doi: '10.4018/979-8-3373-6566-4.ch008',
+    apa: 'Sırvermez, U., Baltacı, Ş., & Coşkun Onan, B. (2026). Artificial intelligence ethics in digital citizenship education. In Media literacy and the politics of digital misinformation (pp. 239–270). IGI Global Scientific Publishing. https://doi.org/10.4018/979-8-3373-6566-4.ch008' },
+  { year: 2026, theme: 'om', type: 'software', role: 'sole', lang: 'tr',
+    authors: ['Sırvermez, U.'],
+    title: 'PyTorch Eğitim Kaynakları (PyTorch Education Open Educational Resource)',
+    venue: 'Zenodo', details: 'version 1.1.0',
+    doi: '10.5281/zenodo.19015554',
+    apa: 'Sırvermez, U. (2026). PyTorch eğitim kaynakları (PyTorch education open educational resource) (Version 1.1.0) [Computer software]. Zenodo. https://doi.org/10.5281/zenodo.19015554' },
+  { year: 2026, theme: 've', type: 'article', role: 'second',
+    authors: ['Doğan, C.', 'Sırvermez, U.', 'Birişçi, S.'],
+    title: 'Exploring the impact of computer-supported collaborative instructional design on the development of creative and critical thinking skills',
+    venue: 'Journal of Educational Technology and Online Learning', details: '9(1), 1–21',
+    doi: '10.31681/jetol.1576510',
+    apa: 'Doğan, C., Sırvermez, U., & Birişçi, S. (2026). Exploring the impact of computer-supported collaborative instructional design on the development of creative and critical thinking skills. Journal of Educational Technology and Online Learning, 9(1), 1–21. https://doi.org/10.31681/jetol.1576510' },
+  { year: 2026, theme: 'dc', type: 'article', role: 'first',
+    authors: ['Sırvermez, U.', 'Baltacı, Ş.', 'Coşkun Onan, B.'],
+    title: 'Digital citizenship education: an in-depth study of teaching practices and research insights',
+    venue: 'Interactive Learning Environments', details: '34(4), 2162–2177 · online 2025',
+    doi: '10.1080/10494820.2025.2542890',
+    apa: 'Sırvermez, U., Baltacı, Ş., & Coşkun Onan, B. (2026). Digital citizenship education: An in-depth study of teaching practices and research insights. Interactive Learning Environments, 34(4), 2162–2177. https://doi.org/10.1080/10494820.2025.2542890' },
+  { year: 2023, theme: 've', type: 'chapter', role: 'first',
+    authors: ['Sırvermez, U.', 'Baltacı, Ş.'],
+    title: 'Metaverse Applications in Education: Systematic Literature Review and Bibliographic Analysis of 2010–2022',
+    venue: 'Metaverse · Studies in Big Data · Springer', details: 'pp. 397–417',
+    doi: '10.1007/978-981-99-4641-9_27',
+    apa: 'Sırvermez, U., & Baltacı, Ş. (2023). Metaverse applications in education: Systematic literature review and bibliographic analysis of 2010–2022. In Metaverse (pp. 397–417). Springer Nature Singapore. https://doi.org/10.1007/978-981-99-4641-9_27' },
+];
+
+const EDU = [
+  { when: { en: '2024 – present', tr: '2024 – devam ediyor' }, now: true,
+    what: { en: 'PhD, Computer and Instructional Technologies Education', tr: 'Doktora, Bilgisayar ve Öğretim Teknolojileri Eğitimi' },
+    where: { en: 'Bursa Uludağ University, Institute of Educational Sciences', tr: 'Bursa Uludağ Üniversitesi, Eğitim Bilimleri Enstitüsü' } },
+  { when: { en: '2021 – 2024', tr: '2021 – 2024' },
+    what: { en: 'MSc, Computer and Instructional Technologies Education', tr: 'Yüksek Lisans, Bilgisayar ve Öğretim Teknolojileri Eğitimi' },
+    where: { en: 'Bursa Uludağ University', tr: 'Bursa Uludağ Üniversitesi' } },
+  { when: { en: '2018 – 2021', tr: '2018 – 2021' }, badge: { en: 'top of class', tr: 'bölüm birincisi' },
+    what: { en: 'BSc, Computer and Instructional Technologies Education', tr: 'Lisans, Bilgisayar ve Öğretim Teknolojileri Eğitimi' },
+    where: { en: 'Bursa Uludağ University · graduated first in class', tr: 'Bursa Uludağ Üniversitesi · bölüm birincisi olarak mezun' } },
+];
+
+const EXP = [
+  { when: { en: 'since 2017', tr: '2017’den beri' },
+    what: { en: 'Teaching Unity and Python', tr: 'Unity ve Python eğitmenliği' },
+    body: { en: 'Game development and programming with students. Some of their games are public: RunToLife, PydewValley.',
+            tr: 'Öğrencilerle oyun geliştirme ve programlama. Oyunlarından bazıları açık: RunToLife, PydewValley.' } },
+  { when: { en: '2025–26 fall', tr: '2025–26 güz' },
+    what: { en: 'Course site: Modeling and Design in Education', tr: 'Ders sitesi: Eğitimde Modelleme ve Tasarım' },
+    body: { en: 'GameEngineStudio. 14 weeks of Unity 6 for future teachers, with demos that run in the browser.',
+            tr: 'GameEngineStudio. Öğretmen adayları için 14 haftalık Unity 6 dersi; tarayıcıda çalışan demolarla.' },
+    link: 'https://ugursirvermez.github.io/GameEngineStudio/' },
+  { when: { en: '2025', tr: '2025' },
+    what: { en: 'Python course materials', tr: 'Python ders materyalleri' },
+    body: { en: 'Materials for the Python courses of Ulutek Maker Çocuk · Dad & Sons Software.',
+            tr: 'Ulutek Maker Çocuk · Dad & Sons Software Python eğitimleri için hazırlanan materyaller.' },
+    link: 'https://github.com/ugursirvermez/Python_BeginnerEducation' },
+  { when: { en: 'industry', tr: 'sektör' },
+    what: { en: 'VR and AR application development', tr: 'VR ve AR uygulama geliştirme' },
+    body: { en: 'VR and AR applications built in the private sector.', tr: 'Özel sektörde geliştirilen VR ve AR uygulamaları.' } },
+  { when: { en: 'certification', tr: 'sertifika' },
+    what: { en: 'Project management', tr: 'Proje yönetimi' },
+    body: { en: 'Certified in project management.', tr: 'Proje yönetimi sertifikası.' } },
+  { when: { en: 'interests', tr: 'ilgi alanları' },
+    what: { en: 'Research interests', tr: 'Araştırma ilgi alanları' },
+    body: { en: 'Digital citizenship, virtual environment design, autonomous virtual environments, machine learning, RAG.',
+            tr: 'Dijital vatandaşlık, sanal ortam tasarımı, otonom sanal ortamlar, makine öğrenmesi, RAG.' } },
+];
+
+const PROJECTS = [
+  { name: 'GameEngineStudio', year: 2026, tags: ['unity', 'teaching', 'web'],
+    en: 'Course site for Modeling and Design in Education, with in-browser demos.',
+    tr: 'Eğitimde Modelleme ve Tasarım dersinin sitesi; tarayıcıda çalışan demolarla.',
+    live: 'https://ugursirvermez.github.io/GameEngineStudio/', repo: 'GameEngineStudio' },
+  { name: 'Tunnel Vision', year: 2026, tags: ['xr', 'game', 'web', 'teaching'],
+    en: 'A small browser game about VR comfort: vection, comfort vignettes, frame budgets.',
+    tr: 'VR konforu üzerine küçük bir tarayıcı oyunu: vection, konfor vinyeti, kare bütçesi.',
+    live: '../', repo: 'ugursirvermez' },
+  { name: 'BlazeFace_NMS_Sentis', year: 2025, tags: ['unity', 'ml'],
+    en: 'The BlazeFace ONNX model running in Unity Sentis, with non-max suppression moved into Unity.',
+    tr: 'BlazeFace ONNX modelini Unity Sentis’te çalıştırır; NMS adımı Unity tarafına taşındı.',
+    repo: 'BlazeFace_NMS_Sentis' },
+  { name: 'FBC_OS', year: 2025, tags: ['python', 'game'],
+    en: 'A retro fictional OS from Remedy’s Control: CRT look, documents, audio logs, hotline archive.',
+    tr: 'Remedy’nin Control evreninden retro, kurgusal bir işletim sistemi: CRT görünüm, belgeler, ses kayıtları.',
+    repo: 'FBC_OS-Fan-Project' },
+  { name: 'FoodVisionApp', year: 2025, tags: ['ml', 'web'],
+    en: 'The FoodVision model from the PyTorch course, in a React Native app.',
+    tr: 'PyTorch eğitimindeki FoodVision modeli, React Native uygulaması olarak.',
+    repo: 'FoodVisionApp' },
+  { name: 'PydewValley', year: 2025, tags: ['python', 'game', 'teaching'],
+    en: 'Pydew Valley from freeCodeCamp, built with my students.',
+    tr: 'freeCodeCamp’in Pydew Valley projesi, öğrencilerimle birlikte.',
+    repo: 'PydewValley' },
+  { name: 'Python_BeginnerEducation', year: 2025, tags: ['python', 'teaching'],
+    en: 'Materials for the Python courses of Ulutek Maker Çocuk · Dad & Sons Software.',
+    tr: 'Ulutek Maker Çocuk · Dad & Sons Software Python eğitimlerinin materyalleri.',
+    repo: 'Python_BeginnerEducation' },
+  { name: 'PyTorch_Education', year: 2024, tags: ['ml', 'python', 'teaching'],
+    en: 'PyTorch course material in Turkish, citable on Zenodo.',
+    tr: 'Türkçe PyTorch eğitim materyali; Zenodo’da DOI ile atıf yapılabilir.',
+    live: 'https://ugursirvermez.github.io/PyTorch_Education/', repo: 'PyTorch_Education' },
+  { name: 'Unity-Egitim-Materyalleri', year: 2024, tags: ['unity', 'teaching'],
+    en: 'Unity Learn material I share with my class.',
+    tr: 'Sınıfımla paylaştığım Unity Learn materyalleri.',
+    repo: 'Unity-Egitim-Materyalleri' },
+  { name: 'Unity-ML-Test-Project', year: 2023, tags: ['unity', 'ml'],
+    en: 'A Unity ML-Agents test: an agent trained to reach a target in a maze.',
+    tr: 'Unity ML-Agents denemesi: labirentte hedefe ulaşmayı öğrenen bir ajan.',
+    repo: 'Unity-ML-Test-Project' },
+  { name: 'RunToLife', year: 2023, tags: ['game', 'teaching'],
+    en: 'An educational 2D game made by my students.',
+    tr: 'Öğrencilerimin geliştirdiği eğitsel 2B oyun.',
+    repo: 'RunToLife' },
+  { name: 'Space-Invader-with-Pygame', year: 2023, tags: ['python', 'game'],
+    en: 'A 2D shooter in Pygame, from a freeCodeCamp course.',
+    tr: 'freeCodeCamp eğitimiyle yapılmış 2B Pygame nişancı oyunu.',
+    repo: 'Space-Invader-with-Pygame' },
+  { name: 'Sarcaster-Corvus', year: 2022, tags: ['unity', 'game'],
+    en: 'Game and App Academy bootcamp, team 20: a post-apocalyptic metaverse with turn-based fights.',
+    tr: 'Oyun ve Uygulama Akademisi bootcamp’i, 20 numaralı takım: sıra tabanlı dövüşlü kıyamet sonrası bir metaverse.',
+    repo: 'Sarcaster-Corvus' },
+];
+
+const TAGS = {
+  unity: { en: 'Unity', tr: 'Unity' }, ml: { en: 'Machine learning', tr: 'Makine öğrenmesi' },
+  xr: { en: 'VR / AR', tr: 'VR / AR' }, python: { en: 'Python', tr: 'Python' },
+  teaching: { en: 'Teaching', tr: 'Öğretim' }, game: { en: 'Games', tr: 'Oyunlar' }, web: { en: 'Web & mobile', tr: 'Web ve mobil' },
+};
+
+const SKILLS = [
+  { en: 'Game development', tr: 'Oyun geliştirme',
+    items: [['Unity', 'unity'], ['C#', 'unity'], ['URP'], ['VR / AR', 'xr'], ['ML-Agents', 'ml'], ['Unity Sentis', 'ml'], ['Blender']] },
+  { en: 'Machine learning', tr: 'Makine öğrenmesi',
+    items: [['Python', 'python'], ['PyTorch', 'ml'], ['Keras'], ['CUDA'], ['ONNX', 'ml'], ['RAG'], ['LangChain']] },
+  { en: 'Web & mobile', tr: 'Web ve mobil',
+    items: [['React Native · Expo', 'web'], ['Next.js'], ['TypeScript'], ['JavaScript', 'web']] },
+  { en: 'Research', tr: 'Araştırma',
+    items: [['Systematic reviews'], ['Bibliometrics'], ['Survey & predictive models'], ['Document analysis'], ['Instructional design', 'teaching']] },
+];
+
+const POSTS = [
+  { date: '2026-06', tag: { en: 'teaching', tr: 'öğretim' }, title: '“Texture ile Material aynı şey değil mi hocam?”',
+    url: 'https://medium.com/@ugursirvermez/texture-ile-material-ayn%C4%B1-%C5%9Fey-de%C4%9Fil-mi-hocam-1ba7978abcfa' },
+  { date: '2025-03', tag: { en: 'music', tr: 'müzik' }, title: 'Stone Gibi Olmak: Ölüme Chris Cornell Şarkısından Bakmak',
+    url: 'https://medium.com/@ugursirvermez/stone-gibi-olmak-%C3%B6l%C3%BCme-chris-cornell-%C5%9Fark%C4%B1s%C4%B1ndan-bakmak-7f4dc14d68c2' },
+  { date: '2025-03', tag: { en: 'machine learning', tr: 'makine öğrenmesi' }, title: '1 Yıl Boyunca PyTorch Kullanarak Makine Öğrenmesini Öğrenmek',
+    url: 'https://medium.com/@ugursirvermez/1-y%C4%B1l-boyunca-pytorch-kullanarak-makine-%C3%B6%C4%9Frenmesini-%C3%B6%C4%9Frenmek-0521786ece78' },
+  { date: '2025-01', tag: { en: 'music', tr: 'müzik' }, title: 'Sağır için Şarkılar: Bir Queens of the Stone Age Albümündeki Ana Karakteri Anlamak',
+    url: 'https://medium.com/@ugursirvermez/sa%C4%9F%C4%B1r-i%C3%A7in-%C5%9Fark%C4%B1lar-bir-queens-of-the-stone-age-alb%C3%BCm%C3%BCndeki-ana-karakteri-anlamak-6ce7f1e7db52' },
+  { date: '2024-12', tag: { en: 'research methods', tr: 'araştırma yöntemi' }, title: 'Sosyal Bilimler Alanında Akademik Araştırma Nasıl Yapılır? Acemiler için Kılavuz',
+    url: 'https://medium.com/@ugursirvermez/sosyal-bilimler-alan%C4%B1nda-akademik-ara%C5%9Ft%C4%B1rma-nas%C4%B1l-yap%C4%B1l%C4%B1r-acemiler-i%C3%A7in-k%C4%B1lavuz-a8eadfe17d57' },
+  { date: '2024-03', tag: { en: 'history', tr: 'tarih' }, title: 'Subayların ve Komutanların Zaferi: Çanakkale’nin Ruhu ve Dehasına Bir Bakış',
+    url: 'https://medium.com/@ugursirvermez/subaylar%C4%B1n-ve-komutanlar%C4%B1n-zaferi-%C3%A7anakkalenin-ruhu-ve-dehas%C4%B1na-bir-bak%C4%B1%C5%9F-793cfd50abb9' },
+];
+
+const UI = {
+  en: {
+    'nav.education': 'Education', 'nav.publications': 'Publications', 'nav.experience': 'Teaching & work',
+    'nav.projects': 'Projects', 'nav.skills': 'Skills', 'nav.writing': 'Writing', 'ui.pdf': 'PDF',
+    'intro.kicker': 'PhD student · Computer & Instructional Technologies Education',
+    'intro.lede': 'I study game engines and virtual environments as places where people learn, build in Unity, and have been teaching Unity and Python since 2017.',
+    'intro.d20': 'drag to roll · red/cyan anaglyph',
+    'stats.works': 'published works, 2023–2026', 'stats.first': 'as first or sole author',
+    'stats.teaching': 'the year I started teaching Unity & Python', 'stats.top': 'in class, BSc 2021',
+    'pubs.aside': 'from Crossref · DataCite', 'edu.aside': 'Bursa Uludağ University', 'pubs.copyAll': 'Copy all as APA', 'pubs.all': 'All',
+    'pubs.cite': 'Copy APA', 'pubs.copied': 'Copied', 'pubs.toast': 'APA reference copied', 'pubs.toastAll': 'All references copied',
+    'type.article': 'article', 'type.chapter': 'chapter', 'type.software': 'software',
+    'role.first': 'first author', 'role.second': 'second author', 'role.sole': 'sole author', 'lang.tr': 'in Turkish',
+    'proj.aside': 'public repos, by year', 'proj.all': 'All', 'proj.empty': 'Nothing public under this tag yet.',
+    'proj.live': 'Open', 'proj.repo': 'Repo', 'skills.hint': 'Skills with an arrow jump to the projects that use them.',
+    'writing.aside': 'Medium · in Turkish', 'foot.updated': 'Updated September 2026', 'foot.source': 'source',
+  },
+  tr: {
+    'nav.education': 'Eğitim', 'nav.publications': 'Yayınlar', 'nav.experience': 'Öğretim ve iş',
+    'nav.projects': 'Projeler', 'nav.skills': 'Yetenekler', 'nav.writing': 'Yazılar', 'ui.pdf': 'PDF',
+    'intro.kicker': 'Doktora öğrencisi · Bilgisayar ve Öğretim Teknolojileri Eğitimi',
+    'intro.lede': 'Oyun motorlarını ve sanal ortamları, insanların öğrendiği yerler olarak inceliyorum. Unity’de geliştiriyorum ve 2017’den beri Unity ve Python öğretiyorum.',
+    'intro.d20': 'sürükleyip at · kırmızı/camgöbeği anaglif',
+    'stats.works': 'yayımlanmış çalışma, 2023–2026', 'stats.first': 'birinci ya da tek yazar',
+    'stats.teaching': 'Unity ve Python öğretmeye başladığım yıl', 'stats.top': 'bölüm birincisi, lisans 2021',
+    'pubs.aside': 'kaynak: Crossref · DataCite', 'edu.aside': 'Bursa Uludağ Üniversitesi', 'pubs.copyAll': 'Tümünü APA olarak kopyala', 'pubs.all': 'Tümü',
+    'pubs.cite': 'APA kopyala', 'pubs.copied': 'Kopyalandı', 'pubs.toast': 'APA künyesi kopyalandı', 'pubs.toastAll': 'Tüm künyeler kopyalandı',
+    'type.article': 'makale', 'type.chapter': 'kitap bölümü', 'type.software': 'yazılım',
+    'role.first': 'birinci yazar', 'role.second': 'ikinci yazar', 'role.sole': 'tek yazar', 'lang.tr': 'Türkçe',
+    'proj.aside': 'açık repolar, yıla göre', 'proj.all': 'Tümü', 'proj.empty': 'Bu etikette henüz açık bir proje yok.',
+    'proj.live': 'Aç', 'proj.repo': 'Repo', 'skills.hint': 'Oklu yetenekler, onları kullanan projelere götürür.',
+    'writing.aside': 'Medium · Türkçe', 'foot.updated': 'Güncelleme: Eylül 2026', 'foot.source': 'kaynak kod',
+  },
+};
+
+// ---------------------------------------------------------------------------
+// state + helpers
+// ---------------------------------------------------------------------------
+const store = {
+  get(k, d) { try { const v = localStorage.getItem(k); return v == null ? d : v; } catch (e) { return d; } },
+  set(k, v) { try { localStorage.setItem(k, v); } catch (e) { /* private mode */ } },
+};
+let lang = store.get('cv.lang', (navigator.language || 'en').toLowerCase().startsWith('tr') ? 'tr' : 'en');
+let pubFilter = 'all';
+let projFilter = 'all';
+
+const $ = (s) => document.querySelector(s);
+const t = (k) => UI[lang][k] || UI.en[k] || k;
+const L = (o) => (o && typeof o === 'object' ? (o[lang] || o.en) : o);
+const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+
+function toast(msg) {
+  const el = $('#toast');
+  el.textContent = msg;
+  el.classList.add('show');
+  clearTimeout(toast.t);
+  toast.t = setTimeout(() => el.classList.remove('show'), 1600);
+}
+
+async function copy(text) {
+  try { await navigator.clipboard.writeText(text); return true; } catch (e) {
+    const ta = document.createElement('textarea');
+    ta.value = text; document.body.appendChild(ta); ta.select();
+    const ok = document.execCommand('copy'); ta.remove(); return ok;
+  }
+}
+
+// ---------------------------------------------------------------------------
+// render
+// ---------------------------------------------------------------------------
+function renderStatic() {
+  document.documentElement.lang = lang;
+  for (const el of document.querySelectorAll('[data-i18n]')) el.textContent = t(el.dataset.i18n);
+  $('#lang').textContent = lang === 'en' ? 'TR' : 'EN';
+  $('#lang').setAttribute('aria-label', lang === 'en' ? 'Türkçe' : 'English');
+}
+
+function renderEdu() {
+  $('#edu').innerHTML = EDU.map((e) => `
+    <li class="${e.now ? 'now' : ''}">
+      <div class="when">${esc(L(e.when))}</div>
+      <div class="what">${esc(L(e.what))}${e.badge ? `<span class="badge">${esc(L(e.badge))}</span>` : ''}</div>
+      <div class="where">${esc(L(e.where))}</div>
+    </li>`).join('');
+}
+
+function renderPubs() {
+  const counts = { all: PUBS.length };
+  for (const p of PUBS) counts[p.theme] = (counts[p.theme] || 0) + 1;
+  $('#pubFilters').innerHTML = ['all', 'dc', 've', 'om'].map((k) => `
+    <button class="chip" type="button" data-f="${k}" aria-pressed="${pubFilter === k}">
+      ${k === 'all' ? '' : `<span class="dot" style="background:${THEMES[k].color}"></span>`}${esc(k === 'all' ? t('pubs.all') : L(THEMES[k]))}<span class="count">${counts[k]}</span>
+    </button>`).join('');
+  const list = PUBS.filter((p) => pubFilter === 'all' || p.theme === pubFilter);
+  $('#pubs').innerHTML = list.map((p) => {
+    const i = PUBS.indexOf(p);
+    const authors = p.authors.map((a) => (ME.test(a) ? `<b>${esc(a)}</b>` : esc(a))).join(', ');
+    return `
+    <li class="pub" style="--c:${THEMES[p.theme].color}">
+      <div><div class="yr">${p.year}</div><div class="type">${esc(t('type.' + p.type))}</div></div>
+      <div>
+        <h3><a href="https://doi.org/${esc(p.doi)}">${esc(p.title)}</a></h3>
+        <div class="authors">${authors}</div>
+        <div class="venue"><i>${esc(p.venue)}</i>, ${esc(p.details)}${p.lang === 'tr' ? ' · ' + esc(t('lang.tr')) : ''}</div>
+        <div class="row">
+          <span class="role">${esc(t('role.' + p.role))}</span>
+          <span class="doi">doi:${esc(p.doi)}</span>
+          <button class="mini" type="button" data-cite="${i}">${esc(t('pubs.cite'))}</button>
+        </div>
+      </div>
+    </li>`;
+  }).join('');
+}
+
+function renderExp() {
+  $('#exp').innerHTML = EXP.map((e) => `
+    <div class="card">
+      <div class="when">${esc(L(e.when))}</div>
+      <h3>${e.link ? `<a href="${esc(e.link)}">${esc(L(e.what))}</a>` : esc(L(e.what))}</h3>
+      <p>${esc(L(e.body))}</p>
+    </div>`).join('');
+}
+
+function renderProjects() {
+  const used = ['all', ...Object.keys(TAGS).filter((k) => PROJECTS.some((p) => p.tags.includes(k)))];
+  $('#projFilters').innerHTML = used.map((k) => {
+    const n = k === 'all' ? PROJECTS.length : PROJECTS.filter((p) => p.tags.includes(k)).length;
+    return `<button class="chip" type="button" data-p="${k}" aria-pressed="${projFilter === k}">${esc(k === 'all' ? t('proj.all') : L(TAGS[k]))}<span class="count">${n}</span></button>`;
+  }).join('');
+  $('#projects-grid').innerHTML = PROJECTS.map((p) => {
+    const show = projFilter === 'all' || p.tags.includes(projFilter);
+    const repo = `https://github.com/ugursirvermez/${p.repo}`;
+    return `
+    <article class="proj"${show ? '' : ' hidden'}>
+      <div class="top"><h3>${esc(p.name)}</h3><span class="yr">${p.year}</span></div>
+      <p>${esc(p[lang] || p.en)}</p>
+      <div class="tags">${p.tags.map((k) => `<span class="tag">${esc(L(TAGS[k]))}</span>`).join('')}</div>
+      <div class="go">${p.live ? `<a href="${esc(p.live)}">${esc(t('proj.live'))} ↗</a>` : ''}<a href="${esc(repo)}">${esc(t('proj.repo'))} ↗</a></div>
+    </article>`;
+  }).join('');
+  $('#projEmpty').hidden = PROJECTS.some((p) => projFilter === 'all' || p.tags.includes(projFilter));
+}
+
+function renderSkills() {
+  $('#skillGroups').innerHTML = SKILLS.map((g) => `
+    <div class="card">
+      <h3>${esc(L(g))}</h3>
+      <div class="chips">${g.items.map(([name, tag]) => tag
+        ? `<button class="chip link" type="button" data-skill="${tag}">${esc(name)}</button>`
+        : `<span class="chip static">${esc(name)}</span>`).join('')}</div>
+    </div>`).join('');
+}
+
+function renderPosts() {
+  const fmt = (d) => {
+    const [y, m] = d.split('-').map(Number);
+    return new Date(y, m - 1, 1).toLocaleDateString(lang === 'tr' ? 'tr-TR' : 'en-GB', { month: 'short', year: 'numeric' });
+  };
+  $('#posts').innerHTML = POSTS.map((p) => `
+    <li><span class="when">${esc(fmt(p.date))}</span><a href="${esc(p.url)}">${esc(p.title)}</a><span class="tag">${esc(L(p.tag))}</span></li>`).join('');
+}
+
+function renderAll() {
+  renderStatic(); renderEdu(); renderPubs(); renderExp(); renderProjects(); renderSkills(); renderPosts();
+}
+
+// ---------------------------------------------------------------------------
+// events
+// ---------------------------------------------------------------------------
+document.addEventListener('click', async (e) => {
+  const f = e.target.closest('[data-f]');
+  if (f) { pubFilter = f.dataset.f; renderPubs(); return; }
+  const p = e.target.closest('[data-p]');
+  if (p) { projFilter = p.dataset.p; renderProjects(); return; }
+  const s = e.target.closest('[data-skill]');
+  if (s) {
+    projFilter = s.dataset.skill;
+    renderProjects();
+    $('#projects').scrollIntoView({ behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' });
+    return;
+  }
+  const c = e.target.closest('[data-cite]');
+  if (c) {
+    if (await copy(PUBS[+c.dataset.cite].apa)) {
+      c.textContent = t('pubs.copied'); c.classList.add('done'); toast(t('pubs.toast'));
+      setTimeout(() => { c.textContent = t('pubs.cite'); c.classList.remove('done'); }, 1600);
+    }
+  }
+});
+
+$('#copyAll').addEventListener('click', async () => {
+  const list = PUBS.filter((p) => pubFilter === 'all' || p.theme === pubFilter).map((p) => p.apa)
+    .sort((a, b) => a.localeCompare(b, 'tr'));
+  if (await copy(list.join('\n\n'))) toast(t('pubs.toastAll'));
+});
+
+$('#lang').addEventListener('click', () => {
+  lang = lang === 'en' ? 'tr' : 'en';
+  store.set('cv.lang', lang);
+  renderAll();
+});
+
+const THEME_ORDER = ['auto', 'dark', 'light'];
+function applyTheme(mode) {
+  if (mode === 'auto') document.documentElement.removeAttribute('data-theme');
+  else document.documentElement.setAttribute('data-theme', mode);
+  $('#theme').textContent = { auto: '◐', dark: '●', light: '○' }[mode];
+  $('#theme').title = mode;
+}
+let themeMode = store.get('cv.theme', 'auto');
+applyTheme(themeMode);
+$('#theme').addEventListener('click', () => {
+  themeMode = THEME_ORDER[(THEME_ORDER.indexOf(themeMode) + 1) % 3];
+  store.set('cv.theme', themeMode);
+  applyTheme(themeMode);
+});
+
+$('#print').addEventListener('click', () => {
+  // print everything, not just the current filter
+  const keep = [pubFilter, projFilter];
+  pubFilter = 'all'; projFilter = 'all'; renderPubs(); renderProjects();
+  window.print();
+  [pubFilter, projFilter] = keep; renderPubs(); renderProjects();
+});
+
+// section reveal + active link in the bar
+if (!('IntersectionObserver' in window)) document.querySelectorAll('.reveal').forEach((el) => el.classList.add('in'));
+const reveal = new IntersectionObserver((entries) => {
+  for (const en of entries) if (en.isIntersecting) { en.target.classList.add('in'); reveal.unobserve(en.target); }
+}, { rootMargin: '0px 0px -8% 0px' });
+document.querySelectorAll('.reveal').forEach((el) => reveal.observe(el));
+
+const links = [...document.querySelectorAll('.toc a')];
+const spy = new IntersectionObserver((entries) => {
+  for (const en of entries) {
+    if (!en.isIntersecting) continue;
+    for (const a of links) a.classList.toggle('on', a.getAttribute('href') === '#' + en.target.id);
+  }
+}, { rootMargin: '-45% 0px -50% 0px' });
+document.querySelectorAll('main section[id]').forEach((s) => spy.observe(s));
+
+// ---------------------------------------------------------------------------
+// the d20: same anaglyph die as the profile banner, but this one you can roll
+// ---------------------------------------------------------------------------
+(function d20() {
+  const cv = $('#d20');
+  if (!cv) return;
+  const ctx = cv.getContext('2d');
+  const P = (1 + Math.sqrt(5)) / 2;
+  const V = [];
+  for (const a of [-1, 1]) for (const b of [-P, P]) V.push([0, a, b], [a, b, 0], [b, 0, a]);
+  const E = [];
+  for (let i = 0; i < 12; i++) for (let j = i + 1; j < 12; j++) {
+    const d = V[i].reduce((s, v, k) => s + (v - V[j][k]) ** 2, 0);
+    if (Math.abs(d - 4) < 1e-6) E.push([i, j]);
+  }
+  const still = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  let ax = 0.5, ay = 0.3, vx = 0.004, vy = 0.009, drag = null;
+  cv.addEventListener('pointerdown', (e) => { drag = { x: e.clientX, y: e.clientY }; cv.setPointerCapture(e.pointerId); });
+  cv.addEventListener('pointermove', (e) => {
+    if (!drag) return;
+    vy = (e.clientX - drag.x) * 0.004; vx = (e.clientY - drag.y) * 0.004;
+    ay += vy; ax += vx; drag = { x: e.clientX, y: e.clientY };
+    if (still) draw();
+  });
+  const end = () => { drag = null; };
+  cv.addEventListener('pointerup', end); cv.addEventListener('pointercancel', end);
+
+  function colors() {
+    const cs = getComputedStyle(document.documentElement);
+    const dark = cs.getPropertyValue('color-scheme').trim() === 'dark';
+    return dark ? { red: '#ff4747', cyan: '#2fd3d8', op: 'lighter' } : { red: '#e5303d', cyan: '#0096a8', op: 'multiply' };
+  }
+  function draw() {
+    const S = cv.width, R = S * 0.36, D = 6, f = R * D / 1.902;
+    ctx.clearRect(0, 0, S, S);
+    const c = colors();
+    ctx.globalCompositeOperation = c.op;
+    for (const [eye, col] of [[-0.17, c.red], [0.17, c.cyan]]) {
+      const pts = V.map(([x, y, z]) => {
+        let y1 = y * Math.cos(ax) - z * Math.sin(ax), z1 = y * Math.sin(ax) + z * Math.cos(ax);
+        let x2 = x * Math.cos(ay) + z1 * Math.sin(ay), z2 = -x * Math.sin(ay) + z1 * Math.cos(ay);
+        const Z = D + z2;
+        return [S / 2 + f * (x2 - eye) / Z + f * eye / D, S / 2 - f * y1 / Z];
+      });
+      ctx.strokeStyle = col; ctx.lineWidth = 3.2; ctx.lineJoin = 'round';
+      ctx.beginPath();
+      for (const [a, b] of E) { ctx.moveTo(pts[a][0], pts[a][1]); ctx.lineTo(pts[b][0], pts[b][1]); }
+      ctx.stroke();
+    }
+    ctx.globalCompositeOperation = 'source-over';
+  }
+  function loop() {
+    if (!drag) { ax += vx; ay += vy; vx += (0.004 - vx) * 0.02; vy += (0.009 - vy) * 0.02; }
+    draw();
+    requestAnimationFrame(loop);
+  }
+  if (still) draw(); else loop();
+  matchMedia('(prefers-color-scheme: dark)').addEventListener('change', draw);
+})();
+
+renderAll();
+</script>
+</body>
+</html>

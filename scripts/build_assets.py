@@ -847,7 +847,7 @@ def illus_mla(th, uid):
     rw, _ = text("mono-bold", "+1.0", 12, gx, gy - 20, th["cyan"], anchor="middle")
     p.append(f'<g opacity="0">{rw}<animate attributeName="opacity" values="0;0;1;1;0" '
              f'keyTimes="0;{run};{run + 0.03};0.9;0.95" dur="{dur}s" repeatCount="indefinite"/></g>')
-    ep, _ = text("mono", "episode 4812 · mean reward 0.93", 11, X0, Y0 + rows * c + 26, th["muted"])
+    ep, _ = text("mono", "agent → target", 11, X0, Y0 + rows * c + 26, th["muted"])
     p.append(ep)
     return "", "".join(p)
 
@@ -920,13 +920,12 @@ def footer(tn):
 # SECTION HEADERS (transparent, so they sit on GitHub's own background)
 # --------------------------------------------------------------------------
 SECTIONS = [
-    ("01", "Learn by playing", "two things built to teach, both playable"),
-    ("02", "Timeline", "2017 → now, scrubbed like a Unity Timeline"),
-    ("03", "Research", "game engines · virtual environments · digital citizenship"),
-    ("04", "Other things I've built", "side projects, fan work, experiments"),
+    ("01", "Learn by playing", "built to teach, playable in the browser"),
+    ("02", "Timeline", "2017 → now"),
+    ("03", "Research", "seven works, 2023–2026"),
+    ("04", "Other things I've built", "fan work, ML, experiments"),
     ("05", "Skill tree", "where the branches meet"),
-    ("06", "Contribution level", "the last 12 months of GitHub, rebuilt every night"),
-    ("07", "Writing", "in Turkish, on Medium"),
+    ("06", "Contribution level", "rebuilt every night"),
 ]
 
 
@@ -977,10 +976,14 @@ def _icon(key, col, bg):
                 f'<ellipse cx="21.3" cy="12" rx="1.05" ry="4.8" fill="{col}"/>')
     if key == "email":
         return f'<rect x="2.5" y="5" width="19" height="14" rx="2.5" {st}/><path d="M3.5 6.5L12 13L20.5 6.5" {st}/>'
+    if key == "cv":
+        return (f'<path d="M6 2.5H14.5L19 7V21.5H6Z" {st}/><path d="M14 2.5V7.5H19" {st}/>'
+                f'<path d="M9 12H16M9 15.5H16M9 19H13" {st}/>')
     raise KeyError(key)
 
 
-LINKS = [("scholar", "SCHOLAR"), ("orcid", "ORCID"), ("linkedin", "LINKEDIN"), ("medium", "MEDIUM"), ("email", "EMAIL")]
+LINKS = [("cv", "INTERACTIVE CV"), ("scholar", "SCHOLAR"), ("orcid", "ORCID"), ("linkedin", "LINKEDIN"),
+         ("medium", "MEDIUM"), ("email", "EMAIL")]
 
 
 def pill(tn, idx):
@@ -994,12 +997,14 @@ def pill(tn, idx):
             f'<linearGradient id="{uid}g" x1="0" x2="1"><stop offset="0" stop-color="{th["ink"]}" stop-opacity="0"/>'
             f'<stop offset="0.5" stop-color="{th["ink"]}" stop-opacity="0.13"/>'
             f'<stop offset="1" stop-color="{th["ink"]}" stop-opacity="0"/></linearGradient>')
-    body = [f'<rect x="1" y="1" width="{W - 2}" height="{H - 2}" rx="{(H - 2) / 2}" fill="{th["bg"]}" '
-            f'stroke="{th["stroke"]}" stroke-width="1.5"/>']
-    body.append(f'<g transform="translate(18 12)">{_icon(key, th["accent"], th["bg"])}</g>')
-    t, _ = text("mono-bold", label, 13, 54, 29, th["ink"], tracking=0.14)
+    solid = key == "cv"
+    fg = "#ffffff" if solid else th["ink"]
+    body = [f'<rect x="1" y="1" width="{W - 2}" height="{H - 2}" rx="{(H - 2) / 2}" '
+            f'fill="{th["accent"] if solid else th["bg"]}" stroke="{th["accent"] if solid else th["stroke"]}" stroke-width="1.5"/>']
+    body.append(f'<g transform="translate(18 12)">{_icon(key, fg if solid else th["accent"], th["bg"])}</g>')
+    t, _ = text("mono-bold", label, 13, 54, 29, fg, tracking=0.14)
     body.append(t)
-    ar, _ = text("mono", "↗", 13, W - 18, 29, th["muted"], anchor="end")
+    ar, _ = text("mono", "↗", 13, W - 18, 29, fg if solid else th["muted"], anchor="end")
     body.append(ar)
     # the sheen visits one pill after another
     dur = 7.5
@@ -1007,7 +1012,8 @@ def pill(tn, idx):
     body.append(f'<g clip-path="url(#{uid}c)"><rect x="-70" y="0" width="70" height="{H}" fill="url(#{uid}g)" '
                 f'transform="skewX(-20)"><animate attributeName="x" values="-70;-70;{W + 40};{W + 40}" '
                 f'keyTimes="0;{a:.2f};{a + 0.12:.2f};1" dur="{dur}s" repeatCount="indefinite"/></rect></g>')
-    return svg(W, H, label.title() if key != "orcid" else "ORCID", "".join(body), defs)
+    name = {"orcid": "ORCID", "cv": "Interactive CV"}.get(key, label.title())
+    return svg(W, H, name, "".join(body), defs)
 
 
 # --------------------------------------------------------------------------
@@ -1056,7 +1062,7 @@ def player(tn):
     # title bar
     tb, _ = text("mono-bold", "player_1.sav", 12, 30, 30, th["ink"], tracking=0.06)
     body.append(tb)
-    ld, _ = text("mono", "LOAD  ·  CONTINUE", 11, W - 30, 30, th["muted"], anchor="end", tracking=0.12)
+    ld, _ = text("mono-bold", "OPEN THE FULL CV  ↗", 11, W - 30, 30, th["accent"], anchor="end", tracking=0.12)
     body.append(ld)
     body.append(f'<rect x="0" y="46" width="{W}" height="1" fill="{th["stroke"]}"/>')
 
@@ -1070,7 +1076,7 @@ def player(tn):
             ("GUILD", "Bursa Uludağ University"),
             ("SPEAKS", "Türkçe · English · C# · Python"),
             ("FAN OF", "Control · Queens of the Stone Age"),
-            ("ASK ME", "Unity, VR comfort, PyTorch")]
+            ("TEACHES", "Unity & Python, since 2017")]
     for i, (k, v) in enumerate(rows):
         y = 160 + i * 27
         kk, _ = text("mono-bold", k, 10.5, x0, y, th["muted"], tracking=0.14)
@@ -1225,13 +1231,14 @@ def timeline(tn):
         area.append(lt)
     # research signals
     y = ty(1) + TH / 2
-    pubs = [2023.8, 2026.05, 2026.16, 2026.27, 2026.38, 2026.49, 2026.6]
+    # online publication dates from Crossref / DataCite
+    pubs = [2023.78, 2025.63, 2026.08, 2026.2, 2026.29, 2026.33, 2026.5]
     for k, pv in enumerate(pubs):
         x = xa(pv)
         area.append(f'<path d="M{n(x)} {n(y - 8)}L{n(x + 8)} {n(y)}L{n(x)} {n(y + 8)}L{n(x - 8)} {n(y)}Z" '
                     f'fill="{S["accent"]}" stroke="{S["bg"]}" stroke-width="1.5"/>')
     l1, _ = text("mono", "Springer · Studies in Big Data", 11, xa(2023.8) - 14, y + 4, S["ink"], anchor="end")
-    l2, _ = text("mono", "×6", 11, xa(2026.05) - 14, y + 4, S["ink"], anchor="end")
+    l2, _ = text("mono", "×5", 11, xa(2026.08) - 14, y + 4, S["ink"], anchor="end")
     area.append(l1 + l2)
     # teaching
     y = ty(2) + 13
@@ -1295,7 +1302,7 @@ def timeline(tn):
               (2023.8, "Published", "Springer · Studies in Big Data"),
               (2024.6, "New quest: PhD", "MSc done, doctorate started"),
               (2025.7, "Fan favourite", "FBC_OS · most-starred repo"),
-              (2026.3, "Busy year", "six works on ORCID in 2026")]
+              (2026.3, "Busy year", "five works out in 2026")]
     SHOW = 2.3
     tw_, th_ = 290, 62
     tx_ = X1 - tw_ - 8
@@ -1338,7 +1345,7 @@ def skilltree(tn):
         "ml": ("MACHINE LEARNING", 36, 262, "ml", "root"),
         "rs": ("RESEARCH", 36, 420, "rs", "root"),
         "unity": ("Unity · C#", 290, 62, "gd", "skill"),
-        "xr": ("XR · Meta XR SDK", 290, 112, "gd", "skill"),
+        "xr": ("VR / AR", 290, 112, "gd", "skill"),
         "blender": ("Blender", 290, 162, "gd", "skill"),
         "torch": ("PyTorch · Keras", 290, 228, "ml", "skill"),
         "cuda": ("CUDA", 290, 274, "ml", "skill"),
@@ -1362,7 +1369,7 @@ def skilltree(tn):
          ("unity", "gbl"), ("xr", "gbl"), ("id", "gbl"),
          ("sv", "ail"), ("torch", "ail")]
     OUTS = {"sentis": "→ BlazeFace_NMS_Sentis", "mla": "→ Unity-ML-Test-Project",
-            "gbl": "→ GameEngineStudio · the PhD", "ail": "→ IJCES 2026 paper"}
+            "gbl": "→ GameEngineStudio", "ail": "→ IJCES 2026 paper"}
     CH = 32
     box = {}
     for k, (lab, x, y, br, kind) in N.items():
@@ -1424,6 +1431,128 @@ def skilltree(tn):
                "".join(body), "".join(defs))
 
 
+# --------------------------------------------------------------------------
+# RESEARCH SHELF: one spine per published work
+# --------------------------------------------------------------------------
+# (online date, spine label, theme, short title, venue, authorship) — from Crossref / DataCite
+WORKS = [
+    (2023.78, "SPRINGER", "ve", "Metaverse applications in education: a systematic review of 2010–2022",
+     "Studies in Big Data · Springer", "first author"),
+    (2025.63, "ILE", "dc", "Digital citizenship education: teaching practices and research insights",
+     "Interactive Learning Environments", "first author"),
+    (2026.08, "JETOL", "ve", "Collaborative instructional design, creative and critical thinking",
+     "J. of Educational Technology and Online Learning", "second author"),
+    (2026.20, "ZENODO", "om", "PyTorch Eğitim Kaynakları, an open educational resource",
+     "Zenodo · software, v1.1.0 · in Turkish", "sole author"),
+    (2026.29, "IGI", "dc", "Artificial intelligence ethics in digital citizenship education",
+     "IGI Global · book chapter", "first author"),
+    (2026.33, "MED", "dc", "Digital citizenship education in Türkiye: the Council of Europe framework and MoNE textbooks",
+     "Milli Eğitim Dergisi · in Turkish", "first author"),
+    (2026.50, "IJCES", "dc", "Predicting pre-service teachers’ AI literacy",
+     "Int. J. of Current Educational Studies", "first author"),
+]
+
+
+def _wrap(font, s, size, maxw):
+    lines, cur = [], ""
+    for w in s.split():
+        t = f"{cur} {w}".strip()
+        if cur and width(font, t, size) > maxw:
+            lines.append(cur)
+            cur = w
+        else:
+            cur = t
+    return lines + [cur]
+
+
+def shelf(tn):
+    th = THEMES[tn]
+    W, H = 1200, 320
+    fdefs, fbody, fborder = frame(W, H, th, "sh")
+    body = [fbody]
+    col = {"dc": th["accent"], "ve": th["cyan"], "om": th["ink"]}
+    STEP = 3.2
+    CYC = STEP * (len(WORKS) + 1)
+    PLANK = 262
+    widths = [58, 60, 50, 46, 54, 64, 52]
+    heights = [168, 196, 176, 150, 186, 204, 180]
+    gap = 7
+    x = 96
+    books = []
+    for i, ((yr, lab, theme, *_), bw, bh) in enumerate(zip(WORKS, widths, heights)):
+        c = col[theme]
+        y = PLANK - bh
+        t0, t1 = STEP * (i + 1), STEP * (i + 2)
+        kt = [0, t0, t0 + 0.35, t1 - 0.35, t1, CYC]
+        kts = ";".join(f"{v / CYC:.4f}" for v in kt)
+        cx, cy = x + bw / 2, y + bh / 2
+        yr_s = str(int(yr))
+        spine_txt, _ = text("mono-bold", f"{lab}  {yr_s}", 12, 0, 4.3, th["ink"], anchor="middle", tracking=0.12)
+        books.append(
+            f'<g><animateTransform attributeName="transform" type="translate" values="0 0;0 0;0 -22;0 -22;0 0;0 0" '
+            f'keyTimes="{kts}" calcMode="spline" keySplines="0 0 1 1;0.3 0 0.2 1;0 0 1 1;0.4 0 0.6 1;0 0 1 1" '
+            f'dur="{CYC:.1f}s" repeatCount="indefinite"/>'
+            f'<rect x="{x}" y="{y}" width="{bw}" height="{bh}" rx="3" fill="{c}" fill-opacity="0.16" stroke="{c}" stroke-width="1.5"/>'
+            f'<rect x="{x}" y="{y + 14}" width="{bw}" height="3" fill="{c}" opacity="0.8"/>'
+            f'<rect x="{x}" y="{y + bh - 17}" width="{bw}" height="3" fill="{c}" opacity="0.8"/>'
+            f'<g transform="translate({n(cx)} {n(cy)}) rotate(-90)">{spine_txt}</g></g>')
+        x += bw + gap
+    body.append("".join(books))
+    # a d20 bookend, because of course
+    bl = wire_frames(ICO_V, ICO_E, 1, x + 34, PLANK - 30, 28, (0.35, 1, 0.18), tilt=0.35, eye=-0.17)[0]
+    br = wire_frames(ICO_V, ICO_E, 1, x + 34, PLANK - 30, 28, (0.35, 1, 0.18), tilt=0.35, eye=0.17)[0]
+    body.append(f'<g style="isolation:isolate"><path d="{bl}" fill="none" stroke="{th["red"]}" stroke-width="1.6" '
+                f'style="mix-blend-mode:{th["blend"]}"/><path d="{br}" fill="none" stroke="{th["cyan"]}" stroke-width="1.6" '
+                f'style="mix-blend-mode:{th["blend"]}"/></g>')
+    body.append(f'<rect x="60" y="{PLANK}" width="{x + 100 - 60}" height="9" rx="2" fill="{th["ink"]}" fill-opacity="0.22"/>'
+                f'<rect x="80" y="{PLANK + 9}" width="10" height="16" fill="{th["ink"]}" fill-opacity="0.14"/>'
+                f'<rect x="{x + 70}" y="{PLANK + 9}" width="10" height="16" fill="{th["ink"]}" fill-opacity="0.14"/>')
+
+    # right panel: a summary, then whichever book is in hand
+    px = 700
+    def state(i, inner):
+        if i == 0:
+            vals, times, base = [1, 0, 1], [0, STEP, CYC], 1
+        else:
+            vals, times, base = [0, 1, 0], [0, STEP * i, STEP * (i + 1)], 0
+        return f'<g opacity="{base}">{inner}' + discrete("opacity", vals, times, CYC) + "</g>"
+
+    s0 = []
+    a, _ = text("mono-bold", "SEVEN WORKS · 2023–2026", 12, px, 76, th["accent"], tracking=0.14)
+    s0.append(a)
+    for k, line in enumerate(["First or sole author", "on six of the seven."]):
+        t, _ = text("serif", line, 30, px - 1, 122 + k * 36, th["ink"])
+        s0.append(t)
+    for k, (key, lab) in enumerate([("dc", "digital citizenship & AI literacy"),
+                                    ("ve", "virtual environments & instructional design"),
+                                    ("om", "open educational material")]):
+        yy = 206 + k * 22
+        s0.append(f'<rect x="{px}" y="{yy - 10}" width="12" height="12" rx="2" fill="{col[key]}" fill-opacity="0.3" stroke="{col[key]}"/>')
+        t, _ = text("mono", lab, 12.5, px + 22, yy, th["muted"])
+        s0.append(t)
+    body.append(state(0, "".join(s0)))
+    for i, (yr, lab, theme, title, venue, role) in enumerate(WORKS, 1):
+        g = []
+        a, _ = text("mono-bold", f"IN HAND · {int(yr)}", 12, px, 76, th["accent"], tracking=0.14)
+        g.append(a)
+        lines = _wrap("serif", title, 25, W - px - 44)
+        for k, line in enumerate(lines[:4]):
+            t, _ = text("serif", line, 25, px - 1, 114 + k * 31, th["ink"])
+            g.append(t)
+        yy = 114 + min(len(lines), 4) * 31 + 10
+        v, _ = text("mono", venue, 12.5, px, yy, th["muted"])
+        r, _ = text("mono-bold", role.upper(), 11.5, px, yy + 24, col[theme], tracking=0.12)
+        g.append(v + r)
+        body.append(state(i, "".join(g)))
+    cta, _ = text("mono-bold", "FULL LIST, DOIs AND CITATIONS IN THE CV  ↗", 11.5, W - 36, 292, th["accent"],
+                  anchor="end", tracking=0.1)
+    body.append(cta)
+    body.append(f'<rect x="{px - 30}" y="52" width="1" height="{H - 104}" fill="{th["stroke"]}"/>')
+    body.append(fborder)
+    return svg(W, H, "Research shelf: seven works from 2023 to 2026, first or sole author on six. "
+                     "The full list with DOIs is in the CV.", "".join(body), fdefs)
+
+
 
 def main():
     for sub in ("", "sections", "links"):
@@ -1437,6 +1566,7 @@ def main():
         jobs.append((f"player-{tn}.svg", lambda tn=tn: player(tn)))
         jobs.append((f"timeline-{tn}.svg", lambda tn=tn: timeline(tn)))
         jobs.append((f"skilltree-{tn}.svg", lambda tn=tn: skilltree(tn)))
+        jobs.append((f"shelf-{tn}.svg", lambda tn=tn: shelf(tn)))
         for key, c in CARDS.items():
             jobs.append((f"card-{key}-{tn}.svg",
                          lambda tn=tn, key=key, c=c: card(tn, key, c["title"], c["lines"], c["meta"], c["illus"], c["alt"])))
