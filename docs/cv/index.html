@@ -220,6 +220,8 @@
   .terms { list-style: none; padding: 0; margin: 10px 0 0; }
   .terms li { display: grid; grid-template-columns: 136px 1fr; gap: 10px; padding: 7px 0; border-top: 1px dashed var(--line); font-size: 14.5px; }
   .terms li span:first-child { font: 12px/1.5 var(--mono); color: var(--muted); }
+  .card.span2 { grid-column: span 2; }
+  .card.span2 .terms { display: grid; grid-template-columns: 1fr 1fr; column-gap: 28px; }
 
   /* ---------- projects ---------- */
   .projects { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
@@ -290,14 +292,40 @@
   .toast.show { opacity: 1; transform: translate(-50%, 0); }
   .toast .ach { color: var(--gold); letter-spacing: .12em; }
 
+  /* live numbers */
+  .live { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 18px; font: 12px/1.4 var(--mono); color: var(--muted);
+    margin: 4px 0 0; padding: 10px 14px; border: 1px dashed var(--line); border-radius: 10px; min-height: 42px; }
+  .live b { color: var(--ink); font-size: 14px; font-variant-numeric: tabular-nums; }
+  .live .tag-live { display: inline-flex; align-items: center; gap: 7px; font-weight: 600; letter-spacing: .12em; color: var(--cyan); }
+  .live .tag-live i { width: 8px; height: 8px; border-radius: 50%; background: var(--cyan); animation: pulse 2s infinite; }
+  @keyframes pulse { 0% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--cyan) 55%, transparent); } 70% { box-shadow: 0 0 0 8px transparent; } 100% { box-shadow: 0 0 0 0 transparent; } }
+  .live .src { margin-left: auto; font-size: 11px; }
+  .cites { font: 600 10.5px/1 var(--mono); letter-spacing: .08em; text-transform: uppercase; color: var(--cyan); }
+  .stars { font: 600 12px/1 var(--mono); color: var(--gold); margin-left: 8px; }
+
+  /* the d20 roll */
+  .d20wrap { width: 230px; text-align: center; }
+  .roll { margin-top: 6px; }
+  .roll-out { margin-top: 10px; min-height: 64px; font-size: 14px; line-height: 1.4; }
+  .roll-out b { display: block; font: 600 34px/1 var(--serif); color: var(--accent); margin-bottom: 4px; }
+  .roll-out em { display: block; font: 600 10.5px/1.3 var(--mono); letter-spacing: .12em; text-transform: uppercase; font-style: normal; color: var(--gold); margin-bottom: 4px; }
+  .roll-out.pop { animation: pop .35s ease; }
+  @keyframes pop { 0% { transform: scale(.85); opacity: 0; } 100% { transform: none; opacity: 1; } }
+
   @media (max-width: 900px) {
     .intro { grid-template-columns: 1fr; padding-top: 32px; }
-    .intro .d20wrap { display: none; }
+    .intro .d20wrap { width: auto; display: grid; grid-template-columns: 112px 1fr; grid-template-areas: "die out" "btn out"; align-items: center; gap: 4px 14px; text-align: left; }
+    .intro .d20wrap #d20 { grid-area: die; width: 112px; height: 112px; }
+    .intro .d20wrap .roll { grid-area: btn; }
+    .intro .d20wrap .roll-out { grid-area: out; margin: 0; }
+    .intro .d20wrap .d20cap { display: none; }
     .stats { grid-template-columns: repeat(3, 1fr); }
     .projects, .certs, .talks { grid-template-columns: repeat(2, 1fr); }
     .cert.wide { grid-column: span 2; grid-template-columns: 1fr; }
     .cert.wide .thumb { aspect-ratio: 16 / 9; min-height: 0; }
     .grid2, .skills-wrap { grid-template-columns: 1fr; }
+    .card.span2 { grid-column: auto; }
+    .card.span2 .terms { grid-template-columns: 1fr; }
     .evidence { position: static; }
     .explore span { display: none; }
   }
@@ -319,7 +347,7 @@
   @media print {
     :root, :root[data-theme="dark"] { --bg: #fff; --panel: #fff; --line: #ccc; --ink: #111; --muted: #555; --chip: #fff; --accent: #b3122a; --cyan: #006b78; --gold: #8a5a12; color-scheme: light; }
     body { background: #fff; font-size: 10.5pt; }
-    .bar, .filters, .mini, .d20wrap, .hint-k, .toast, .no-print, .overlay, #replay, .evidence, .thumb, .path { display: none !important; }
+    .bar, .filters, .mini, .d20wrap, .hint-k, .toast, .no-print, .overlay, #replay, .evidence, .thumb, .path, .live { display: none !important; }
     .js .reveal { opacity: 1 !important; transform: none !important; }
     main { max-width: none; padding: 0; }
     .intro { padding: 0 0 8px; }
@@ -340,9 +368,9 @@
   <nav class="toc" aria-label="Sections">
     <a href="#replay" data-i18n="nav.replay">Replay</a>
     <a href="#education" data-i18n="nav.education">Education</a>
+    <a href="#experience" data-i18n="nav.experience">Experience</a>
     <a href="#research" data-i18n="nav.research">Research</a>
     <a href="#certificates" data-i18n="nav.certificates">Certificates</a>
-    <a href="#teaching" data-i18n="nav.teaching">Teaching</a>
     <a href="#projects" data-i18n="nav.projects">Projects</a>
     <a href="#skills" data-i18n="nav.skills">Skills</a>
     <a href="#writing" data-i18n="nav.writing">Writing</a>
@@ -376,12 +404,14 @@
       <p class="hint-k" id="kbdHint"></p>
     </div>
     <div class="d20wrap">
-      <canvas id="d20" width="360" height="360" aria-label="A spinning d20 drawn as a red/cyan anaglyph. Drag to spin it."></canvas>
-      <div class="d20cap" data-i18n="intro.d20">drag to roll · red/cyan anaglyph</div>
+      <canvas id="d20" width="360" height="360" aria-label="A spinning d20 drawn as a red/cyan anaglyph. Click or press R to roll it."></canvas>
+      <button class="tool roll" id="rollBtn" type="button" data-i18n="d20.roll">Roll the d20</button>
+      <div class="roll-out" id="rollOut" aria-live="polite"><span class="d20cap" data-i18n="intro.d20">red/cyan anaglyph · roll for a fact</span></div>
     </div>
   </section>
 
   <div class="stats reveal" id="stats"></div>
+  <div class="live reveal" id="live" aria-live="polite"></div>
 
   <section id="replay" class="reveal">
     <div class="sec-head"><span class="num">01</span><h2 data-i18n="replay.title">Career replay</h2><span class="aside" data-i18n="replay.aside">press play, or drag the year</span></div>
@@ -389,7 +419,7 @@
       <div class="controls">
         <button class="play" id="playBtn" type="button" aria-label="Play"><svg width="16" height="16" viewBox="0 0 16 16" id="playIcon"><path d="M4 2.5L13 8L4 13.5Z" fill="currentColor"/></svg></button>
         <div class="year" id="yearOut">2026</div>
-        <input type="range" id="yearRange" min="2013" max="2026.99" step="0.01" value="2026.99" aria-label="Year">
+        <input type="range" id="yearRange" min="2011" max="2026.99" step="0.01" value="2026.99" aria-label="Year">
         <div class="hud" id="hud"></div>
       </div>
       <div class="lanes" id="laneBtns"></div>
@@ -403,8 +433,16 @@
     <ul class="tl" id="edu"></ul>
   </section>
 
+  <section id="experience" class="reveal">
+    <div class="sec-head"><span class="num">03</span><h2 data-i18n="nav.experience">Experience</h2></div>
+    <h3 class="sub" style="margin-top:0" data-i18n="exp.work">Work</h3>
+    <div class="grid2" id="workGrid"></div>
+    <h3 class="sub" data-i18n="teach.title">Teaching &amp; service</h3>
+    <div class="grid2" id="teachGrid"></div>
+  </section>
+
   <section id="research" class="reveal">
-    <div class="sec-head"><span class="num">03</span><h2 data-i18n="nav.research">Research</h2><span class="aside" data-i18n="pubs.aside">from Crossref · DataCite</span></div>
+    <div class="sec-head"><span class="num">04</span><h2 data-i18n="nav.research">Research</h2><span class="aside" data-i18n="pubs.aside">from Crossref · DataCite</span></div>
     <div class="filters" id="pubFilters" role="group" aria-label="Filter publications"></div>
     <ol class="pubs" id="pubs"></ol>
     <p class="hint-k"><button class="mini" id="copyAll" type="button" data-i18n="pubs.copyAll">Copy all as APA</button></p>
@@ -413,14 +451,9 @@
   </section>
 
   <section id="certificates" class="reveal">
-    <div class="sec-head"><span class="num">04</span><h2 data-i18n="nav.certificates">Certificates</h2><span class="aside" data-i18n="certs.aside">click a certificate to enlarge</span></div>
+    <div class="sec-head"><span class="num">05</span><h2 data-i18n="nav.certificates">Certificates</h2><span class="aside" data-i18n="certs.aside">click a certificate to enlarge</span></div>
     <div class="filters" id="certFilters" role="group" aria-label="Filter certificates"></div>
     <div class="certs" id="certGrid"></div>
-  </section>
-
-  <section id="teaching" class="reveal">
-    <div class="sec-head"><span class="num">05</span><h2 data-i18n="teach.title">Teaching &amp; service</h2></div>
-    <div class="grid2" id="teachGrid"></div>
   </section>
 
   <section id="projects" class="reveal">
@@ -603,15 +636,43 @@ const EDU = [
   { id: 'e-phd', when: { en: '2024 – present', tr: '2024 – devam ediyor' }, now: true,
     what: { en: 'PhD, Computer and Instructional Technologies Education', tr: 'Doktora, Bilgisayar ve Öğretim Teknolojileri Eğitimi' },
     where: { en: 'Bursa Uludağ University, Institute of Educational Sciences', tr: 'Bursa Uludağ Üniversitesi, Eğitim Bilimleri Enstitüsü' } },
-  { id: 'e-msc', when: { en: '2021 – 2024', tr: '2021 – 2024' },
+  { id: 'e-msc', when: { en: '2021 – 2024', tr: '2021 – 2024' }, gpa: ['3.94', '4.00'],
     what: { en: 'MSc, Computer and Instructional Technologies Education', tr: 'Yüksek Lisans, Bilgisayar ve Öğretim Teknolojileri Eğitimi' },
-    where: { en: 'Bursa Uludağ University', tr: 'Bursa Uludağ Üniversitesi' },
+    where: { en: 'Bursa Uludağ University, Institute of Educational Sciences', tr: 'Bursa Uludağ Üniversitesi, Eğitim Bilimleri Enstitüsü' },
     thesis: { title: 'Dijital Vatandaşlık İçeriklerinin Ortaokul Öğretim Süreçlerine Yansımaları: Bütünleşik Bir Durum Çalışması',
               en: 'How digital citizenship content shows up in middle-school teaching: an embedded case study. Advisor: Prof. Dr. Şehnaz Baltacı.',
               tr: 'Danışman: Prof. Dr. Şehnaz Baltacı.' } },
-  { id: 'e-bsc', when: { en: '2018 – 2021', tr: '2018 – 2021' }, badge: { en: 'top of class', tr: 'bölüm birincisi' },
-    what: { en: 'BSc, Computer and Instructional Technologies Education', tr: 'Lisans, Bilgisayar ve Öğretim Teknolojileri Eğitimi' },
-    where: { en: 'Bursa Uludağ University · graduated first in class', tr: 'Bursa Uludağ Üniversitesi · bölüm birincisi olarak mezun' } },
+  { id: 'e-bsc', when: { en: '2018 – 2021', tr: '2018 – 2021' }, gpa: ['3.83', '4.00'], badge: { en: 'first in department', tr: 'bölüm birincisi' },
+    what: { en: 'BSc, Computer and Instructional Technologies Education', tr: 'Lisans, Bilgisayar ve Öğretim Teknolojileri Öğretmenliği' },
+    where: { en: 'Bursa Uludağ University', tr: 'Bursa Uludağ Üniversitesi' } },
+  { id: 'e-assoc', when: { en: '2016 – 2018', tr: '2016 – 2018' }, gpa: ['3.91', '4.00'], badge: { en: 'first in department', tr: 'bölüm birincisi' },
+    what: { en: 'Associate degree, Computer Programming', tr: 'Ön lisans, Bilgisayar Programcılığı' },
+    where: { en: 'Bursa Uludağ University, Vocational School of Technical Sciences · second in the whole school', tr: 'Bursa Uludağ Üniversitesi, Teknik Bilimler Meslek Yüksekokulu · okul ikincisi' } },
+  { id: 'e-hs', when: { en: '2011 – 2015', tr: '2011 – 2015' }, grade: ['87.6', '100'], badge: { en: 'top of school', tr: 'okul birincisi' },
+    what: { en: 'Vocational and technical high school', tr: 'Mesleki ve teknik Anadolu lisesi' },
+    where: { en: 'Bursa Ali Osman Sönmez Vocational and Technical Anatolian High School', tr: 'Bursa Ali Osman Sönmez Mesleki ve Teknik Anadolu Lisesi' } },
+];
+
+// Work history comes from the Notion CV; teaching and service from the documents in Drive.
+const WORK = [
+  { id: 'w-dns', wide: true, when: { en: '2021 – 2023', tr: '2021 – 2023' }, tags: ['unity', 'python', 'arduino', 'teaching', 'web'],
+    what: { en: 'Teacher & software developer · Dad & Sons Software', tr: 'Eğitmen ve yazılım geliştirici · Dad & Sons Software' },
+    body: { en: 'Taught programming and computational thinking at Ulutek Maker Çocuk in Bursa: Scratch and mBlock up to Arduino and mBot for middle-school students, Unity for middle and high-school students. Also worked on CodeLine, the company’s learning platform: designed its Python module and wrote code for it.',
+            tr: 'Bursa’da Ulutek Maker Çocuk’ta programlama ve bilgi işlemsel düşünme eğitimleri: ortaokul öğrencilerine Scratch ve mBlock’tan Arduino ve mBot’a, ortaokul ve lise öğrencilerine Unity. Şirketin eğitim platformu CodeLine’ın geliştirilmesinde de görev aldım: Python modülünü tasarladım ve yazılımında çalıştım.' },
+    terms: [
+      ['Feb – Apr 2022', { en: 'Unity game programming', tr: 'Unity ile oyun programlama' }],
+      ['Sep 2022 – Jun 2023', { en: 'Scratch, Arduino, Kodu Game Lab, mBot · 64 hours', tr: 'Scratch, Arduino, Kodu Game Lab, mBot · 64 saat' }],
+      ['Nov – Dec 2022', { en: 'Arduino electronics and Unity game programming', tr: 'Arduino ile elektronik ve Unity ile oyun programlama' }],
+      ['Jun 2023', { en: 'Arduino, text-based programming', tr: 'Arduino ile metin tabanlı programlama' }],
+    ],
+    link: 'https://github.com/ugursirvermez/Python_BeginnerEducation' },
+  { id: 'w-akcalar', when: { en: '2016 – 2017 · freelance', tr: '2016 – 2017 · serbest' }, tags: ['unity', 'xr'],
+    what: { en: 'VR developer · Akçalar Mobilya', tr: 'VR geliştirici · Akçalar Mobilya' },
+    body: { en: 'A VR tour application for a furniture company, built in Unity.', tr: 'Bir mobilya firması için Unity ile geliştirilen VR tur uygulaması.' } },
+  { id: 'w-bizpark', when: { en: '2016 · internship', tr: '2016 · staj' }, tags: ['unity', 'xr'],
+    what: { en: 'Intern · Bizpark', tr: 'Stajyer · Bizpark' },
+    body: { en: 'An augmented reality project in Unity for Microsoft HoloLens. The project is confidential, so there is nothing public to link.',
+            tr: 'Unity ile Microsoft HoloLens için artırılmış gerçeklik projesi. Proje gizli olduğu için bağlantı verilecek açık bir çalışma yok.' } },
 ];
 
 const TEACH = [
@@ -619,17 +680,6 @@ const TEACH = [
     what: { en: 'Teaching Unity and Python', tr: 'Unity ve Python eğitmenliği' },
     body: { en: 'Game development and programming with students. Some of their games are public: RunToLife, PydewValley.',
             tr: 'Öğrencilerle oyun geliştirme ve programlama. Oyunlarından bazıları açık: RunToLife, PydewValley.' } },
-  { id: 'x-ulutek', when: { en: '2022 – 2025', tr: '2022 – 2025' }, tags: ['unity', 'arduino', 'python', 'teaching'],
-    what: { en: 'Maker workshops for kids · Ulutek Maker Çocuk', tr: 'Çocuklar için maker atölyeleri · Ulutek Maker Çocuk' },
-    body: { en: 'Run with D&S Software at the Ulutek technology development zone in Bursa.', tr: 'Bursa’da Ulutek Teknoloji Geliştirme Bölgesi’nde D&S Software ile yürütüldü.' },
-    terms: [
-      ['Feb – Apr 2022', { en: 'Unity game programming', tr: 'Unity ile oyun programlama' }],
-      ['Sep 2022 – Jun 2023', { en: 'Scratch, Arduino, Kodu Game Lab, mBot · 64 hours', tr: 'Scratch, Arduino, Kodu Game Lab, mBot · 64 saat' }],
-      ['Nov – Dec 2022', { en: 'Arduino electronics and Unity game programming', tr: 'Arduino ile elektronik ve Unity ile oyun programlama' }],
-      ['Jun 2023', { en: 'Arduino, text-based programming', tr: 'Arduino ile metin tabanlı programlama' }],
-      ['2025', { en: 'Python course materials', tr: 'Python ders materyalleri' }],
-    ],
-    link: 'https://github.com/ugursirvermez/Python_BeginnerEducation' },
   { id: 'x-course', when: { en: '2025–26 fall', tr: '2025–26 güz' }, tags: ['unity', 'teaching', 'id'],
     what: { en: 'Course site: Modeling and Design in Education', tr: 'Ders sitesi: Eğitimde Modelleme ve Tasarım' },
     body: { en: 'GameEngineStudio. 14 weeks of Unity 6 for future teachers, with demos that run in the browser.',
@@ -645,9 +695,6 @@ const TEACH = [
     body: { en: 'Two review rounds for one manuscript, May and July 2024. Both certificates can be verified on DergiPark.',
             tr: 'Bir makale için iki değerlendirme turu, Mayıs ve Temmuz 2024. İki sertifika da DergiPark’ta doğrulanabilir.' },
     verify: ['https://dergipark.org.tr/en/verify-reviewer-certificate/1723642-77e5', 'https://dergipark.org.tr/en/verify-reviewer-certificate/1791942-bee3'] },
-  { id: 'x-industry', when: { en: 'industry', tr: 'sektör' }, tags: ['xr', 'unity'],
-    what: { en: 'VR and AR application development', tr: 'VR ve AR uygulama geliştirme' },
-    body: { en: 'VR and AR applications built in the private sector.', tr: 'Özel sektörde geliştirilen VR ve AR uygulamaları.' } },
 ];
 
 const PROJECTS = [
@@ -731,22 +778,27 @@ const POSTS = [
 const LANES = {
   edu: { en: 'Education', tr: 'Eğitim', color: 'var(--ink)' },
   res: { en: 'Research', tr: 'Araştırma', color: 'var(--accent)' },
-  tea: { en: 'Teaching & service', tr: 'Öğretim ve hizmet', color: 'var(--cyan)' },
+  tea: { en: 'Work & teaching', tr: 'İş ve öğretim', color: 'var(--cyan)' },
   cer: { en: 'Certificates', tr: 'Sertifikalar', color: 'var(--gold)' },
   bld: { en: 'Projects', tr: 'Projeler', color: 'var(--muted)' },
 };
 const EVENTS = [
   { d: '2013-12', lane: 'cer', ref: 'c-cisco', en: 'Cisco IT Essentials', tr: 'Cisco IT Essentials' },
+  { d: '2015-06', lane: 'edu', ref: 'e-hs', en: 'High school, top of school', tr: 'Lise, okul birincisi' },
+  { d: '2016-07', lane: 'tea', ref: 'w-bizpark', en: 'Bizpark internship: AR for HoloLens', tr: 'Bizpark stajı: HoloLens için AR' },
+  { d: '2016-10', lane: 'tea', ref: 'w-akcalar', en: 'Freelance VR tour for Akçalar Mobilya', tr: 'Akçalar Mobilya için serbest VR tur' },
+  { d: '2018-06', lane: 'edu', ref: 'e-assoc', en: 'Associate degree, first in department', tr: 'Ön lisans, bölüm birincisi' },
   { d: '2017-09', lane: 'tea', ref: 'x-teach', en: 'Started teaching Unity and Python', tr: 'Unity ve Python öğretmeye başladı' },
   { d: '2018-09', lane: 'edu', ref: 'e-bsc', en: 'BSc begins', tr: 'Lisans başladı' },
-  { d: '2021-06', lane: 'edu', ref: 'e-bsc', en: 'BSc, graduated first in class', tr: 'Lisans, bölüm birincisi' },
+  { d: '2021-06', lane: 'edu', ref: 'e-bsc', en: 'BSc, first in department', tr: 'Lisans, bölüm birincisi' },
   { d: '2021-09', lane: 'cer', ref: 'c-anadolu', en: 'Anadolu University certificate program', tr: 'Anadolu Üniversitesi sertifika programı' },
   { d: '2021-10', lane: 'edu', ref: 'e-msc', en: 'MSc begins', tr: 'Yüksek lisans başladı' },
-  { d: '2022-02', lane: 'tea', ref: 'x-ulutek', en: 'Unity workshops at Ulutek Maker Çocuk', tr: 'Ulutek Maker Çocuk’ta Unity atölyeleri' },
+  { d: '2021-11', lane: 'tea', ref: 'w-dns', en: 'Dad & Sons Software: teaching and CodeLine', tr: 'Dad & Sons Software: eğitmenlik ve CodeLine' },
+  { d: '2022-02', lane: 'tea', ref: 'w-dns', en: 'Unity workshops at Ulutek Maker Çocuk', tr: 'Ulutek Maker Çocuk’ta Unity atölyeleri' },
   { d: '2022-04', lane: 'cer', ref: 'c-gpm', en: 'Google Project Management', tr: 'Google Proje Yönetimi' },
   { d: '2022-04', lane: 'bld', ref: 'r-sarc', en: 'Sarcaster-Corvus (bootcamp)', tr: 'Sarcaster-Corvus (bootcamp)' },
   { d: '2022-06', lane: 'res', ref: 't-2022', en: 'ICETOL 2022: metaverse gamification review', tr: 'ICETOL 2022: metaverse oyunlaştırma incelemesi' },
-  { d: '2022-09', lane: 'tea', ref: 'x-ulutek', en: 'Scratch, Arduino, Kodu, mBot · 64 hours', tr: 'Scratch, Arduino, Kodu, mBot · 64 saat' },
+  { d: '2022-09', lane: 'tea', ref: 'w-dns', en: 'Scratch, Arduino, Kodu, mBot · 64 hours', tr: 'Scratch, Arduino, Kodu, mBot · 64 saat' },
   { d: '2023-05', lane: 'bld', ref: 'r-run', en: 'RunToLife, with students', tr: 'RunToLife, öğrencilerle' },
   { d: '2023-06', lane: 'res', ref: 't-2023', en: 'ICETOL 2023: digital citizenship materials', tr: 'ICETOL 2023: dijital vatandaşlık materyalleri' },
   { d: '2023-07', lane: 'bld', ref: 'r-mla', en: 'Unity ML-Agents maze', tr: 'Unity ML-Agents labirenti' },
@@ -771,15 +823,44 @@ const EVENTS = [
   { d: '2026-07', lane: 'res', ref: 'p-ijces', en: 'IJCES article: AI literacy', tr: 'IJCES makalesi: YZ okuryazarlığı' },
 ];
 
+// What the d20 says. 1 and 20 are the critical rolls.
+const FACTS = [
+  { en: 'The shader is still compiling. Roll again.', tr: 'Shader hâlâ derleniyor. Tekrar at.' },
+  { en: 'Has been using Unity since 2015.', tr: '2015’ten beri Unity kullanıyor.' },
+  { en: 'Has been poking at Unreal since its 2013 sandbox days.', tr: 'Unreal ile 2013’teki sandbox sürümlerinden beri uğraşıyor.' },
+  { en: 'Finished vocational high school at the top of the school (2015).', tr: 'Meslek lisesini okul birincisi olarak bitirdi (2015).' },
+  { en: 'First in department in the associate degree, GPA 3.91 (2018).', tr: 'Ön lisansta bölüm birincisi, ortalama 3,91 (2018).' },
+  { en: 'First in department again in the BSc, GPA 3.83 (2021).', tr: 'Lisansta yine bölüm birincisi, ortalama 3,83 (2021).' },
+  { en: 'Finished the MSc with a 3.94 GPA.', tr: 'Yüksek lisansı 3,94 ortalamayla bitirdi.' },
+  { en: 'Interned on an AR project for Microsoft HoloLens in 2016.', tr: '2016’da Microsoft HoloLens için bir AR projesinde staj yaptı.' },
+  { en: 'Built a VR tour for a furniture company as a freelancer.', tr: 'Serbest çalışarak bir mobilya firmasına VR tur yaptı.' },
+  { en: 'Finished 13 IBM AI Engineering courses in one month, June to July 2025.', tr: '13 IBM AI Engineering kursunu bir ayda bitirdi, Haziran–Temmuz 2025.' },
+  { en: 'Seven published works, first or sole author on six.', tr: 'Yedi yayın; altısında birinci ya da tek yazar.' },
+  { en: 'Presented at ICETOL three years in a row, 2022 to 2024.', tr: 'ICETOL’da üç yıl üst üste bildiri sundu, 2022–2024.' },
+  { en: 'Peer reviewer for the Turkish Journal of Education.', tr: 'Turkish Journal of Education hakemi.' },
+  { en: 'Has taught Scratch, Arduino, Kodu Game Lab and mBot to kids.', tr: 'Çocuklara Scratch, Arduino, Kodu Game Lab ve mBot öğretti.' },
+  { en: 'Wrote a 14-week Unity 6 course site for future teachers.', tr: 'Öğretmen adayları için 14 haftalık bir Unity 6 ders sitesi yazdı.' },
+  { en: 'Built a fictional OS from Remedy’s Control. It is his most-starred repo.', tr: 'Remedy’nin Control’ünden kurgusal bir işletim sistemi yaptı; en çok yıldızlı reposu.' },
+  { en: 'Took Google’s project management certificate in Turkish (2022).', tr: 'Google’ın proje yönetimi sertifikasını Türkçe aldı (2022).' },
+  { en: 'Contributed to TÜBİTAK 4004 AI workshops in 2025.', tr: '2025’te TÜBİTAK 4004 yapay zekâ atölyelerine katkı verdi.' },
+  { en: 'Writes about Queens of the Stone Age on Medium.', tr: 'Medium’da Queens of the Stone Age üzerine yazıyor.' },
+  { en: 'Teaching Unity and Python since 2017, and still answering “Texture ile Material aynı şey değil mi hocam?”', tr: '2017’den beri Unity ve Python öğretiyor ve hâlâ “Texture ile Material aynı şey değil mi hocam?” sorusunu yanıtlıyor.' },
+];
+
 const UI = {
   en: {
-    'nav.replay': 'Replay', 'nav.education': 'Education', 'nav.research': 'Research', 'nav.certificates': 'Certificates',
+    'nav.replay': 'Replay', 'nav.education': 'Education', 'nav.experience': 'Experience', 'nav.research': 'Research', 'nav.certificates': 'Certificates',
+    'exp.work': 'Work', 'kind.work': 'work', 'edu.gpa': 'GPA', 'edu.grade': 'grade',
+    'd20.roll': 'Roll the d20', 'd20.nat20': 'Natural 20', 'd20.nat1': 'Critical fail', 'ach.roll': 'Rolled the d20', 'ach.crit': 'Natural 20!',
+    'live.tag': 'LIVE', 'live.loading': 'fetching live numbers…', 'live.cites': 'citations', 'live.views': 'views', 'live.downloads': 'downloads of the PyTorch OER',
+    'live.repos': 'public repos', 'live.stars': 'stars', 'live.followers': 'followers', 'live.src': 'OpenAlex · Zenodo · GitHub', 'live.cited': 'cited by {n}',
+    'live.zen': '{v} views · {d} downloads', 'live.off': 'live numbers are unavailable right now',
     'nav.teaching': 'Teaching', 'nav.projects': 'Projects', 'nav.skills': 'Skills', 'nav.writing': 'Writing', 'ui.search': 'Search',
     'intro.kicker': 'PhD student · Computer & Instructional Technologies Education',
     'intro.lede': 'I study game engines and virtual environments as places where people learn, build in Unity, and have been teaching Unity and Python since 2017.',
-    'intro.d20': 'drag to roll · red/cyan anaglyph', 'intro.keys': 'Press {k1} to search everything, {k2} for shortcuts.',
+    'intro.d20': 'red/cyan anaglyph · roll for a fact', 'intro.keys': 'Press {k1} to search everything, {k2} for shortcuts.',
     'stats.works': 'published works', 'stats.first': 'as first or sole author', 'stats.talks': 'conference papers',
-    'stats.certs': 'certificates, incl. 13 IBM courses', 'stats.top': 'in class, BSc 2021', 'stats.teaching': 'the year I started teaching',
+    'stats.certs': 'certificates, incl. 13 IBM courses', 'stats.top': 'times graduated first: high school, associate, BSc', 'stats.teaching': 'the year I started teaching',
     'replay.title': 'Career replay', 'replay.aside': 'press play, or drag the year', 'replay.pick': 'Press play, or pick a dot to see what happened.',
     'replay.go': 'Show me', 'hud.works': 'works', 'hud.talks': 'talks', 'hud.certs': 'certificates', 'hud.projects': 'projects',
     'edu.aside': 'Bursa Uludağ University', 'edu.thesis': 'MSc thesis',
@@ -801,13 +882,18 @@ const UI = {
     'ach.replay': 'Watched the whole replay', 'ach.all': 'Explored every section', 'ach.skill': 'Asked for proof',
   },
   tr: {
-    'nav.replay': 'Özet', 'nav.education': 'Eğitim', 'nav.research': 'Araştırma', 'nav.certificates': 'Sertifikalar',
+    'nav.replay': 'Özet', 'nav.education': 'Eğitim', 'nav.experience': 'Deneyim', 'nav.research': 'Araştırma', 'nav.certificates': 'Sertifikalar',
+    'exp.work': 'İş', 'kind.work': 'iş', 'edu.gpa': 'Ortalama', 'edu.grade': 'not',
+    'd20.roll': 'Zarı at', 'd20.nat20': 'Doğal 20', 'd20.nat1': 'Kritik başarısızlık', 'ach.roll': 'Zarı attın', 'ach.crit': 'Doğal 20!',
+    'live.tag': 'CANLI', 'live.loading': 'canlı veriler alınıyor…', 'live.cites': 'atıf', 'live.views': 'görüntülenme', 'live.downloads': 'PyTorch materyali indirmesi',
+    'live.repos': 'açık repo', 'live.stars': 'yıldız', 'live.followers': 'takipçi', 'live.src': 'OpenAlex · Zenodo · GitHub', 'live.cited': '{n} atıf',
+    'live.zen': '{v} görüntülenme · {d} indirme', 'live.off': 'canlı veriler şu an alınamıyor',
     'nav.teaching': 'Öğretim', 'nav.projects': 'Projeler', 'nav.skills': 'Yetenekler', 'nav.writing': 'Yazılar', 'ui.search': 'Ara',
     'intro.kicker': 'Doktora öğrencisi · Bilgisayar ve Öğretim Teknolojileri Eğitimi',
     'intro.lede': 'Oyun motorlarını ve sanal ortamları, insanların öğrendiği yerler olarak inceliyorum. Unity’de geliştiriyorum ve 2017’den beri Unity ve Python öğretiyorum.',
-    'intro.d20': 'sürükleyip at · kırmızı/camgöbeği anaglif', 'intro.keys': 'Her şeyde aramak için {k1}, kısayollar için {k2}.',
+    'intro.d20': 'kırmızı/camgöbeği anaglif · bir bilgi için at', 'intro.keys': 'Her şeyde aramak için {k1}, kısayollar için {k2}.',
     'stats.works': 'yayımlanmış çalışma', 'stats.first': 'birinci ya da tek yazar', 'stats.talks': 'kongre bildirisi',
-    'stats.certs': 'sertifika, 13 IBM kursu dahil', 'stats.top': 'bölüm birincisi, lisans 2021', 'stats.teaching': 'öğretmeye başladığım yıl',
+    'stats.certs': 'sertifika, 13 IBM kursu dahil', 'stats.top': 'kez birincilikle mezun: lise, ön lisans, lisans', 'stats.teaching': 'öğretmeye başladığım yıl',
     'replay.title': 'Kariyer özeti', 'replay.aside': 'oynat ya da yılı sürükle', 'replay.pick': 'Oynat ya da ne olduğunu görmek için bir noktaya tıkla.',
     'replay.go': 'Göster', 'hud.works': 'çalışma', 'hud.talks': 'bildiri', 'hud.certs': 'sertifika', 'hud.projects': 'proje',
     'edu.aside': 'Bursa Uludağ Üniversitesi', 'edu.thesis': 'Yüksek lisans tezi',
@@ -853,8 +939,9 @@ function fmtDate(d) {
   const opts = day ? { day: 'numeric', month: 'short', year: 'numeric' } : { month: 'short', year: 'numeric' };
   return new Date(y, m - 1, day || 1).toLocaleDateString(lang === 'tr' ? 'tr-TR' : 'en-GB', opts);
 }
+const num = (x) => (lang === 'tr' ? String(x).replace('.', ',') : String(x));
 const byId = {};
-[...PUBS, ...TALKS, ...CERTS, ...EDU, ...TEACH, ...PROJECTS].forEach((x) => { byId[x.id] = x; });
+[...PUBS, ...TALKS, ...CERTS, ...EDU, ...WORK, ...TEACH, ...PROJECTS].forEach((x) => { byId[x.id] = x; });
 
 function toast(html, ms = 1800) {
   const el = $('#toast');
@@ -908,7 +995,7 @@ const STATS = [
   { n: PUBS.filter((p) => p.role !== 'second').length, k: 'stats.first' },
   { n: TALKS.length, k: 'stats.talks' },
   { n: CERTS.length, k: 'stats.certs' },
-  { n: 1, k: 'stats.top', suffix: { en: 'st', tr: '.' } },
+  { n: 3, k: 'stats.top', suffix: { en: '×', tr: '×' } },
   { n: 2017, k: 'stats.teaching', from: 2008 },
 ];
 function renderStats() {
@@ -931,7 +1018,7 @@ function countUp() {
 // ---------------------------------------------------------------------------
 // career replay
 // ---------------------------------------------------------------------------
-const TL = { x0: 150, x1: 985, y0: 34, lane: 46, from: 2013, to: 2027 };
+const TL = { x0: 150, x1: 985, y0: 34, lane: 46, from: 2011, to: 2027 };
 const tx = (y) => TL.x0 + (y - TL.from) / (TL.to - TL.from) * (TL.x1 - TL.x0);
 
 function renderLaneBtns() {
@@ -1028,7 +1115,7 @@ function renderEdu() {
     <li id="${e.id}" class="${e.now ? 'now' : ''}">
       <div class="when">${esc(L(e.when))}</div>
       <div class="what">${esc(L(e.what))}${e.badge ? `<span class="badge">${esc(L(e.badge))}</span>` : ''}</div>
-      <div class="where">${esc(L(e.where))}</div>
+      <div class="where">${esc(L(e.where))}${e.gpa ? ` · ${esc(t('edu.gpa'))} ${esc(num(e.gpa[0]))} / ${esc(num(e.gpa[1]))}` : ''}${e.grade ? ` · ${esc(t('edu.grade'))} ${esc(num(e.grade[0]))} / ${e.grade[1]}` : ''}</div>
       ${e.thesis ? `<div class="thesis"><span class="k2">${esc(t('edu.thesis'))}</span><br><i>${esc(e.thesis.title)}</i><br><small>${esc(L(e.thesis))}</small></div>` : ''}
     </li>`).join('');
 }
@@ -1045,7 +1132,7 @@ function renderPubs() {
         <h3><a href="https://doi.org/${esc(p.doi)}">${esc(p.title)}</a></h3>
         <div class="authors">${p.authors.map((a) => (ME.test(a) ? `<b>${esc(a)}</b>` : esc(a))).join(', ')}</div>
         <div class="venue"><i>${esc(p.venue)}</i>, ${esc(p.details)}${p.lang === 'tr' ? ' · ' + esc(t('lang.tr')) : ''}</div>
-        <div class="row"><span class="role">${esc(t('role.' + p.role))}</span><span class="doi">doi:${esc(p.doi)}</span>
+        <div class="row"><span class="role">${esc(t('role.' + p.role))}</span>${liveBadge(p)}<span class="doi">doi:${esc(p.doi)}</span>
           <button class="mini" type="button" data-cite="${p.id}">${esc(t('pubs.cite'))}</button></div>
       </div>
     </li>`).join('');
@@ -1096,9 +1183,9 @@ function renderCerts() {
   }).join('');
 }
 
-function renderTeach() {
-  $('#teachGrid').innerHTML = TEACH.map((x) => `
-    <article class="card" id="${x.id}">
+function expCard(x) {
+  return `
+    <article class="card${x.wide ? ' span2' : ''}" id="${x.id}">
       <div class="when">${esc(L(x.when))}</div>
       <h3>${esc(L(x.what))}</h3>
       <p>${esc(L(x.body))}</p>
@@ -1108,7 +1195,11 @@ function renderTeach() {
         ${x.drive ? `<a href="${DRIVE_VIEW(x.drive)}">${esc(t('teach.doc'))} ↗</a>` : ''}
         ${(x.verify || []).map((u, i) => `<a href="${esc(u)}">${esc(t('teach.verify'))} ${i + 1} ↗</a>`).join('')}
       </div>
-    </article>`).join('');
+    </article>`;
+}
+function renderTeach() {
+  $('#workGrid').innerHTML = WORK.map(expCard).join('');
+  $('#teachGrid').innerHTML = TEACH.map(expCard).join('');
 }
 
 function renderProjects() {
@@ -1121,7 +1212,7 @@ function renderProjects() {
     const show = state.proj === 'all' || p.tags.includes(state.proj);
     return `
     <article class="proj" id="${p.id}"${show ? '' : ' hidden'}>
-      <div class="top"><h3>${esc(p.name)}</h3><span class="yr">${p.year}</span></div>
+      <div class="top"><h3>${esc(p.name)}</h3><span class="yr">${p.year}${starBadge(p)}</span></div>
       <p>${esc(p[lang] || p.en)}</p>
       <div class="tags">${p.tags.filter((k) => PROJ_TAGS[k]).map((k) => `<span class="tag">${esc(L(PROJ_TAGS[k]))}</span>`).join('')}</div>
       <div class="go">${p.live ? `<a href="${esc(p.live)}">${esc(t('proj.live'))} ↗</a>` : ''}<a href="https://github.com/ugursirvermez/${esc(p.repo)}">${esc(t('proj.repo'))} ↗</a></div>
@@ -1138,6 +1229,7 @@ function evidenceFor(tags) {
   PROJECTS.filter(hit).forEach((p) => out.push({ kind: 'proj', id: p.id, label: p.name, href: `https://github.com/ugursirvermez/${p.repo}` }));
   PUBS.filter(hit).forEach((p) => out.push({ kind: 'pub', id: p.id, label: p.title, href: `https://doi.org/${p.doi}` }));
   TALKS.filter(hit).forEach((x) => out.push({ kind: 'talk', id: x.id, label: x.title, href: DRIVE_VIEW(x.drive) }));
+  WORK.filter(hit).forEach((x) => out.push({ kind: 'work', id: x.id, label: L(x.what) }));
   TEACH.filter(hit).forEach((x) => out.push({ kind: 'teach', id: x.id, label: L(x.what) }));
   return out;
 }
@@ -1169,16 +1261,71 @@ function renderPosts() {
 
 function renderHelp() {
   const rows = lang === 'tr'
-    ? [['/  ⌘K', 'Ara'], ['?', 'Bu pencere'], ['1 – 8', 'Bölüme git'], ['space', 'Özeti oynat / durdur'], ['← →', 'Yılı değiştir · sertifikalar arasında gez'], ['L', 'Dil'], ['T', 'Tema'], ['P', 'PDF'], ['esc', 'Kapat']]
-    : [['/  ⌘K', 'Search'], ['?', 'This window'], ['1 – 8', 'Jump to a section'], ['space', 'Play / pause the replay'], ['← →', 'Change year · browse certificates'], ['L', 'Language'], ['T', 'Theme'], ['P', 'PDF'], ['esc', 'Close']];
+    ? [['/  ⌘K', 'Ara'], ['?', 'Bu pencere'], ['1 – 8', 'Bölüme git'], ['space', 'Özeti oynat / durdur'], ['← →', 'Yılı değiştir · sertifikalar arasında gez'], ['R', 'Zarı at'], ['L', 'Dil'], ['T', 'Tema'], ['P', 'PDF'], ['esc', 'Kapat']]
+    : [['/  ⌘K', 'Search'], ['?', 'This window'], ['1 – 8', 'Jump to a section'], ['space', 'Play / pause the replay'], ['← →', 'Change year · browse certificates'], ['R', 'Roll the d20'], ['L', 'Language'], ['T', 'Theme'], ['P', 'PDF'], ['esc', 'Close']];
   $('#helpList').innerHTML = rows.map(([k, v]) => `<dt><span class="k">${esc(k)}</span></dt><dd style="margin:0">${esc(v)}</dd>`).join('');
 }
 
 function renderAll() {
   renderStatic(); renderStats(); renderLaneBtns(); renderTimeline(); renderEdu(); renderPubs(); renderTalks();
-  renderCerts(); renderTeach(); renderProjects(); renderSkills(); renderPosts(); renderHelp();
+  renderCerts(); renderTeach(); renderProjects(); renderSkills(); renderPosts(); renderHelp(); renderLive();
   if (state.sel != null) showEvent(state.sel);
   else $('#evDetail').innerHTML = `<span class="d-lane">${esc(t('replay.pick'))}</span>`;
+}
+
+// ===========================================================================
+// LIVE NUMBERS: citations (OpenAlex, one batch request), the Zenodo record,
+// and GitHub. Cached for six hours; anything that fails keeps its last value.
+// ===========================================================================
+const LIVE_KEY = 'cv.live.v1';
+let LIVE = null;
+const doiKey = (d) => d.toLowerCase().replace('https://doi.org/', '');
+function liveBadge(p) {
+  if (!LIVE) return '';
+  if (p.id === 'p-zenodo' && LIVE.zen) return `<span class="cites">${esc(t('live.zen').replace('{v}', LIVE.zen.views).replace('{d}', LIVE.zen.downloads))}</span>`;
+  const n = LIVE.cites && LIVE.cites[doiKey(p.doi)];
+  return n ? `<span class="cites">${esc(t('live.cited').replace('{n}', n))}</span>` : '';
+}
+function starBadge(p) {
+  const n = LIVE && LIVE.stars && p.repo !== 'ugursirvermez' ? LIVE.stars[p.repo] : 0;
+  return n ? `<span class="stars" title="GitHub stars">★ ${n}</span>` : '';
+}
+function renderLive() {
+  const el = $('#live');
+  if (!LIVE) { el.innerHTML = `<span class="tag-live"><i></i>${esc(t('live.tag'))}</span><span>${esc(t('live.loading'))}</span>`; return; }
+  const parts = [];
+  const cites = Object.values(LIVE.cites || {}).reduce((a, b) => a + b, 0);
+  if (LIVE.cites && Object.keys(LIVE.cites).length) parts.push(`<span><b>${cites}</b> ${esc(t('live.cites'))}</span>`);
+  if (LIVE.zen) parts.push(`<span><b>${LIVE.zen.views}</b> ${esc(t('live.views'))} · <b>${LIVE.zen.downloads}</b> ${esc(t('live.downloads'))}</span>`);
+  if (LIVE.gh) parts.push(`<span><b>${LIVE.gh.repos}</b> ${esc(t('live.repos'))}</span>`);
+  if (LIVE.stars) parts.push(`<span><b>${Object.values(LIVE.stars).reduce((a, b) => a + b, 0)}</b> ${esc(t('live.stars'))}</span>`);
+  if (LIVE.gh) parts.push(`<span><b>${LIVE.gh.followers}</b> ${esc(t('live.followers'))}</span>`);
+  el.innerHTML = `<span class="tag-live"><i></i>${esc(t('live.tag'))}</span>${parts.join('') || `<span>${esc(t('live.off'))}</span>`}<span class="src">${esc(t('live.src'))}</span>`;
+}
+async function loadLive() {
+  let cached = null;
+  try { cached = JSON.parse(localStorage.getItem(LIVE_KEY) || 'null'); } catch (e) { /* ignore */ }
+  if (cached) { LIVE = cached; renderLive(); renderPubs(); renderProjects(); }
+  if (cached && Date.now() - cached.t < 6 * 3600e3) return;
+  const out = { t: Date.now(), cites: null, gh: null, stars: null, zen: null };
+  const get = (u) => fetch(u).then((r) => (r.ok ? r.json() : Promise.reject(new Error(r.status))));
+  const dois = PUBS.map((p) => p.doi).join('|');
+  await Promise.allSettled([
+    get(`https://api.openalex.org/works?filter=doi:${dois}&select=doi,cited_by_count&per-page=50`).then((d) => {
+      out.cites = {};
+      for (const w of d.results) out.cites[doiKey(w.doi)] = w.cited_by_count;
+    }),
+    get('https://api.github.com/users/ugursirvermez').then((u) => { out.gh = { repos: u.public_repos, followers: u.followers }; }),
+    get('https://api.github.com/users/ugursirvermez/repos?per_page=100').then((rs) => {
+      out.stars = {};
+      for (const r of rs) out.stars[r.name] = r.stargazers_count;
+    }),
+    get('https://zenodo.org/api/records/19015554').then((z) => { out.zen = { views: z.stats.unique_views, downloads: z.stats.unique_downloads }; }),
+  ]);
+  for (const k of ['cites', 'gh', 'stars', 'zen']) if (out[k] == null && cached) out[k] = cached[k];
+  try { localStorage.setItem(LIVE_KEY, JSON.stringify(out)); } catch (e) { /* ignore */ }
+  LIVE = out;
+  renderLive(); renderPubs(); renderProjects();
 }
 
 // ===========================================================================
@@ -1193,6 +1340,7 @@ function searchIndex() {
     ...CERTS.map((c) => ({ kind: 'cert', label: L(c.title), sub: `${c.issuer} · ${fmtDate(c.date)}`, go: c.id })),
     ...IBM_COURSES.map(([d, name, v]) => ({ kind: 'course', label: name, sub: `IBM AI Engineering · ${fmtDate(d)}`, href: `https://coursera.org/verify/${v}` })),
     ...PROJECTS.map((p) => ({ kind: 'proj', label: p.name, sub: p[lang] || p.en, go: p.id })),
+    ...WORK.map((x) => ({ kind: 'work', label: L(x.what), sub: L(x.when), go: x.id })),
     ...TEACH.map((x) => ({ kind: 'teach', label: L(x.what), sub: L(x.when), go: x.id })),
     ...EDU.map((e) => ({ kind: 'section', label: L(e.what), sub: L(e.when), go: e.id })),
     ...POSTS.map((p) => ({ kind: 'post', label: p.title, sub: fmtDate(p.date), href: p.url })),
@@ -1348,13 +1496,14 @@ document.addEventListener('keydown', (e) => {
   const onPage = el === document.body || !el;
   if (k === '/') { e.preventDefault(); openPalette(); }
   else if (k === '?') { $('#help').hidden = false; }
-  else if (/^[1-8]$/.test(k)) { const a = document.querySelectorAll('.toc a')[+k - 1]; if (a) focusItem(a.getAttribute('href').slice(1)); }
+  else if (/^[1-9]$/.test(k)) { const a = document.querySelectorAll('.toc a')[+k - 1]; if (a) focusItem(a.getAttribute('href').slice(1)); }
   else if (k === ' ' && onPage) { e.preventDefault(); setPlaying(!playing); }
   else if ((k === 'ArrowLeft' || k === 'ArrowRight') && onPage) {
     setPlaying(false);
     state.year = Math.max(TL.from, Math.min(2026.99, Math.floor(state.year) + (k === 'ArrowRight' ? 1.5 : -0.5)));
     updateReplay();
   }
+  else if (k === 'r' || k === 'R') rollD20();
   else if (k === 'l' || k === 'L') toggleLang();
   else if (k === 't' || k === 'T') cycleTheme();
   else if (k === 'p' || k === 'P') doPrint();
@@ -1412,15 +1561,44 @@ if (!('IntersectionObserver' in window)) {
     if (Math.abs(d - 4) < 1e-6) E.push([i, j]);
   }
   let ax = 0.5, ay = 0.3, vx = 0.004, vy = 0.009, drag = null;
-  cv.addEventListener('pointerdown', (e) => { drag = { x: e.clientX, y: e.clientY }; cv.setPointerCapture(e.pointerId); });
+  let rolling = false, result = 0, shown = 0, moved = 0;
+  cv.addEventListener('pointerdown', (e) => { drag = { x: e.clientX, y: e.clientY }; moved = 0; cv.setPointerCapture(e.pointerId); });
   cv.addEventListener('pointermove', (e) => {
     if (!drag) return;
+    moved += Math.abs(e.clientX - drag.x) + Math.abs(e.clientY - drag.y);
     vy = (e.clientX - drag.x) * 0.004; vx = (e.clientY - drag.y) * 0.004;
     ay += vy; ax += vx; drag = { x: e.clientX, y: e.clientY };
     if (reduced) draw();
   });
-  const end = () => { drag = null; };
-  cv.addEventListener('pointerup', end); cv.addEventListener('pointercancel', end);
+  // a click (or a flick) rolls; a slow drag just turns the die
+  const end = () => {
+    if (!drag) return;
+    const flick = Math.abs(vx) + Math.abs(vy) > 0.08;
+    drag = null;
+    if (moved < 6 || flick) roll(flick);
+  };
+  cv.addEventListener('pointerup', end); cv.addEventListener('pointercancel', () => { drag = null; });
+
+  function roll(keepSpin) {
+    if (rolling) return;
+    rolling = true; result = 0;
+    if (!keepSpin) { vx = (Math.random() < 0.5 ? -1 : 1) * (0.22 + Math.random() * 0.12); vy = 0.28 + Math.random() * 0.14; }
+    if (reduced) setTimeout(settle, 300);
+  }
+  function settle() {
+    rolling = false;
+    vx = 0; vy = 0;
+    result = 1 + Math.floor(Math.random() * 20);
+    shown = performance.now();
+    const out = $('#rollOut');
+    const crit = result === 20 ? `<em>★ ${esc(t('d20.nat20'))}</em>` : result === 1 ? `<em>${esc(t('d20.nat1'))}</em>` : '';
+    out.innerHTML = `${crit}<b>${result}</b>${esc(L(FACTS[result - 1]))}`;
+    out.classList.remove('pop'); void out.offsetWidth; out.classList.add('pop');
+    achieve(result === 20 ? 'crit' : 'roll');
+    draw();
+  }
+  window.rollD20 = () => roll(false);
+  $('#rollBtn').addEventListener('click', () => roll(false));
   function colors() {
     const dark = getComputedStyle(document.documentElement).getPropertyValue('color-scheme').trim() === 'dark';
     return dark ? { red: '#ff4747', cyan: '#2fd3d8', op: 'lighter' } : { red: '#e5303d', cyan: '#0096a8', op: 'multiply' };
@@ -1443,9 +1621,30 @@ if (!('IntersectionObserver' in window)) {
       ctx.stroke();
     }
     ctx.globalCompositeOperation = 'source-over';
+    if (result && !rolling) {
+      // the number the die "landed" on, on top of the wireframe
+      const a = Math.min(1, (performance.now() - shown) / 400);
+      ctx.globalAlpha = a;
+      const css = (v) => getComputedStyle(document.documentElement).getPropertyValue(v).trim();
+      ctx.fillStyle = css('--bg');
+      ctx.beginPath(); ctx.arc(S / 2, S / 2, S * 0.17, 0, Math.PI * 2); ctx.fill();
+      ctx.fillStyle = css(result === 20 ? '--gold' : '--accent');
+      ctx.font = `600 ${Math.round(S * 0.2)}px "Source Serif 4", Georgia, serif`;
+      ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+      ctx.fillText(String(result), S / 2, S / 2 + S * 0.01);
+      ctx.globalAlpha = 1;
+    }
   }
   function loop() {
-    if (!drag) { ax += vx; ay += vy; vx += (0.004 - vx) * 0.02; vy += (0.009 - vy) * 0.02; }
+    if (!drag) {
+      ax += vx; ay += vy;
+      if (rolling) {
+        vx *= 0.962; vy *= 0.962;                       // friction until it settles
+        if (Math.abs(vx) + Math.abs(vy) < 0.006) settle();
+      } else if (!result) {
+        vx += (0.004 - vx) * 0.02; vy += (0.009 - vy) * 0.02;   // idle spin
+      }
+    }
     draw();
     requestAnimationFrame(loop);
   }
@@ -1453,6 +1652,7 @@ if (!('IntersectionObserver' in window)) {
 })();
 
 renderAll();
+loadLive();
 </script>
 </body>
 </html>
